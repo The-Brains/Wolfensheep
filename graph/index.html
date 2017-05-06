@@ -1,0 +1,62 @@
+<html>
+    <canvas id="canvas" style="width:100%; height:100%" width="1000" height="1000">
+    </canvas>
+
+    <script>
+        var elems = {
+            G: 10000,
+            S: 43,
+            W: 10,
+            H: 32,
+        };
+
+        var reproduce = {
+            G: 1.7,
+            S: 40.12,
+            W: 13.01,
+            H: 1.2,
+        };
+
+        function process(elems) {
+            var old = elems;
+            elems = {};
+            for(var i in old) {
+                elems[i] = old[i];
+            }
+
+            elems.G = Math.min(Math.max(old.G*reproduce.G-old.S/2,0),5000000);
+            elems.S = Math.max(Math.ceil(Math.max(Math.min(old.S * reproduce.S,old.G) - old.W / 2 - old.H/2)),0);
+            elems.W = Math.max(Math.ceil(Math.floor(old.W *.7) + Math.min(old.W/2 * reproduce.W, old.S) - old.H/1000),0);
+            elems.H = Math.max(Math.ceil(Math.floor(old.H *.9) + Math.min(old.H/2 * reproduce.H, old.S)),0)
+            return elems;
+        }
+
+        var graph = [];
+        for(var i=0;i<1000;i++) {
+            graph.push(elems);
+            elems = process(elems);
+            if(i<100)
+                console.log(elems);
+        }
+
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        for(var l in elems) {
+//            console.log(l);
+            var mul = 1/10000;
+//            if(l==='G') continue;
+            ctx.beginPath();
+            ctx.moveTo(0,graph[0][l]*mul);
+//            console.log(l, graph[0]);
+            ctx.strokeStyle = l==='G'?'green':l==='S'?"blue":l==='W'?'purple':'red';
+            for(var i=1; i<graph.length;i++) {
+                ctx.lineTo(i,graph[i][l]*mul);
+                if(graph[i][l]===0) {
+                    break;
+                }
+//                console.log(i, graph[i][l]);
+            }
+            ctx.stroke();
+        }
+    </script>
+</html>
