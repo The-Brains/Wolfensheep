@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+    <head>
+        <!-- META -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>WolfenSheep</title>
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/6.0.0/normalize.min.css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.light_blue-orange.min.css" />
+        <link href="//fonts.googleapis.com/css?family=Roboto:400,100,500,300italic,500italic,700italic,900,300">
+
+        <link rel="stylesheet" href="./style/main.css" />
+
+        <!-- JS -->
+        <script
+          src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+          integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+          crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js">
+        </script>
+
+        <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    </head>
+    <body>
+        <div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+            <header class="mdl-layout__header">
+                <div class="mdl-layout__header-row">
+                    <div class="mdl-layout-spacer"></div>
+                    <span class="mdl-layout-title">
+                        Cycle: <span class="cycle">0</span>
+                    </span>
+                </div>
+            </header>
+            <div class="mdl-layout__drawer">
+                <span class="mdl-layout-title">WolfenSheep</span>
+                <!-- Navigation -->
+                <nav class="mdl-navigation">
+                    <!-- TODO -->
+                </nav>
+            </div>
+            <main class="mdl-layout__content">
+                <div class="page-content">
+                    <div class="CanvasArea">
+                        <canvas id="canvas_ui"></canvas>
+                        <canvas id="canvas_drawing"></canvas>
+                    </div>
+                </div>
+            </main>
+        </div>
+        <script language="JavaScript" src="util/addJS.js">
+        </script>
+        <script language="JavaScript" src="main.js">
+        </script>
+    </body>
+</html>
