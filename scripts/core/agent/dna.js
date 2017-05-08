@@ -3,10 +3,8 @@ define(
     function(convertDNAKeys) {
         var classDNA = function() {
             this.dna = {};
-        };
 
-        classDNA.prototype = {
-            serialize: function() {
+            this.serialize = function() {
                 var output = '';
                 _.forEach(this.getAllKeys(), (key) => {
                     var keyID = convertDNAKeys[key];
@@ -15,8 +13,9 @@ define(
                 });
 
                 return btoa(output);
-            },
-            deserialize: function(input) {
+            };
+
+            this.deserialize = function(input) {
                 var pairs = _.split(input, '||');
                 _.forEach(pairs, (pair) => {
                     var pieces = _.split(pair, ':');
@@ -26,21 +25,24 @@ define(
 
                     this.set(key, value);
                 });
-            },
-            getAllKeys: function() {
-                return _.keys(dna);
-            },
-            set: function(key, value) {
+            };
+
+            this.getAllKeys = function() {
+                return _.keys(this.dna);
+            };
+
+            this.setGene = function(key, value) {
                 if (!convertDNAKeys[key]) {
                     throw new Error('Unknown DNA key: ' + key + '.');
                 }
-                var returnValue = !!(dna[key]);
-                dna[key] = value;
+                var returnValue = !!(this.dna[key]);
+                this.dna[key] = value;
                 return returnValue;
-            },
-            get: function(key) {
-                return dna[key];
-            },
+            };
+
+            this.getGene = function(key) {
+                return this.dna[key];
+            };
         };
 
         return classDNA;

@@ -36,9 +36,29 @@ define(['jquery'], function($) {
                 + ' "' + name + '" took ' + timeSpent + 'ms to ' +
                 (succeed ? 'SUCCEED' : 'FAILED')
                 + '.');
-            var $result = $('<div/>', {
-                text: name,
+
+            this.renderTest(succeed, name, timeSpent, errorMsg);
+        }
+
+        this.renderTest = function(succeed, name, time, errorMsg) {
+            var $result = $('<li/>', {
+                class: 'mdl-list__item',
             });
+            var iconName = succeed ? 'done' : 'close';
+            var checked = succeed ? 'checked' : '';
+            var secondaryBlock = succeed ? `${time} ms` : errorMsg;
+            var $testStatus = $(`
+                <span class="mdl-list__item-primary-content">
+                    <i class="material-icons  mdl-list__item-avatar">
+                        ${iconName}
+                    </i>
+                    ${name}
+                </span>
+                <span class="mdl-list__item-secondary-action">
+                    ${secondaryBlock}
+                </span>`
+            );
+            $result.append($testStatus);
             this.$resultContainer.append($result);
         }
     };
