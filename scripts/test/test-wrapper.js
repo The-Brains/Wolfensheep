@@ -47,9 +47,10 @@ define(['jquery'], function($) {
             var iconName = succeed ? 'done' : 'close';
             var checked = succeed ? 'checked' : '';
             var secondaryBlock = succeed ? `${time} ms` : errorMsg;
+            var iconClass = succeed ? 'icon-succeed' : 'icon-failed';
             var $testStatus = $(`
                 <span class="mdl-list__item-primary-content">
-                    <i class="material-icons  mdl-list__item-avatar">
+                    <i class="material-icons mdl-list__item-avatar ${iconClass}">
                         ${iconName}
                     </i>
                     ${name}

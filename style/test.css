@@ -1,0 +1,7 @@
+.TestResultsArea .icon-succeed {
+    background-color: green;
+}
+
+.TestResultsArea .icon-failed {
+    background-color: red;
+}
