@@ -2,4 +2,4 @@
 
 _______
 
-Graph: https://the-brains.github.io/Wolfensheep/graph/
+Graph: https://the-brains.github.io/Wolfensheep/scripts/graph/
