@@ -33,6 +33,10 @@ define(['jquery', 'lodash'], function($, _) {
                     (succeed ? 'SUCCEED' : 'FAILED')
                     + '.');
 
+                if (!succeed) {
+                    console.error(errorMsg);
+                }
+
                 myself.updateCounters(succeed);
                 myself.renderTest(succeed, mainName, testName, timeSpent, errorMsg);
             }, 0);
