@@ -11,7 +11,7 @@ define(
 
         testWrapper.execTest(mainName, 'should generate parameters', function() {
             var world = new World('cool seed', 20, 20);
-            var env = world.getWorldStatus(new Location(5, 5));
+            var env = world.getWorldStatus(new Location(5, 5)).getParameters();
             expect(env).to.have.property('humidity');
             expect(env).to.have.property('temperature');
             expect(env).to.have.property('ground');
