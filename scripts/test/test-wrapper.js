@@ -1,24 +1,11 @@
-define(['jquery'], function($) {
+define(['jquery', 'lodash'], function($, _) {
     var testWrapper = function() {
         this.currentTest = '';
         this.startTime = 0;
         this.testQuantity = 0;
         this.$resultContainer = $('.TestResultsArea');
 
-        this.startTest = function(name) {
-            this.currentTest = name;
-            this.startTime = new Date();
-        };
-
-        this.endTest = function() {
-            this.testQuantity++;
-            var timeSpent = new Date() - this.startTime;
-            this.startTime = null;
-            console.log('Test "' + this.currentTest + '" took ' + timeSpent + '.');
-            this.currentTest = null;
-        };
-
-        this.execTest = function(name, testFn) {
+        this.execTest = function(mainName, testName, testFn) {
             this.testQuantity++;
             var startTime = new Date();
             var succeed = null;
@@ -32,15 +19,40 @@ define(['jquery'], function($) {
             }
             var timeSpent = new Date() - startTime;
 
-            console.log('Test #' + this.testQuantity
-                + ' "' + name + '" took ' + timeSpent + 'ms to ' +
+            console[succeed ? 'log' : 'error']('Test #' + this.testQuantity
+                + ' "' + mainName + ' | ' + testName + '" took ' + timeSpent + 'ms to ' +
                 (succeed ? 'SUCCEED' : 'FAILED')
                 + '.');
 
-            this.renderTest(succeed, name, timeSpent, errorMsg);
+            this.renderTest(succeed, mainName, testName, timeSpent, errorMsg);
         }
 
-        this.renderTest = function(succeed, name, time, errorMsg) {
+        this.createTestClass = function(mainName) {
+            return 'testBlock-' + _.replace(mainName, ' ', '_');
+        }
+
+        this.getTestContainer = function(mainName) {
+            var className = this.createTestClass(mainName);
+            var $container = this.$resultContainer.find('.' + className);
+
+            if (!$container.length) {
+                $container = $('<div>',{
+                    class: className,
+                });
+                $ul = $('<ul>');
+                $title = $('<h3>', {
+                    text: mainName,
+                });
+                $container.append($title);
+                $container.append($ul);
+                this.$resultContainer.append($container);
+            }
+
+            return $container.find('ul');
+        }
+
+        this.renderTest = function(succeed, mainName, name, time, errorMsg) {
+            var $container = this.getTestContainer(mainName);
             var $result = $('<li/>', {
                 class: 'mdl-list__item',
             });
@@ -60,7 +72,7 @@ define(['jquery'], function($) {
                 </span>`
             );
             $result.append($testStatus);
-            this.$resultContainer.append($result);
+            $container.append($result);
         }
     };
 
