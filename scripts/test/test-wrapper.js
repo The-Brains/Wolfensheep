@@ -14,26 +14,28 @@ define(['jquery', 'lodash'], function($, _) {
             this.$testReportContainer.find('.tests-failed-quantity');
 
         this.execTest = function(mainName, testName, testFn) {
-            var startTime = new Date();
-            var succeed = null;
-            var errorMsg = null;
-            try {
-                testFn();
-                succeed = true;
-            } catch (error) {
-                succeed = false;
-                errorMsg = error;
-            }
-            var timeSpent = new Date() - startTime;
+            var myself = this;
+            setTimeout(function() {
+                var startTime = new Date();
+                var succeed = null;
+                var errorMsg = null;
+                try {
+                    testFn();
+                    succeed = true;
+                } catch (error) {
+                    succeed = false;
+                    errorMsg = error;
+                }
+                var timeSpent = new Date() - startTime;
 
-            console[succeed ? 'log' : 'error']('Test #' + this.testQuantity
-                + ' "' + mainName + ' | ' + testName + '" took ' + timeSpent + 'ms to ' +
-                (succeed ? 'SUCCEED' : 'FAILED')
-                + '.');
+                console[succeed ? 'log' : 'error']('Test #' + this.testQuantity
+                    + ' "' + mainName + ' | ' + testName + '" took ' + timeSpent + 'ms to ' +
+                    (succeed ? 'SUCCEED' : 'FAILED')
+                    + '.');
 
-            this.updateCounters(succeed);
-
-            this.renderTest(succeed, mainName, testName, timeSpent, errorMsg);
+                myself.updateCounters(succeed);
+                myself.renderTest(succeed, mainName, testName, timeSpent, errorMsg);
+            }, 0);
         }
 
         this.updateCounters = function(succeed) {
