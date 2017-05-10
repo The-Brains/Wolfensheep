@@ -1,6 +1,10 @@
-define(
-    ['lodash', '../random.js', '../../util/world-parameters.js'],
-    function(_, Generator, Parameters) {
+define([
+        'lodash',
+        '../random.js',
+        '../../util/world-parameters.js',
+        './world-status.js',
+    ],
+    function(_, Generator, Parameters, WorldStatus) {
         var World = function(seed, width, height) {
             this.width = width;
             this.height = height;
@@ -24,15 +28,11 @@ define(
                     throw new Error('Location outside of world');
                 }
 
-                var key = location.getX() + '-' + location.getY();
+                var key = location.serialize();
 
                 if(!_.has(this.world, key)) {
-                    var myself = this;
-                    var param = {};
-                    _.each(Parameters, function(p, key) {
-                        param[key] = p[myself.generator.getInt(0, p.length)];
-                    });
-                    this.world[key] = param;
+                    // world piece need to be defined in function of its neighbors.
+                    this.world[key] = new WorldStatus(location, this.generator);
                 }
 
                 return this.world[key];
