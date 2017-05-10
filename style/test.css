@@ -1,9 +1,19 @@
-.TestResultsArea .icon-succeed {
-    background-color: green;
+.TestReport {
+    font-size: 20px;
 }
 
-.TestResultsArea .icon-failed {
-    background-color: red;
+.TestReport i {
+    font-size: 22px !important;
+    width: 22px !important;
+    height: 22px !important;
+}
+
+.icon-succeed {
+    background-color: green !important;
+}
+
+.icon-failed {
+    background-color: red !important;
 }
 
 .mdl-list__item-primary-content {

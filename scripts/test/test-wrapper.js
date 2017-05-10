@@ -3,10 +3,17 @@ define(['jquery', 'lodash'], function($, _) {
         this.currentTest = '';
         this.startTime = 0;
         this.testQuantity = 0;
+        this.testFailed = 0;
+        this.testSucceed = 0;
         this.$resultContainer = $('.TestResultsArea');
+        this.$testReportContainer = $('.TestReport');
+        this.$testQuantity = this.$testReportContainer.find('.tests-quantity');
+        this.$testSuceedQuantity =
+            this.$testReportContainer.find('.tests-succeed-quantity');
+        this.$testFailedQuantity =
+            this.$testReportContainer.find('.tests-failed-quantity');
 
         this.execTest = function(mainName, testName, testFn) {
-            this.testQuantity++;
             var startTime = new Date();
             var succeed = null;
             var errorMsg = null;
@@ -24,7 +31,22 @@ define(['jquery', 'lodash'], function($, _) {
                 (succeed ? 'SUCCEED' : 'FAILED')
                 + '.');
 
+            this.updateCounters(succeed);
+
             this.renderTest(succeed, mainName, testName, timeSpent, errorMsg);
+        }
+
+        this.updateCounters = function(succeed) {
+            this.testQuantity++;
+            if (succeed) {
+                this.testSucceed++;
+            } else {
+                this.testFailed++;
+            }
+
+            this.$testQuantity.text(this.testQuantity);
+            this.$testSuceedQuantity.text(this.testSucceed);
+            this.$testFailedQuantity.text(this.testFailed);
         }
 
         this.createTestClass = function(mainName) {
