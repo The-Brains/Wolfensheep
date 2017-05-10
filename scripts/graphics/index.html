@@ -1,6 +1,20 @@
 <html>
-<canvas id="canvas" style="width:100%; height:100%" width="1000" height="1000">
-</canvas>
+
+<style>
+    .logger {
+        margin-top: 0;
+        transition: margin-top 0.2s;
+        position: absolute;
+        font-size: 8px;
+    }
+    .logger.shifted {
+        margin-top: 8px;
+        transition: margin-top 0s;
+    }
+</style>
+
+<canvas id="canvas" style="width:100%; height:100%" width="1000" height="1000"></canvas>
+<div id="log" class="logger" style="top:0; left:0;"></div>
 <script src="viewcore.js"></script>
 <script src="viewmodel.js"></script>
 <script src="canvasviewer.js"></script>
@@ -11,9 +25,27 @@
     var generator = new ActionGenerator();
     var model = new ViewModel();
 
-    generator.generateActions(model.updateModel);
+    generator.generateActions(function(action) {
+        logAction(action);
+        model.updateModel(action);
+    });
 
     var canvasViewer = new CanvasViewer(canvas, model);
     canvasViewer.start();
+
+
+    function logAction(action) {
+        var log = document.createElement('div');
+        log.innerText = JSON.stringify(action);
+        var logger = document.getElementById("log");
+        logger.appendChild(log);
+        if(logger.children.length > 8) {
+            logger.removeChild(logger.firstChild);
+            logger.classList.add('shifted');
+            var timeout = setTimeout(function() {
+                logger.classList.remove('shifted');
+            },10);
+        }
+    }
 </script>
 </html>
