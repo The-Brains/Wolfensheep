@@ -1,31 +1,31 @@
 define({
-    'humidity': {
+    'humidity': [
         'dry',
         'normal',
         'humid',
-    },
-    'temperature': {
+    ],
+    'temperature': [
         'hot',
         'warm',
         'normal',
         'cold',
         'freezing',
-    },
-    'ground': {
+    ],
+    'ground': [
         'sand',
         'dirt',
         'mud',
         'water',
         'rock',
-    },
-    'wind': {
+    ],
+    'wind': [
         'quiet',
         'windy',
         'stormy',
-    },
-    'cloud': {
+    ],
+    'cloud': [
         'overcast',
         'clear',
         'rainy',
-    }
+    ],
 });

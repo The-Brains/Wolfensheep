@@ -21,5 +21,6 @@ define(function() {
         'scripts/test/core-agent-dna-test.js',
         'scripts/test/core-localization-location-test.js',
         'scripts/test/core-random-test.js',
+        'scripts/test/core-world-world-test.js',
     ]);
 });
