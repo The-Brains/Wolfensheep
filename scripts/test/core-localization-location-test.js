@@ -9,5 +9,12 @@ define(
             expect(loc.getX()).to.equal(10);
             expect(loc.getY()).to.equal(30);
         });
+
+        testWrapper.execTest(mainName, 'should serialize and deserialize', function() {
+            var expected = new Location(10, 30);
+            var returned = Location.deserialize(expected.serialize());
+            expect(returned.getX()).to.equal(expected.getX());
+            expect(returned.getY()).to.equal(expected.getY());
+        });
     }
 );
