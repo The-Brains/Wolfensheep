@@ -1,5 +1,5 @@
 define(
-    ['../../util/conversionDNATable.js'],
+    ['../../util/conversion-dna-table.js'],
     function(convertDNAKeys) {
         var classDNA = function() {
             this.dna = {};

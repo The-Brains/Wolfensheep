@@ -5,3 +5,12 @@
 .TestResultsArea .icon-failed {
     background-color: red;
 }
+
+.mdl-list__item-primary-content {
+    flex: 100%;
+}
+
+.page-content {
+    padding-left: 32px;
+    padding-right: 32px;
+}
