@@ -9,6 +9,7 @@ requirejs.config({
     paths: {
         jquery: 'https://code.jquery.com/jquery-3.2.1.slim.min',
         lodash: 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js',
+        seedRandom: 'https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.3/seedrandom.min',
     }
 });
 

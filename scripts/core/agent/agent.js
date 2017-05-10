@@ -6,4 +6,4 @@ define(['../../localization/location.js'], function (Location) {
     };
 
     return Agent;
-}
+});
