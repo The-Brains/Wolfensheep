@@ -3,28 +3,56 @@ define(['jquery', 'lodash'], function($, _) {
         this.currentTest = '';
         this.startTime = 0;
         this.testQuantity = 0;
+        this.testFailed = 0;
+        this.testSucceed = 0;
         this.$resultContainer = $('.TestResultsArea');
+        this.$testReportContainer = $('.TestReport');
+        this.$testQuantity = this.$testReportContainer.find('.tests-quantity');
+        this.$testSuceedQuantity =
+            this.$testReportContainer.find('.tests-succeed-quantity');
+        this.$testFailedQuantity =
+            this.$testReportContainer.find('.tests-failed-quantity');
 
         this.execTest = function(mainName, testName, testFn) {
+            var myself = this;
+            setTimeout(function() {
+                var startTime = new Date();
+                var succeed = null;
+                var errorMsg = null;
+                try {
+                    testFn();
+                    succeed = true;
+                } catch (error) {
+                    succeed = false;
+                    errorMsg = error;
+                }
+                var timeSpent = new Date() - startTime;
+
+                console[succeed ? 'log' : 'error']('Test #' + this.testQuantity
+                    + ' "' + mainName + ' | ' + testName + '" took ' + timeSpent + 'ms to ' +
+                    (succeed ? 'SUCCEED' : 'FAILED')
+                    + '.');
+
+                if (!succeed) {
+                    console.error(errorMsg);
+                }
+
+                myself.updateCounters(succeed);
+                myself.renderTest(succeed, mainName, testName, timeSpent, errorMsg);
+            }, 0);
+        }
+
+        this.updateCounters = function(succeed) {
             this.testQuantity++;
-            var startTime = new Date();
-            var succeed = null;
-            var errorMsg = null;
-            try {
-                testFn();
-                succeed = true;
-            } catch (error) {
-                succeed = false;
-                errorMsg = error;
+            if (succeed) {
+                this.testSucceed++;
+            } else {
+                this.testFailed++;
             }
-            var timeSpent = new Date() - startTime;
 
-            console[succeed ? 'log' : 'error']('Test #' + this.testQuantity
-                + ' "' + mainName + ' | ' + testName + '" took ' + timeSpent + 'ms to ' +
-                (succeed ? 'SUCCEED' : 'FAILED')
-                + '.');
-
-            this.renderTest(succeed, mainName, testName, timeSpent, errorMsg);
+            this.$testQuantity.text(this.testQuantity);
+            this.$testSuceedQuantity.text(this.testSucceed);
+            this.$testFailedQuantity.text(this.testFailed);
         }
 
         this.createTestClass = function(mainName) {
