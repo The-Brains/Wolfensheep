@@ -14,3 +14,14 @@
     padding-left: 32px;
     padding-right: 32px;
 }
+
+.logger {
+    margin-top: 0;
+    transition: margin-top 0.2s;
+    position: absolute;
+    font-size: 8px;
+}
+.logger.shifted {
+    margin-top: 8px;
+    transition: margin-top 0s;
+}
