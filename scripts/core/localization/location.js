@@ -17,6 +17,13 @@ define(['lodash'], function(_) {
         this.serialize = function() {
             return this.x + '-' + this.y;
         }
+
+        this.distance = function(location) {
+            var x = location.x - this.x;
+            var y = location.y - this.y;
+
+            return Math.sqrt(x*x + y*y);
+        }
     };
 
     Location.deserialize = function(input) {

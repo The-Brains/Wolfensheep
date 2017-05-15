@@ -18,5 +18,12 @@ define(
             expect(env).to.have.property('wind');
             expect(env).to.have.property('cloud');
         });
+
+        testWrapper.execTest(mainName, 'should generate parameters', function() {
+            var world = new World('cool seed', 20, 20);
+            var env = world.getWorldStatus(new Location(5, 5));
+            expect(env.serialize()).to.be
+                .equal('humidity:humid,temperature:warm,ground:rock,wind:quiet,cloud:clear,');
+        });
     }
 );

@@ -1,5 +1,5 @@
 define(
-    ['../random.js',],
+    ['../random.js'],
     function(Generator) {
         var DNA_LENGTH = 512;
 
