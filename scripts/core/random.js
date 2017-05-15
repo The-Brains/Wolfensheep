@@ -5,7 +5,11 @@ define(
             this.myGenerator = new Math.seedrandom(seed);
 
             this.getInt = function(min, max) {
-                return Math.floor((this.myGenerator() * (max - min)) + min);
+                return Math.floor(this.getFloatInRange(min, max));
+            }
+
+            this.getFloatInRange = function(min, max) {
+                return (this.myGenerator() * Math.abs(max - min)) + min;
             }
 
             this.getFloat = function() {

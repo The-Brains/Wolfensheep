@@ -37,5 +37,15 @@ define(
                 expect(returned).to.be.below(10);
             }
         });
+
+        testWrapper.execTest(mainName, 'should return float in range', function() {
+            var r = new Random();
+            for(var i = 0; i < 100 ; i ++) {
+                var returned = r.getFloatInRange(3, 10);
+
+                expect(returned).to.be.at.least(3);
+                expect(returned).to.be.below(10);
+            }
+        });
     }
 );
