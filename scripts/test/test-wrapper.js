@@ -9,6 +9,7 @@ define([
         this.testQuantity = 0;
         this.testFailed = 0;
         this.testSucceed = 0;
+        this.testTotalTime = 0;
         this.$resultContainer = $('.TestResultsArea');
         this.$testReportContainer = $('.TestReport');
         this.$testQuantity = this.$testReportContainer.find('.tests-quantity');
@@ -16,6 +17,8 @@ define([
             this.$testReportContainer.find('.tests-succeed-quantity');
         this.$testFailedQuantity =
             this.$testReportContainer.find('.tests-failed-quantity');
+        this.$testTimer =
+            this.$testReportContainer.find('.tests-time');
 
         this.grepSearch = FindGetParam('grep');
 
@@ -45,6 +48,7 @@ define([
                 var timeSpent = new Date() - startTime;
 
                 myself.testQuantity++;
+                myself.testTotalTime += timeSpent;
 
                 console[succeed ? 'log' : 'error']('Test #' + myself.testQuantity
                     + ' "' + mainName + ' | ' + testName + '" took ' + timeSpent + 'ms to ' +
@@ -70,6 +74,7 @@ define([
             this.$testQuantity.text(this.testQuantity);
             this.$testSuceedQuantity.text(this.testSucceed);
             this.$testFailedQuantity.text(this.testFailed);
+            this.$testTimer.text(this.testTotalTime);
         }
 
         this.createTestClass = function(mainName) {
