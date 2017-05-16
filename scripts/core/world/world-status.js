@@ -74,7 +74,7 @@ define([
                 };
 
                 var allParamSet = innerLoop(0, [], {});
-                return _.map(allParamSet, function(p) {
+                WorldStatus.allPossibleTerrains = _.map(allParamSet, function(p) {
                     return new WorldStatus(null, null, p);
                 });
             }

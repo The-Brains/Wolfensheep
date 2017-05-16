@@ -11,7 +11,7 @@ define(
 
         testWrapper.execTest(mainName, 'should generate all type of terrain', function() {
             var terrains = WorldStatus.getAllPossibleType();
-            console.dir(terrains);
+            expect(terrains.length).to.equal(675);
         });
     }
 );
