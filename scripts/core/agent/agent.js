@@ -1,8 +1,9 @@
 define([
+    '../../util/agent-goals.js',
     '../random.js',
     '../localization/location.js',
     '../world/world-status.js',
-], function (Generator, Location, WorldStatus) {
+], function (AgentGoals, Generator, Location, WorldStatus) {
     var Agent = function(objectDNA, location) {
         var myself = this;
         this.objectDNA = objectDNA;
@@ -10,9 +11,11 @@ define([
         this.previousLocations = [];
         this.location = location;
 
+        this.currentGoal = null;
+        this.target = null;
+
         this.alive = true;
 
-        this.tired = 0;
         this.weight = 0;
         this.threat = 0;
 
@@ -20,6 +23,7 @@ define([
             myself.alive = false;
         }
 
+        // SPEEDS
         this.speeds = null; // array of speed for every terrains.
         this.canMove = true;
         var initializeSpeeds = function() {
@@ -67,7 +71,9 @@ define([
             var key = worldStatus.serialize();
             return this.speeds[key];
         }
+        ///////////////
 
+        // FOOD PART
         this.hungry = null; // current hunger status.
         this.deathByHunger = null; // if hunger is above this, agent die.
         this.hungerRate = null; // hunger spend every cycle.
@@ -92,6 +98,62 @@ define([
                 die();
             }
         }
+        ///////////////
+
+        // Sleep
+        this.tired = null;
+        this.deathByExhaustion = null;
+        this.exhaustionRate = null;
+        this.exhaustionMove = null;
+        var initializeSleep = function() {
+            var sleepMaxOriginal = myself.generator.getInt(0, 30);
+            myself.tired = myself.generator.getInt(0, sleepMaxOriginal);
+            var bonusSleepSurvival = myself.generator.getFloatInRange(0.6, 5);
+            myself.deathByExhaustion = myself.generator.getInt(
+                sleepMaxOriginal,
+                100 * bonusSleepSurvival
+            );
+
+            myself.exhaustionRate = myself.generator.getFloatInRange(0.1, sleepMaxOriginal / 3.0);
+            myself.exhaustionMove = myself.generator.getFloatInRange(0, 1);
+        }
+
+        var spendEnergy = function(energySpent) {
+            myself.tired = myself.tired + energySpent;
+
+            if (myself.tired >= myself.deathByExhaustion) {
+                die();
+            }
+        }
+        /////////////
+
+        // Brain
+        var decideGoal = function() {
+            var allGoals = _.cloneDeep(AgentGoals);
+
+            if (!myself.alive) {
+                myself.currentGoal = allGoals.dead;
+                return myself.currentGoal;
+            } else {
+                allGoals.dead.score = 0;
+            }
+
+
+            // going to get food
+            var closeToDieFromHunger = myself.deathByHunger - myself.hungry;
+            allGoals.lookingForFood.score = 100.0 / closeToDieFromHunger;
+            if (myself.target && myself.canEat(target)) {
+                allGoals.lookingForFood.score = 0;
+                allGoals.goingToTarget = 100.0 / closeToDieFromHunger;
+            }
+
+            myself.currentGoal = _.head(_.sortBy(allGoals, function(g) {
+                return g.score;
+            }));
+
+            return myself.currentGoal;
+        }
+        /////////////
 
         var moveTo = function(location) {
             if (!location) {
@@ -102,12 +164,14 @@ define([
             var distance = location.distance(myself.location);
 
             spendHunger(myself.hungerMove * distance);
+            spendEnergy(myself.exhaustionMove * distance);
 
             myself.previousLocations.push(myself.location);
             myself.location = location;
         }
 
         this.cycle = function(newLocation = null) {
+            decideGoal();
             moveTo(newLocation);
             spendHunger(this.hungerRate);
         }
@@ -115,6 +179,7 @@ define([
         var initAll = function() {
             initializeSpeeds();
             initializeHunger();
+            initializeSleep();
         }
 
         initAll();

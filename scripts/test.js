@@ -24,6 +24,7 @@ define(function() {
         'scripts/test/core-localization-location-test.js',
         'scripts/test/core-random-test.js',
         'scripts/test/core-world-world-test.js',
-        'scripts/test/core-world-world-status.js'
+        'scripts/test/core-world-world-status-test.js',
+        'scripts/test/util-find-get-param-test.js',
     ]);
 });
