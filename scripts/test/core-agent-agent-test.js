@@ -75,6 +75,34 @@ define(
             expect(agent.exhaustionMove).to.be.below(1);
         });
 
+        testWrapper.execTest(mainName, 'should have traits settings', function() {
+            var dna = new objectDNA('test seed');
+            var agent = new Agent(dna, new Location(0, 0));
+
+            // test for number and integer
+            // curiosity
+            expect(_.isNumber(agent.curiosity)).to.be.true;
+            expect(agent.curiosity).to.be.a('number');
+            expect(agent.curiosity % 1).to.be.equal(0);
+            expect(agent.curiosity).to.be.at.least(0);
+            expect(agent.curiosity).to.be.below(90);
+
+            expect(_.isNumber(agent.looseCuriosityWithAgeCoef)).to.be.true;
+            expect(agent.looseCuriosityWithAgeCoef).to.be.above(0);
+            expect(agent.looseCuriosityWithAgeCoef).to.be.below(1);
+
+            // playful
+            expect(_.isNumber(agent.playful)).to.be.true;
+            expect(agent.playful).to.be.a('number');
+            expect(agent.playful % 1).to.be.equal(0);
+            expect(agent.playful).to.be.at.least(0);
+            expect(agent.playful).to.be.below(90);
+
+            expect(_.isNumber(agent.loosePlayfulWithAgeCoef)).to.be.true;
+            expect(agent.loosePlayfulWithAgeCoef).to.be.above(0);
+            expect(agent.loosePlayfulWithAgeCoef).to.be.below(1);
+        });
+
         testWrapper.execTest(mainName, 'should die while moving', function() {
             var dna = new objectDNA('test seed');
             var agent = new Agent(dna, new Location(0, 0));
@@ -121,7 +149,9 @@ define(
             expect(agent.location.getX()).to.be.equal(0);
             expect(agent.location.getY()).to.be.equal(0);
             expect(agent.alive).to.be.false;
-            expect(agent.hungry).to.be.at.least(agent.deathByHunger);
+            expect(agent.tired).to.be.at.least(agent.deathByExhaustion);
+            // this one died from being tired, not from starvation.
+            // expect(agent.hungry).to.be.at.least(agent.deathByHunger);
 
             // you do not want agent which would die right away
             expect(cycleQuantity).to.be.at.least(10);
