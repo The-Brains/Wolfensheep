@@ -1,5 +1,8 @@
-define(
-    ['lodash', '../random.js', '../../util/world-parameters.js'],
+define([
+        'lodash',
+        '../random.js',
+        '../../util/world-parameters.js',
+    ],
     function(_, Generator, Parameters) {
         var WorldStatus = function(location, locationSeed, parameters) {
             var myself = this;
@@ -48,33 +51,34 @@ define(
             }
         };
 
+        WorldStatus.allPossibleTerrains = null;
         WorldStatus.getAllPossibleType = function() {
-            // TODO
-            // var possibility = [];
+            if (!WorldStatus.allPossibleTerrains) {
+                var allKeys = _.keys(Parameters);
+                var innerLoop = function(optionIndex, results, current) {
+                    var optionKey = allKeys[optionIndex];
+                    var vals = Parameters[optionKey];
 
-            // _.each(Parameters, function(p, key) {
-            //     var parameters = {};
+                    for(var i = 0 ; i < vals.length ; i++) {
+                        current[optionKey] = vals[i];
 
-            //     myself.status[key] = p[myself.generator.getInt(0, p.length)];
-            // });
+                        if (optionIndex + 1 < allKeys.length) {
+                            innerLoop(optionIndex + 1, results, current);
+                        } else {
+                            var res = JSON.parse(JSON.stringify(current));
+                            results.push(res);
+                        }
+                    }
 
-            // Placehold to unlock the rest of the code.
-            return [
-                new WorldStatus(null, null, {
-                    humidity: 'dry',
-                    temperature: 'hot',
-                    ground: 'sand',
-                    wind: 'quiet',
-                    cloud: 'overcast',
-                }),
-                new WorldStatus(null, null, {
-                    humidity: 'humid',
-                    temperature: 'freezing',
-                    ground: 'rock',
-                    wind: 'stormy',
-                    cloud: 'rainy',
-                })
-            ]
+                    return results;
+                };
+
+                var allParamSet = innerLoop(0, [], {});
+                return _.map(allParamSet, function(p) {
+                    return new WorldStatus(null, null, p);
+                });
+            }
+            return WorldStatus.allPossibleTerrains;
         }
 
         return WorldStatus;
