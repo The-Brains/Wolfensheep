@@ -1,4 +1,8 @@
-define(['jquery', 'lodash'], function($, _) {
+define([
+        'jquery',
+        'lodash',
+        '../util/find-get-param.js',
+    ], function($, _, FindGetParam) {
     var testWrapper = function() {
         this.currentTest = '';
         this.startTime = 0;
@@ -13,8 +17,20 @@ define(['jquery', 'lodash'], function($, _) {
         this.$testFailedQuantity =
             this.$testReportContainer.find('.tests-failed-quantity');
 
+        this.grepSearch = FindGetParam('grep');
+
         this.execTest = function(mainName, testName, testFn) {
             var myself = this;
+            var validTest = true;
+
+            if (this.grepSearch) {
+                validTest = _.includes(mainName, this.grepSearch)
+                    || _.includes(testName, this.grepSearch);
+            }
+
+            if (!validTest) {
+                return;
+            }
             setTimeout(function() {
                 var startTime = new Date();
                 var succeed = null;
