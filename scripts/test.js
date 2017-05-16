@@ -18,10 +18,12 @@ define(function() {
     // Start loading the main app file. Put all of
     // your application logic in there.
     requirejs([
+        'scripts/test/core-agent-agent-test.js',
         'scripts/test/core-agent-dnaHardcodedGene-test.js',
         'scripts/test/core-agent-dnaRandomGene-test.js',
         'scripts/test/core-localization-location-test.js',
         'scripts/test/core-random-test.js',
         'scripts/test/core-world-world-test.js',
+        'scripts/test/core-world-world-status.js'
     ]);
 });

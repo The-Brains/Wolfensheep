@@ -28,7 +28,9 @@ define(['jquery', 'lodash'], function($, _) {
                 }
                 var timeSpent = new Date() - startTime;
 
-                console[succeed ? 'log' : 'error']('Test #' + this.testQuantity
+                myself.testQuantity++;
+
+                console[succeed ? 'log' : 'error']('Test #' + myself.testQuantity
                     + ' "' + mainName + ' | ' + testName + '" took ' + timeSpent + 'ms to ' +
                     (succeed ? 'SUCCEED' : 'FAILED')
                     + '.');
@@ -43,7 +45,6 @@ define(['jquery', 'lodash'], function($, _) {
         }
 
         this.updateCounters = function(succeed) {
-            this.testQuantity++;
             if (succeed) {
                 this.testSucceed++;
             } else {

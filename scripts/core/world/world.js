@@ -32,7 +32,8 @@ define([
 
                 if(!_.has(this.world, key)) {
                     // world piece need to be defined in function of its neighbors.
-                    this.world[key] = new WorldStatus(location, this.generator);
+                    var locationSeed = `${seed}+${key}`;
+                    this.world[key] = new WorldStatus(location, locationSeed);
                 }
 
                 return this.world[key];
