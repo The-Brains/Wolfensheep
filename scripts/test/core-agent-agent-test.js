@@ -41,11 +41,38 @@ define(
             expect(agent.deathByHunger).to.be.above(agent.hungry);
 
             expect(_.isNumber(agent.hungerRate)).to.be.true;
-            expect(agent.hungry).to.be.above(0);
+            expect(agent.hungerRate).to.be.above(0);
 
             expect(_.isNumber(agent.hungerMove)).to.be.true;
             expect(agent.hungerMove).to.be.at.least(0);
             expect(agent.hungerMove).to.be.below(1);
+        });
+
+        testWrapper.execTest(mainName, 'should have sleep settings', function() {
+            var dna = new objectDNA('test seed');
+            var agent = new Agent(dna, new Location(0, 0));
+
+            // test for number and integer
+            expect(_.isNumber(agent.deathByExhaustion)).to.be.true;
+            expect(agent.deathByExhaustion).to.be.a('number');
+            expect(agent.deathByExhaustion % 1).to.be.equal(0);
+
+            expect(agent.deathByExhaustion).to.be.at.least(0);
+
+            expect(_.isNumber(agent.tired)).to.be.true;
+            expect(agent.tired).to.be.a('number');
+            expect(agent.tired % 1).to.be.equal(0);
+
+            expect(agent.tired).to.be.at.least(0);
+
+            expect(agent.deathByExhaustion).to.be.above(agent.tired);
+
+            expect(_.isNumber(agent.exhaustionRate)).to.be.true;
+            expect(agent.exhaustionRate).to.be.above(0);
+
+            expect(_.isNumber(agent.exhaustionMove)).to.be.true;
+            expect(agent.exhaustionMove).to.be.at.least(0);
+            expect(agent.exhaustionMove).to.be.below(1);
         });
 
         testWrapper.execTest(mainName, 'should die while moving', function() {
@@ -63,6 +90,8 @@ define(
                 );
                 moveQuantity += 1;
                 agent.cycle(location);
+                expect(agent.currentGoal.name === 'looking for food'
+                    || agent.currentGoal.name === 'dead').to.be.true;
             }
 
             expect(agent.location.getX()).to.be.equal(0);
