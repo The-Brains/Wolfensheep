@@ -144,7 +144,7 @@ define([
             myself.loosePlayfulWithAgeCoef = myself.generator.getFloatInRange(0.01, 0.99);
         }
 
-        var looseFun = function() {
+        var loseFun = function() {
             myself.curiosity = myself.curiosity * myself.looseCuriosityWithAgeCoef;
             myself.playful = myself.playful * myself.loosePlayfulWithAgeCoef;
         }
