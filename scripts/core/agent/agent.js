@@ -14,6 +14,8 @@ define([
         this.currentGoal = null;
         this.target = null;
 
+        this.age = 0;
+
         this.alive = true;
 
         this.weight = 0;
@@ -127,6 +129,26 @@ define([
         }
         /////////////
 
+        // Extra Traits
+        this.curiosity = null;
+        this.playful = null;
+        this.looseCuriosityWithAgeCoef = null;
+        this.loosePlayfulWithAgeCoef = null;
+        var initializeExtraTraits = function() {
+            // curiosity
+            myself.curiosity = myself.generator.getInt(10, 90);
+            myself.looseCuriosityWithAgeCoef = myself.generator.getFloatInRange(0.01, 0.99);
+
+            // playful
+            myself.playful = myself.generator.getInt(10, 90);
+            myself.loosePlayfulWithAgeCoef = myself.generator.getFloatInRange(0.01, 0.99);
+        }
+
+        var looseFun = function() {
+            myself.curiosity = myself.curiosity * myself.looseCuriosityWithAgeCoef;
+            myself.playful = myself.playful * myself.loosePlayfulWithAgeCoef;
+        }
+
         // Brain
         var decideGoal = function() {
             var allGoals = _.cloneDeep(AgentGoals);
@@ -138,6 +160,8 @@ define([
                 allGoals.dead.score = 0;
             }
 
+            allGoals.exploring.score = myself.curiosity;
+            allGoals.play.score = myself.playful;
 
             // going to get food
             var closeToDieFromHunger = myself.deathByHunger - myself.hungry;
@@ -146,6 +170,10 @@ define([
                 allGoals.lookingForFood.score = 0;
                 allGoals.goingToTarget = 100.0 / closeToDieFromHunger;
             }
+
+            // going to sleep
+            var closeToDieFromExhaustion = myself.deathByExhaustion - myself.tired;
+            allGoals.sleeping.score = 100.0 / closeToDieFromExhaustion;
 
             myself.currentGoal = _.head(_.sortBy(allGoals, function(g) {
                 return g.score;
@@ -174,12 +202,17 @@ define([
             decideGoal();
             moveTo(newLocation);
             spendHunger(this.hungerRate);
+            spendEnergy(this.exhaustionRate);
+
+            this.age += 0.1;
+            looseFun();
         }
 
         var initAll = function() {
             initializeSpeeds();
             initializeHunger();
             initializeSleep();
+            initializeExtraTraits();
         }
 
         initAll();
