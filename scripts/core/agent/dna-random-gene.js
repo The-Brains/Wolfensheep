@@ -20,7 +20,7 @@ define(
 
             this.getDNA = function() {
                 return this.dna;
-            }
+            };
         };
 
         classDNA.deserialize = function(input) {

@@ -44,7 +44,70 @@
             </div>
             <main class="mdl-layout__content">
                 <div class="page-content">
-                    <div class="CanvasArea">
+                    <div class="mdl-grid world-creation-form">
+                        <div class="mdl-layout-spacer"></div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <div class="mdl-grid mdl-grid--bleed">
+                                <div class="
+                                    mdl-textfield
+                                    mdl-js-textfield
+                                    mdl-textfield--floating-label
+                                    mdl-cell mdl-cell--12-col">
+
+                                    <input class="mdl-textfield__input input-world-seed" type="text">
+                                    <label class="mdl-textfield__label" for="sample2">Seed</label>
+                                </div>
+                            </div>
+                            <div class="mdl-grid mdl-grid--bleed">
+                                <div class="
+                                        mdl-textfield
+                                        mdl-js-textfield
+                                        mdl-textfield--floating-label
+                                        mdl-cell mdl-cell--6-col
+                                    ">
+                                    <input class="mdl-textfield__input input-world-width"
+                                        type="number"
+                                        step="1"
+                                        min="1"
+                                        max="1000">
+                                    <label class="mdl-textfield__label" for="sample2">Width</label>
+                                    <span class="mdl-textfield__error">Input is not a number!</span>
+                                </div>
+                                <div class="
+                                            mdl-textfield
+                                            mdl-js-textfield
+                                            mdl-textfield--floating-label
+                                            mdl-cell mdl-cell--6-col
+                                        ">
+                                    <input class="mdl-textfield__input input-world-height"
+                                        type="number"
+                                        step="1"
+                                        min="1"
+                                        max="1000">
+                                    <label class="mdl-textfield__label" for="sample2">Height</label>
+                                    <span class="mdl-textfield__error">Input is not a number!</span>
+                                </div>
+                            </div>
+                            <div class="mdl-grid mdl-grid--bleed">
+                                <button class="
+                                        mdl-button
+                                        mdl-js-button
+                                        mdl-button--raised
+                                        mdl-js-ripple-effect
+                                        mdl-button--accent
+                                        mdl-button--full
+                                        mdl-cell mdl-cell--12-col
+                                        input-world-generate
+                                    ">
+
+                                    Generate
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mdl-layout-spacer"></div>
+                    </div>
+                    <!-- TOOD: Here is the canvas pair to replace the form -->
+                    <div class="CanvasArea is-hidden">
                         <canvas id="canvas_ui"></canvas>
                         <canvas id="canvas_drawing"></canvas>
                     </div>

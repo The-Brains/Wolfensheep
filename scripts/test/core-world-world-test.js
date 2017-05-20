@@ -1,13 +1,19 @@
 define(
     [
         'chai',
+        'lodash',
         './test-wrapper.js',
         '../core/world/world.js',
         '../core/localization/location.js',
     ],
-    function(chai, testWrapper, World, Location) {
+    function(chai, _, testWrapper, World, Location) {
         var expect = chai.expect;
         var mainName = 'core-world-world';
+
+        testWrapper.execTest(mainName, 'should generate all tiles', function() {
+            var world = new World('cool seed', 20, 20);
+            expect(_.size(world.getAllTiles())).to.equal(20 * 20);
+        });
 
         testWrapper.execTest(mainName, 'should generate parameters', function() {
             var world = new World('cool seed', 20, 20);

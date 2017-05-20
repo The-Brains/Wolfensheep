@@ -205,7 +205,7 @@ define([
             spendEnergy(this.exhaustionRate);
 
             this.age += 0.1;
-            looseFun();
+            loseFun();
         }
 
         var initAll = function() {
