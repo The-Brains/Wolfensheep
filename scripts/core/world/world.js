@@ -2,42 +2,60 @@ define([
         'lodash',
         '../random.js',
         '../../util/world-parameters.js',
+        '../localization/location.js',
         './world-status.js',
     ],
-    function(_, Generator, Parameters, WorldStatus) {
+    function(_, Generator, Parameters, Location, WorldStatus) {
         var World = function(seed, width, height) {
-            this.width = width;
-            this.height = height;
-            this.world = {};
-            this.generator = new Generator(seed);
+            var myself = this;
+            var tiles = {};
+            var generator = new Generator(seed);
 
             this.getWidth = function() {
-                return this.width;
+                return width;
             };
 
             this.getHeight = function() {
-                return this.height;
+                return height;
+            };
+
+            var initializeRow = function(rowIndex) {
+                _.times(width, function(w) {
+                    myself.getWorldStatus(new Location(w, rowIndex));
+                })
+            };
+
+            var initializeWorld = function() {
+                _.times(height, function(h) {
+                    initializeRow(h);
+                })
             };
 
             this.getWorldStatus = function(location) {
                 if (location.getX() < 0
                     || location.getY() < 0
-                    || location.getX() >= this.width
-                    || location.getY() >= this.height
+                    || location.getX() >= width
+                    || location.getY() >= height
                 ) {
                     throw new Error('Location outside of world');
                 }
 
                 var key = location.serialize();
 
-                if(!_.has(this.world, key)) {
+                if(!_.has(tiles, key)) {
                     // world piece need to be defined in function of its neighbors.
                     var locationSeed = `${seed}+${key}`;
-                    this.world[key] = new WorldStatus(location, locationSeed);
+                    tiles[key] = new WorldStatus(location, locationSeed);
                 }
 
-                return this.world[key];
+                return tiles[key];
+            };
+
+            this.getAllTiles = function() {
+                return tiles;
             }
+
+            initializeWorld();
         };
 
         return World;

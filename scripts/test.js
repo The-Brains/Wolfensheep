@@ -21,6 +21,7 @@ define(function() {
         'scripts/test/core-agent-agent-test.js',
         'scripts/test/core-agent-dnaHardcodedGene-test.js',
         'scripts/test/core-agent-dnaRandomGene-test.js',
+        'scripts/test/core-game-test.js',
         'scripts/test/core-localization-location-test.js',
         'scripts/test/core-random-test.js',
         'scripts/test/core-world-world-test.js',
