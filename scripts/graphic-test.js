@@ -1,5 +1,5 @@
 requirejs.config({
-//    enforceDefine: true,
+    enforceDefine: true,
     baseUrl: 'scripts/lib',
     paths: {
         jquery: 'https://code.jquery.com/jquery-3.2.1.slim.min',
