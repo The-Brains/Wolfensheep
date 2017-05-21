@@ -3,7 +3,10 @@ define(function() {
         'scripts/graphics/viewcore.js',
     ]);
 
-    var ActionGenerator = function () {
+    var ActionGenerator = function (center) {
+        if(!center) {
+            center = { x: 500, y: 500};
+        }
         var creatures = {};
         var action = {
             id:null,
@@ -17,8 +20,8 @@ define(function() {
             var id = 'id'+Math.floor(Math.random()*10+1);
             if(!creatures[id]) {
                 creatures[id] = {
-                    from: [500, 500, 0],
-                    to: [500, 500, 0],
+                    from: [center.x, center.y, 0],
+                    to: [center.x, center.y, 0],
                 };
             }
             var creature = creatures[id];
