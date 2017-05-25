@@ -21,6 +21,7 @@ define([
             this.$testReportContainer.find('.tests-time');
 
         this.grepSearch = FindGetParam('grep');
+        this.failOnly = !!$.parseJSON(FindGetParam('failOnly'));
 
         this.execTest = function(mainName, testName, testFn) {
             var myself = this;
@@ -34,6 +35,7 @@ define([
             if (!validTest) {
                 return;
             }
+
             setTimeout(function() {
                 var startTime = new Date();
                 var succeed = null;
@@ -47,20 +49,19 @@ define([
                 }
                 var timeSpent = new Date() - startTime;
 
-                myself.testQuantity++;
-                myself.testTotalTime += timeSpent;
-
-                console[succeed ? 'log' : 'error']('Test #' + myself.testQuantity
-                    + ' "' + mainName + ' | ' + testName + '" took ' + timeSpent + 'ms to ' +
-                    (succeed ? 'SUCCEED' : 'FAILED')
-                    + '.');
-
-                if (!succeed) {
-                    console.error(errorMsg);
+                if ((myself.failOnly && !succeed) || !myself.failOnly) {
+                    myself.testQuantity++;
+                    myself.testTotalTime += timeSpent;
+                    console[succeed ? 'log' : 'error']('Test #' + myself.testQuantity
+                        + ' "' + mainName + ' | ' + testName + '" took ' + timeSpent + 'ms to ' +
+                        (succeed ? 'SUCCEED' : 'FAILED')
+                        + '.');
+                    if (!succeed) {
+                        console.error(errorMsg);
+                    }
+                    myself.updateCounters(succeed);
+                    myself.renderTest(succeed, mainName, testName, timeSpent, errorMsg);
                 }
-
-                myself.updateCounters(succeed);
-                myself.renderTest(succeed, mainName, testName, timeSpent, errorMsg);
             }, 0);
         }
 

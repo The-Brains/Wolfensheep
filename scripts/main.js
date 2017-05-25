@@ -3,6 +3,8 @@ define([
         'lodash',
         './core/game.js',
     ], function($, _, Game) {
+        var game = null;
+
         var generateWorld = function() {
             var width = _.parseInt($('.input-world-width').val());
             var height = _.parseInt($('.input-world-height').val());
@@ -17,8 +19,9 @@ define([
                 throw 'You cannot create world without width, height, and seed';
             }
 
-            var game = new Game(seed, width, height);
+            game = new Game(seed, width, height);
             $('.world-creation-form').addClass('is-hidden');
+            $('.input-button-add-agent').attr('disabled', null);
 
             // TODO: Pass the game object to the canvas generation part.
             // something like:
@@ -30,6 +33,12 @@ define([
 
         $('.input-world-generate').on('click', function() {
             generateWorld();
+        });
+
+        $('.input-button-add-agent').on('click', function() {
+            var agent = game.getWorld().addNewAgent();
+            // console.log(agent.serialize());
+            console.log(game.getWorld().getAgentQuantity());
         })
 
         console.log('App started.');

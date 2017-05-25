@@ -3,67 +3,70 @@ define([
     '../random.js',
     '../localization/location.js',
     '../world/world-status.js',
-], function (AgentGoals, Generator, Location, WorldStatus) {
+    './dna-random-gene.js',
+], function (AgentGoals, Generator, Location, WorldStatus, ObjectDNA) {
     var Agent = function(objectDNA, location) {
         var myself = this;
         this.objectDNA = objectDNA;
-        this.generator = new Generator(this.objectDNA.getDNA());
-        this.previousLocations = [];
-        this.location = location;
+        var generator = new Generator(this.objectDNA.getDNA());
+        var previousLocations = [];
+        var currentLocation = location;
+        var agentData = {
+            alive: true,
+        };
 
-        this.currentGoal = null;
-        this.target = null;
+        var currentGoal = null;
+        var currentTarget = null;
 
-        this.age = 0;
-
-        this.alive = true;
+        var age = 0;
 
         this.weight = 0;
         this.threat = 0;
 
         var die = function() {
-            myself.alive = false;
+            agentData.alive = false;
         }
 
         // SPEEDS
-        this.speeds = null; // array of speed for every terrains.
-        this.canMove = true;
+        agentData.speed = {};
+        agentData.speed.speeds = null; // array of speed for every terrains.
+        agentData.speed.canMove = true;
         var initializeSpeeds = function() {
-            myself.speeds = {};
+            agentData.speed.speeds = {};
 
-            var plantChance = myself.generator.getInt(2, 5);
-            var plantRoll = myself.generator.getInt(0, plantChance);
+            var plantChance = generator.getInt(2, 5);
+            var plantRoll = generator.getInt(0, plantChance);
 
             if (plantRoll === 1) {
                 // is a plant
                 _.forEach(WorldStatus.getAllPossibleType(), function(ws) {
                     var key = ws.serialize();
-                    myself.speeds[key] = 0;
+                    agentData.speed.speeds[key] = 0;
                 });
-                myself.canMove = false;
+                agentData.speed.canMove = false;
             } else {
                 // is a moving creature
                 // Speed boundaries
-                myself.speedCoefficient = 1 + myself.generator.getFloat();
-                myself.maxMaxSpeed = myself.generator.getInt(2, 5) * myself.speedCoefficient;
-                myself.minSpeed = myself.generator.getFloatInRange(0, 0.9) * myself.speedCoefficient;
-                myself.maxSpeed = myself.generator.getFloatInRange(
-                    myself.minSpeed,
-                    myself.maxMaxSpeed
+                var speedCoefficient = 1 + generator.getFloat();
+                var maxMaxSpeed = generator.getInt(2, 5) * speedCoefficient;
+                var minSpeed = generator.getFloatInRange(0, 0.9) * speedCoefficient;
+                var maxSpeed = generator.getFloatInRange(
+                    minSpeed,
+                    maxMaxSpeed
                 );
 
                 _.forEach(WorldStatus.getAllPossibleType(), function(ws) {
                     var key = ws.serialize();
-                    myself.speeds[key] = myself.generator.getFloatInRange(
-                        myself.minSpeed,
-                        myself.maxSpeed
+                    agentData.speed.speeds[key] = generator.getFloatInRange(
+                        minSpeed,
+                        maxSpeed
                     );
                 });
             }
         }
 
         this.isPlant = function() {
-            return !this.canMove;
+            return !agentData.speed.canMove;
         }
 
         /**
@@ -71,141 +74,160 @@ define([
         */
         this.getSpeed = function(worldStatus) {
             var key = worldStatus.serialize();
-            return this.speeds[key];
+            return agentData.speed.speeds[key];
         }
         ///////////////
 
         // FOOD PART
-        this.hungry = null; // current hunger status.
-        this.deathByHunger = null; // if hunger is above this, agent die.
-        this.hungerRate = null; // hunger spend every cycle.
-        this.hungerMove = null; // hunger spend every 1 unit of movement done.
+        agentData.food = {};
+        agentData.food.hungry = null; // current hunger status.
+        agentData.food.deathByHunger = null; // if hunger is above this, agent die.
+        agentData.food.hungerRate = null; // hunger spend every cycle.
+        agentData.food.hungerMove = null; // hunger spend every 1 unit of movement done.
         var initializeHunger = function() {
-            var hungerMaxOriginal = myself.generator.getInt(0, 30);
-            myself.hungry = myself.generator.getInt(0, hungerMaxOriginal);
-            var bonusHungerSurvival = myself.generator.getFloatInRange(0.6, 5);
-            myself.deathByHunger = myself.generator.getInt(
+            var hungerMaxOriginal = generator.getInt(0, 30);
+            agentData.food.hungry = generator.getInt(0, hungerMaxOriginal);
+            var bonusHungerSurvival = generator.getFloatInRange(0.6, 5);
+            agentData.food.deathByHunger = generator.getInt(
                 hungerMaxOriginal,
                 100 * bonusHungerSurvival
             );
 
-            myself.hungerRate = myself.generator.getFloatInRange(0.1, hungerMaxOriginal / 3.0);
-            myself.hungerMove = myself.generator.getFloatInRange(0, 1);
+            agentData.food.hungerRate = generator.getFloatInRange(0.1, hungerMaxOriginal / 3.0);
+            agentData.food.hungerMove = generator.getFloatInRange(0, 1);
         }
 
         var spendHunger = function(hungerSpent) {
-            myself.hungry = myself.hungry + hungerSpent;
+            agentData.food.hungry = agentData.food.hungry + hungerSpent;
 
-            if (myself.hungry >= myself.deathByHunger) {
+            if (agentData.food.hungry >= agentData.food.deathByHunger) {
                 die();
             }
+        }
+
+        this.canEat = function(agent) {
+            // TODO
+            return true;
         }
         ///////////////
 
         // Sleep
-        this.tired = null;
-        this.deathByExhaustion = null;
-        this.exhaustionRate = null;
-        this.exhaustionMove = null;
+        agentData.energy = {};
+        agentData.energy.tired = null;
+        agentData.energy.deathByExhaustion = null;
+        agentData.energy.exhaustionRate = null;
+        agentData.energy.exhaustionMove = null;
         var initializeSleep = function() {
-            var sleepMaxOriginal = myself.generator.getInt(0, 30);
-            myself.tired = myself.generator.getInt(0, sleepMaxOriginal);
-            var bonusSleepSurvival = myself.generator.getFloatInRange(0.6, 5);
-            myself.deathByExhaustion = myself.generator.getInt(
+            var sleepMaxOriginal = generator.getInt(0, 30);
+            agentData.energy.tired = generator.getInt(0, sleepMaxOriginal);
+            var bonusSleepSurvival = generator.getFloatInRange(0.6, 5);
+            agentData.energy.deathByExhaustion = generator.getInt(
                 sleepMaxOriginal,
                 100 * bonusSleepSurvival
             );
 
-            myself.exhaustionRate = myself.generator.getFloatInRange(0.1, sleepMaxOriginal / 3.0);
-            myself.exhaustionMove = myself.generator.getFloatInRange(0, 1);
+            agentData.energy.exhaustionRate = generator.getFloatInRange(0.1, sleepMaxOriginal / 3.0);
+            agentData.energy.exhaustionMove = generator.getFloatInRange(0, 1);
         }
 
         var spendEnergy = function(energySpent) {
-            myself.tired = myself.tired + energySpent;
+            agentData.energy.tired = agentData.energy.tired + energySpent;
 
-            if (myself.tired >= myself.deathByExhaustion) {
+            if (agentData.energy.tired >= agentData.energy.deathByExhaustion) {
                 die();
             }
         }
         /////////////
 
         // Extra Traits
-        this.curiosity = null;
-        this.playful = null;
-        this.looseCuriosityWithAgeCoef = null;
-        this.loosePlayfulWithAgeCoef = null;
+        agentData.playful = {};
+        agentData.playful.curiosity = null;
+        agentData.playful.playful = null;
+        agentData.playful.looseCuriosityWithAgeCoef = null;
+        agentData.playful.loosePlayfulWithAgeCoef = null;
         var initializeExtraTraits = function() {
             // curiosity
-            myself.curiosity = myself.generator.getInt(10, 90);
-            myself.looseCuriosityWithAgeCoef = myself.generator.getFloatInRange(0.01, 0.99);
+            agentData.playful.curiosity = generator.getInt(10, 90);
+            agentData.playful.looseCuriosityWithAgeCoef = generator.getFloatInRange(0.01, 0.99);
 
             // playful
-            myself.playful = myself.generator.getInt(10, 90);
-            myself.loosePlayfulWithAgeCoef = myself.generator.getFloatInRange(0.01, 0.99);
+            agentData.playful.playful = generator.getInt(10, 90);
+            agentData.playful.loosePlayfulWithAgeCoef = generator.getFloatInRange(0.01, 0.99);
         }
 
         var loseFun = function() {
-            myself.curiosity = myself.curiosity * myself.looseCuriosityWithAgeCoef;
-            myself.playful = myself.playful * myself.loosePlayfulWithAgeCoef;
+            agentData.playful.curiosity =
+                agentData.playful.curiosity * agentData.playful.looseCuriosityWithAgeCoef;
+            agentData.playful.playful =
+                agentData.playful.playful * agentData.playful.loosePlayfulWithAgeCoef;
         }
 
         // Brain
         var decideGoal = function() {
             var allGoals = _.cloneDeep(AgentGoals);
 
-            if (!myself.alive) {
-                myself.currentGoal = allGoals.dead;
-                return myself.currentGoal;
+            if (!agentData.alive) {
+                currentGoal = allGoals.dead;
+                return currentGoal;
             } else {
                 allGoals.dead.score = 0;
             }
 
-            allGoals.exploring.score = myself.curiosity;
-            allGoals.play.score = myself.playful;
+            allGoals.exploring.score = agentData.playful.curiosity;
+            allGoals.play.score = agentData.playful.playful;
 
             // going to get food
-            var closeToDieFromHunger = myself.deathByHunger - myself.hungry;
+            var closeToDieFromHunger = agentData.food.deathByHunger - agentData.food.hungry;
             allGoals.lookingForFood.score = 100.0 / closeToDieFromHunger;
-            if (myself.target && myself.canEat(target)) {
+            if (currentTarget && myself.canEat(currentTarget)) {
                 allGoals.lookingForFood.score = 0;
                 allGoals.goingToTarget = 100.0 / closeToDieFromHunger;
             }
 
             // going to sleep
-            var closeToDieFromExhaustion = myself.deathByExhaustion - myself.tired;
+            var closeToDieFromExhaustion =
+                agentData.energy.deathByExhaustion - agentData.energy.tired;
             allGoals.sleeping.score = 100.0 / closeToDieFromExhaustion;
 
-            myself.currentGoal = _.head(_.sortBy(allGoals, function(g) {
+            currentGoal = _.head(_.sortBy(allGoals, function(g) {
                 return g.score;
             }));
 
-            return myself.currentGoal;
+            return currentGoal;
+        }
+
+        this.getCurrentGoal = function() {
+            return currentGoal;
         }
         /////////////
 
         var moveTo = function(location) {
             if (!location) {
-                myself.previousLocations.push(myself.location);
+                previousLocations.push(currentLocation);
                 return;
             }
 
-            var distance = location.distance(myself.location);
+            var distance = location.distance(currentLocation);
 
-            spendHunger(myself.hungerMove * distance);
-            spendEnergy(myself.exhaustionMove * distance);
+            spendHunger(agentData.food.hungerMove * distance);
+            spendEnergy(agentData.energy.exhaustionMove * distance);
 
-            myself.previousLocations.push(myself.location);
-            myself.location = location;
+            previousLocations.push(currentLocation);
+            currentLocation = location;
         }
 
         this.cycle = function(newLocation = null) {
             decideGoal();
             moveTo(newLocation);
-            spendHunger(this.hungerRate);
-            spendEnergy(this.exhaustionRate);
+            spendHunger(agentData.food.hungerRate);
+            spendEnergy(agentData.energy.exhaustionRate);
 
-            this.age += 0.1;
+            age += 0.1;
             loseFun();
+        }
+
+        this.getLocation = function() {
+            return currentLocation;
         }
 
         var initAll = function() {
@@ -215,8 +237,25 @@ define([
             initializeExtraTraits();
         }
 
+        this.getAge = function() {
+            return age;
+        }
+
+        this.getData = function() {
+            return agentData;
+        }
+
+        this.serialize = function() {
+            return JSON.stringify(agentData);
+        }
+
         initAll();
     };
+
+    Agent.createNewAgent = function(generator, location) {
+        var dna = ObjectDNA.createNewDNA(generator);
+        return new Agent(dna, location);
+    }
 
     return Agent;
 });

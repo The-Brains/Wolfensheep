@@ -6,13 +6,8 @@ define(
         var classDNA = function(seed) {
             var myself = this;
             this.seed = seed;
+            this.dna = seed;
             this.generator = new Generator(seed);
-            this.dna = '';
-            _.times(DNA_LENGTH, function() {
-                myself.dna = myself.dna + myself.generator.getChar(
-                    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_=+~;:"<>,./?|'
-                );
-            });
 
             this.serialize = function() {
                 return this.seed;
@@ -26,6 +21,17 @@ define(
         classDNA.deserialize = function(input) {
             return new classDNA(input);
         };
+
+        classDNA.createNewDNA = function(generator) {
+            var dna = '';
+            _.times(DNA_LENGTH, function() {
+                dna = dna + generator.getChar(
+                    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_=+~;:"<>,./?|'
+                );
+            });
+
+            return new classDNA(dna);
+        }
 
         return classDNA;
     }

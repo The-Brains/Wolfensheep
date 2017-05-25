@@ -16,7 +16,7 @@ define(
             var dna = new objectDNA('test seed');
             var agent = new Agent(dna, new Location(0, 0));
 
-            expect(_.size(agent.speeds)).to.be.equal(WorldStatus.getAllPossibleType().length);
+            expect(_.size(agent.getData().speed.speeds)).to.be.equal(WorldStatus.getAllPossibleType().length);
             expect(agent.getSpeed(WorldStatus.getAllPossibleType()[0])).to.exists;
             expect(_.isNumber(agent.getSpeed(WorldStatus.getAllPossibleType()[0]))).to.be.true;
         });
@@ -24,83 +24,86 @@ define(
         testWrapper.execTest(mainName, 'should have hunger settings', function() {
             var dna = new objectDNA('test seed');
             var agent = new Agent(dna, new Location(0, 0));
+            var data = agent.getData().food;
 
             // test for number and integer
-            expect(_.isNumber(agent.deathByHunger)).to.be.true;
-            expect(agent.deathByHunger).to.be.a('number');
-            expect(agent.deathByHunger % 1).to.be.equal(0);
+            expect(_.isNumber(data.deathByHunger)).to.be.true;
+            expect(data.deathByHunger).to.be.a('number');
+            expect(data.deathByHunger % 1).to.be.equal(0);
 
-            expect(agent.deathByHunger).to.be.at.least(0);
+            expect(data.deathByHunger).to.be.at.least(0);
 
-            expect(_.isNumber(agent.hungry)).to.be.true;
-            expect(agent.hungry).to.be.a('number');
-            expect(agent.hungry % 1).to.be.equal(0);
+            expect(_.isNumber(data.hungry)).to.be.true;
+            expect(data.hungry).to.be.a('number');
+            expect(data.hungry % 1).to.be.equal(0);
 
-            expect(agent.hungry).to.be.at.least(0);
+            expect(data.hungry).to.be.at.least(0);
 
-            expect(agent.deathByHunger).to.be.above(agent.hungry);
+            expect(data.deathByHunger).to.be.above(data.hungry);
 
-            expect(_.isNumber(agent.hungerRate)).to.be.true;
-            expect(agent.hungerRate).to.be.above(0);
+            expect(_.isNumber(data.hungerRate)).to.be.true;
+            expect(data.hungerRate).to.be.above(0);
 
-            expect(_.isNumber(agent.hungerMove)).to.be.true;
-            expect(agent.hungerMove).to.be.at.least(0);
-            expect(agent.hungerMove).to.be.below(1);
+            expect(_.isNumber(data.hungerMove)).to.be.true;
+            expect(data.hungerMove).to.be.at.least(0);
+            expect(data.hungerMove).to.be.below(1);
         });
 
         testWrapper.execTest(mainName, 'should have sleep settings', function() {
             var dna = new objectDNA('test seed');
             var agent = new Agent(dna, new Location(0, 0));
+            var data = agent.getData().energy;
 
             // test for number and integer
-            expect(_.isNumber(agent.deathByExhaustion)).to.be.true;
-            expect(agent.deathByExhaustion).to.be.a('number');
-            expect(agent.deathByExhaustion % 1).to.be.equal(0);
+            expect(_.isNumber(data.deathByExhaustion)).to.be.true;
+            expect(data.deathByExhaustion).to.be.a('number');
+            expect(data.deathByExhaustion % 1).to.be.equal(0);
 
-            expect(agent.deathByExhaustion).to.be.at.least(0);
+            expect(data.deathByExhaustion).to.be.at.least(0);
 
-            expect(_.isNumber(agent.tired)).to.be.true;
-            expect(agent.tired).to.be.a('number');
-            expect(agent.tired % 1).to.be.equal(0);
+            expect(_.isNumber(data.tired)).to.be.true;
+            expect(data.tired).to.be.a('number');
+            expect(data.tired % 1).to.be.equal(0);
 
-            expect(agent.tired).to.be.at.least(0);
+            expect(data.tired).to.be.at.least(0);
 
-            expect(agent.deathByExhaustion).to.be.above(agent.tired);
+            expect(data.deathByExhaustion).to.be.above(data.tired);
 
-            expect(_.isNumber(agent.exhaustionRate)).to.be.true;
-            expect(agent.exhaustionRate).to.be.above(0);
+            expect(_.isNumber(data.exhaustionRate)).to.be.true;
+            expect(data.exhaustionRate).to.be.above(0);
 
-            expect(_.isNumber(agent.exhaustionMove)).to.be.true;
-            expect(agent.exhaustionMove).to.be.at.least(0);
-            expect(agent.exhaustionMove).to.be.below(1);
+            expect(_.isNumber(data.exhaustionMove)).to.be.true;
+            expect(data.exhaustionMove).to.be.at.least(0);
+            expect(data.exhaustionMove).to.be.below(1);
         });
 
         testWrapper.execTest(mainName, 'should have traits settings', function() {
             var dna = new objectDNA('test seed');
             var agent = new Agent(dna, new Location(0, 0));
+            var data = agent.getData().playful;
 
             // test for number and integer
             // curiosity
-            expect(_.isNumber(agent.curiosity)).to.be.true;
-            expect(agent.curiosity).to.be.a('number');
-            expect(agent.curiosity % 1).to.be.equal(0);
-            expect(agent.curiosity).to.be.at.least(0);
-            expect(agent.curiosity).to.be.below(90);
+            expect(_.isNumber(data.curiosity)).to.be.true;
+            expect(data.curiosity).to.be.a('number');
+            expect(data.curiosity % 1).to.be.equal(0);
+            expect(data.curiosity).to.be.at.least(0);
+            expect(data.curiosity).to.be.below(90);
 
-            expect(_.isNumber(agent.looseCuriosityWithAgeCoef)).to.be.true;
-            expect(agent.looseCuriosityWithAgeCoef).to.be.above(0);
-            expect(agent.looseCuriosityWithAgeCoef).to.be.below(1);
+            expect(_.isNumber(data.looseCuriosityWithAgeCoef)).to.be.true;
+            expect(data.looseCuriosityWithAgeCoef).to.be.above(0);
+            expect(data.looseCuriosityWithAgeCoef).to.be.below(1);
 
             // playful
-            expect(_.isNumber(agent.playful)).to.be.true;
-            expect(agent.playful).to.be.a('number');
-            expect(agent.playful % 1).to.be.equal(0);
-            expect(agent.playful).to.be.at.least(0);
-            expect(agent.playful).to.be.below(90);
+            expect(_.isNumber(data.playful)).to.be.true;
+            expect(data.playful).to.be.a('number');
+            expect(data.playful % 1).to.be.equal(0);
+            expect(data.playful).to.be.at.least(0);
+            expect(data.playful).to.be.below(90);
 
-            expect(_.isNumber(agent.loosePlayfulWithAgeCoef)).to.be.true;
-            expect(agent.loosePlayfulWithAgeCoef).to.be.above(0);
-            expect(agent.loosePlayfulWithAgeCoef).to.be.below(1);
+            expect(_.isNumber(data.loosePlayfulWithAgeCoef)).to.be.true;
+            expect(data.loosePlayfulWithAgeCoef).to.be.above(0);
+            expect(data.loosePlayfulWithAgeCoef).to.be.below(1);
         });
 
         testWrapper.execTest(mainName, 'should die while moving', function() {
@@ -110,22 +113,25 @@ define(
             expect(agent.isPlant()).to.be.false;
 
             var moveQuantity = 0;
-            while(agent.alive) {
+            while(agent.getData().alive) {
                 var location = new Location(
                     0,
-                    agent.location.getY()
+                    agent.getLocation().getY()
                         + agent.getSpeed(WorldStatus.getAllPossibleType()[0])
                 );
                 moveQuantity += 1;
                 agent.cycle(location);
-                expect(agent.currentGoal.name === 'looking for food'
-                    || agent.currentGoal.name === 'dead').to.be.true;
+                expect(agent.getCurrentGoal().name === 'looking for food'
+                    || agent.getCurrentGoal().name === 'dead').to.be.true;
+                if (moveQuantity > 1000) {
+                    break;
+                }
             }
 
-            expect(agent.location.getX()).to.be.equal(0);
-            expect(agent.location.getY()).to.be.above(0);
-            expect(agent.alive).to.be.false;
-            expect(agent.hungry).to.be.at.least(agent.deathByHunger);
+            expect(agent.getLocation().getX()).to.be.equal(0);
+            expect(agent.getLocation().getY()).to.be.above(0);
+            expect(agent.getData().alive).to.be.false;
+            expect(agent.getData().food.hungry).to.be.at.least(agent.getData().food.deathByHunger);
 
             // you do not want agent which would die right away
             expect(moveQuantity).to.be.at.least(10);
@@ -139,19 +145,21 @@ define(
             expect(agent.getSpeed(WorldStatus.getAllPossibleType()[0])).to.equal(0);
 
             var cycleQuantity = 0;
-            while(agent.alive) {
+            while(agent.getData().alive) {
                 cycleQuantity += 3;
                 agent.cycle();
                 agent.cycle();
                 agent.cycle();
+
+                if (cycleQuantity > 1000) {
+                    break;
+                }
             }
 
-            expect(agent.location.getX()).to.be.equal(0);
-            expect(agent.location.getY()).to.be.equal(0);
-            expect(agent.alive).to.be.false;
-            expect(agent.tired).to.be.at.least(agent.deathByExhaustion);
-            // this one died from being tired, not from starvation.
-            // expect(agent.hungry).to.be.at.least(agent.deathByHunger);
+            expect(agent.getLocation().getX()).to.be.equal(0);
+            expect(agent.getLocation().getY()).to.be.equal(0);
+            expect(agent.getData().alive).to.be.false;
+            expect(agent.getData().food.hungry).to.be.at.least(agent.getData().food.deathByHunger);
 
             // you do not want agent which would die right away
             expect(cycleQuantity).to.be.at.least(10);
