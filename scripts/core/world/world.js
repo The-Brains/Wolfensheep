@@ -3,13 +3,15 @@ define([
         '../random.js',
         '../../util/world-parameters.js',
         '../localization/location.js',
+        '../agent/agent.js',
         './world-status.js',
     ],
-    function(_, Generator, Parameters, Location, WorldStatus) {
+    function(_, Generator, Parameters, Location, Agent, WorldStatus) {
         var World = function(seed, width, height) {
             var myself = this;
             var tiles = {};
             var generator = new Generator(seed);
+            var agents = [];
 
             this.getWidth = function() {
                 return width;
@@ -53,6 +55,23 @@ define([
 
             this.getAllTiles = function() {
                 return tiles;
+            }
+
+            this.addNewAgent = function(location = null) {
+                if (!location) {
+                    location = new Location(
+                        generator.getInt(0, width),
+                        generator.getInt(0, height)
+                    );
+                }
+
+                var agent = Agent.createNewAgent(generator, location);
+                agents.push(agent);
+                return agent;
+            }
+
+            this.getAgentQuantity = function() {
+                return _.size(agents);
             }
 
             initializeWorld();

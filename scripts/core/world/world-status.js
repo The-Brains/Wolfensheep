@@ -39,15 +39,7 @@ define([
             }
 
             this.serialize = function() {
-                if (!this.serialized) {
-                    var result = '';
-                    _.forEach(this.status, function(value, key) {
-                        result += `${key}:${value},`;
-                    });
-                    this.serialized = result;
-                }
-
-                return this.serialized;
+                return JSON.stringify(this.status);
             }
         };
 

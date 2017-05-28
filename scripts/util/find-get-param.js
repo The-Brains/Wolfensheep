@@ -11,7 +11,7 @@ define(function() {
             .forEach(function (item) {
                 tmp = item.split("=");
                 if (tmp[0] === parameterName) {
-                    result = decodeURIComponent(tmp[1]);
+                    result = tmp[1] ? decodeURIComponent(tmp[1]) : true;
                 }
             });
         return result;
