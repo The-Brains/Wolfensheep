@@ -35,3 +35,7 @@
     margin-top: 8px;
     transition: margin-top 0s;
 }
+
+.mdl-textfield.is-focused .mdl-textfield__label:after {
+    background-color: rgb(66,66,66);
+}

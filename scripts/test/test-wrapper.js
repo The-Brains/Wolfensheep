@@ -58,6 +58,7 @@ define([
                         + '.');
                     if (!succeed) {
                         console.error(errorMsg);
+                        $('.action-button-failOnly').removeAttr('disabled');
                     }
                     myself.updateCounters(succeed);
                     myself.renderTest(succeed, mainName, testName, timeSpent, errorMsg);
