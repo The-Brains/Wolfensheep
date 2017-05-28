@@ -24,6 +24,18 @@
             <header class="mdl-layout__header">
                 <div class="mdl-layout__header-row">
                     <div class="mdl-layout-spacer"></div>
+                    <form method="GET">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+                        <label class="mdl-button mdl-js-button mdl-button--icon" for="grep">
+                          <i class="material-icons">search</i>
+                        </label>
+                        <div class="mdl-textfield__expandable-holder">
+                          <input class="mdl-textfield__input" type="text" name="grep" id="grep">
+                          <label class="mdl-textfield__label" for="grep-expandable">Expandable Input</label>
+                        </div>
+                      </div>
+                    </form>
+                    <div class="mdl-layout-spacer"></div>
                     <span class="mdl-layout-title TestReport">
                         Test: <span class="tests-quantity">0</span>&nbsp;|&nbsp;
                         <i class="material-icons">access_time</i>&nbsp;
@@ -42,7 +54,21 @@
                 <span class="mdl-layout-title">WolfenSheep - Test</span>
                 <!-- Navigation -->
                 <nav class="mdl-navigation">
-                    <!-- TODO -->
+                    <a
+                        class="
+                            action-button-failOnly
+                            mdl-button
+                            mdl-js-button
+                            mdl-js-ripple-effect
+                            mdl-button--large
+                            mdl-button--colored
+                            mdl-button--raised
+                        "
+                        href="test.html?failOnly"
+                        disabled>
+
+                        Run failed test
+                    </a>
                 </nav>
             </div>
             <main class="mdl-layout__content">
