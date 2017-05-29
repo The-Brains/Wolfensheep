@@ -110,6 +110,7 @@ define([
         ///////////////
 
         // Reproduction
+        agentData.reproduction = {};
         agentData.reproduction.kidQuantity = null;
         var initializeReproductiveFunction = function() {
             agentData.reproduction.kidQuantity = {
