@@ -13,12 +13,11 @@ define([
         var currentLocation = location;
         var agentData = {
             alive: true,
+            age: 0,
         };
 
         var currentGoal = null;
         var currentTarget = null;
-
-        var age = 0;
 
         this.weight = 0;
         this.threat = 0;
@@ -161,6 +160,7 @@ define([
             agentData.playful.playful =
                 agentData.playful.playful * agentData.playful.loosePlayfulWithAgeCoef;
         }
+        /////////////
 
         // Brain
         var decideGoal = function() {
@@ -222,12 +222,26 @@ define([
             spendHunger(agentData.food.hungerRate);
             spendEnergy(agentData.energy.exhaustionRate);
 
-            age += 0.1;
+            agentData.age += 0.1;
             loseFun();
         }
 
+        // GET METHODS
         this.getLocation = function() {
             return currentLocation;
+        }
+
+        this.getAge = function() {
+            return agentData.age;
+        }
+
+        this.getData = function() {
+            return agentData;
+        }
+        /////////////
+
+        this.serialize = function() {
+            return JSON.stringify(agentData);
         }
 
         var initAll = function() {
@@ -235,18 +249,6 @@ define([
             initializeHunger();
             initializeSleep();
             initializeExtraTraits();
-        }
-
-        this.getAge = function() {
-            return age;
-        }
-
-        this.getData = function() {
-            return agentData;
-        }
-
-        this.serialize = function() {
-            return JSON.stringify(agentData);
         }
 
         initAll();
