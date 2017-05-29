@@ -164,5 +164,8 @@ define(
             // you do not want agent which would die right away
             expect(cycleQuantity).to.be.at.least(10);
         });
+
+        // TODO: Check that reproduction value are being created properly
+        // TOOD: Check that reproduction works.
     }
 );

@@ -25,9 +25,7 @@ define(
         classDNA.createNewDNA = function(generator) {
             var dna = '';
             _.times(DNA_LENGTH, function() {
-                dna = dna + generator.getChar(
-                    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_=+~;:"<>,./?|'
-                );
+                dna = dna + generator.getChar();
             });
 
             return new classDNA(dna);
