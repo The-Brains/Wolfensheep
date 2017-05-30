@@ -22,7 +22,7 @@ define(
 
             this.getChar = function(dictionary) {
                 if (!dictionary) {
-                    dictionary =  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+                    dictionary =  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_=+~;:"<>,./?|';
                 }
                 return dictionary[this.getInt(0, dictionary.length)];
             }

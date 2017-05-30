@@ -7,18 +7,16 @@ define([
 ], function (AgentGoals, Generator, Location, WorldStatus, ObjectDNA) {
     var Agent = function(objectDNA, location) {
         var myself = this;
-        this.objectDNA = objectDNA;
-        var generator = new Generator(this.objectDNA.getDNA());
+        var generator = new Generator(objectDNA.getDNA());
         var previousLocations = [];
         var currentLocation = location;
         var agentData = {
             alive: true,
+            age: 0,
         };
 
         var currentGoal = null;
         var currentTarget = null;
-
-        var age = 0;
 
         this.weight = 0;
         this.threat = 0;
@@ -111,6 +109,99 @@ define([
         }
         ///////////////
 
+        // Reproduction
+        agentData.reproduction = {};
+        agentData.reproduction.kidQuantity = null;
+        var initializeReproductiveFunction = function() {
+            agentData.reproduction.kidQuantity = {
+                min: null,
+                max: null,
+            };
+            var maxPossibleKid = generator.getInt(1, 100) * generator.getFloatInRange(0.1, 0.6);
+            agentData.reproduction.kidQuantity.max = generator.getInt(1, maxPossibleKid);
+            agentData.reproduction.kidQuantity.min = generator.getInt(1, agentData.reproduction.kidQuantity.max);
+            agentData.reproduction.mutationRate = generator.getInt(0, 100);
+            agentData.reproduction.failingBirthRate = generator.getInt(0, 100);
+
+            // TODO: create a way so agent has to wait N cycle before reproducing again.
+        }
+
+        this.canReproduceWith = function(agent) {
+            // TODO
+            return true;
+        }
+
+        var createChildWith = function(agent) {
+            var myDNA = myself.getDNA();
+            var myDNALength = myDNA.length;
+            var otherDNA = agent.getDNA();
+            var otherDNALength = otherDNA.length;
+
+            var newLocation = myself.getLocation();
+
+            var newDNA = '';
+
+            for (var i = 0; i < Math.max(myDNALength, otherDNALength); i++) {
+                var gene = '';
+                var myDNAAvailable = i < myDNALength;
+                var otherDNAAvailable = i < otherDNALength;
+                var willMutate = generator.getInt(0, 100) < agentData.reproduction.mutationRate;
+                var WillStop = i > (myDNALength + otherDNALength) / 2.0 * (0.5 + generator.getFloat());
+
+                if (WillStop) {
+                    break;
+                }
+
+                if (willMutate) {
+                    newDNA[i] = generator.getChar();
+                } else {
+                    if (myDNAAvailable && otherDNAAvailable) {
+                        newDNA[i] = generator.getInt(0, 100) < 50
+                            ? myDNA[i]
+                            : otherDNA[i];
+                    }
+
+                    if (!myDNAAvailable && !otherDNAAvailable) {
+                        newDNA[i] = generator.getChar();
+                    }
+
+                    if (!myDNAAvailable && otherDNAAvailable) {
+                        newDNA[i] = otherDNA[i];
+                    }
+
+                    if (myDNAAvailable && !otherDNAAvailable) {
+                        newDNA[i] = myDNA[i];
+                    }
+                }
+            }
+
+            var newObjectDNA = new ObjectDNA(newDNA);
+
+            var child = new Agent(newObjectDNA, newLocation);
+
+            if (generator.getInt(0, 100) < agentData.reproduction.failingBirthRate) {
+                child.kill();
+            }
+
+            return child;
+        }
+
+        this.reproduceWith = function(agent) {
+            var kidQuantity = generator.getInt(
+                agentData.reproduction.kidQuantity.min,
+                agentData.reproduction.kidQuantity.max
+            );
+            var kids = [];
+
+            _.times(kidQuantity, function() {
+                kids.push(createChildWith(agent));
+            });
+
+            return kids;
+        }
+        ///////////////
+
+
         // Sleep
         agentData.energy = {};
         agentData.energy.tired = null;
@@ -161,6 +252,7 @@ define([
             agentData.playful.playful =
                 agentData.playful.playful * agentData.playful.loosePlayfulWithAgeCoef;
         }
+        /////////////
 
         // Brain
         var decideGoal = function() {
@@ -222,12 +314,34 @@ define([
             spendHunger(agentData.food.hungerRate);
             spendEnergy(agentData.energy.exhaustionRate);
 
-            age += 0.1;
+            agentData.age += 0.1;
             loseFun();
         }
 
+        this.kill = function() {
+            agentData.alive = false;
+        }
+
+        // GET METHODS
         this.getLocation = function() {
             return currentLocation;
+        }
+
+        this.getAge = function() {
+            return agentData.age;
+        }
+
+        this.getData = function() {
+            return agentData;
+        }
+
+        this.getDNA = function() {
+            return objectDNA.getDNA();
+        }
+        /////////////
+
+        this.serialize = function() {
+            return JSON.stringify(agentData);
         }
 
         var initAll = function() {
@@ -235,18 +349,7 @@ define([
             initializeHunger();
             initializeSleep();
             initializeExtraTraits();
-        }
-
-        this.getAge = function() {
-            return age;
-        }
-
-        this.getData = function() {
-            return agentData;
-        }
-
-        this.serialize = function() {
-            return JSON.stringify(agentData);
+            initializeReproductiveFunction();
         }
 
         initAll();
