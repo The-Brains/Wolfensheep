@@ -1,0 +1,3 @@
+[submodule "scripts/lib/dok"]
+	path = scripts/lib/dok
+	url = https://github.com/jacklehamster/dok
