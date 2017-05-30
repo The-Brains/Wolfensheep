@@ -55,15 +55,6 @@ define([
                     threeObjs[id] = threeObj;
                 }
                 threeObj.position.set(position[0],position[1],0);
-
-
-    /*            if (!creature.color) {
-                    creature.color = '#'+Math.floor(Math.random()*0xFFFFFF).toString(16);
-                }
-                ctx.fillStyle = creature.color;
-                ctx.beginPath();
-                ctx.arc(position[0],position[1],10,0,2*Math.PI);
-                ctx.fill();*/
             }
 
             function updateView(model, time) {

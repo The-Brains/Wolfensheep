@@ -2,7 +2,8 @@ define([
         'jquery',
         'lodash',
         './core/game.js',
-    ], function($, _, Game) {
+        './graphics/worldview.js',
+    ], function($, _, Game, WorldView) {
         var game = null;
 
         var generateWorld = function() {
@@ -22,6 +23,12 @@ define([
             game = new Game(seed, width, height);
             $('.world-creation-form').addClass('is-hidden');
             $('.input-button-add-agent').attr('disabled', null);
+
+            var worldView = new WorldView(game, document.getElementById('canvas'))
+
+            $('.CanvasArea').removeClass('is-hidden');
+
+            worldView.start();
 
             // TODO: Pass the game object to the canvas generation part.
             // something like:

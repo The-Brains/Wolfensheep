@@ -15,17 +15,10 @@ define([
             var camera = DOK.Camera.getCamera(); //new THREE.PerspectiveCamera(75, width / height, 0.1, 1000000);
             var scene = new THREE.Scene();
 
-            camera.position.set(0,-300,1000);
+            camera.position.set(2000,1000,1000);
             renderer.domElement.style.position = "absolute";
             renderer.domElement.style.left = 0;
             renderer.domElement.style.top = 0;
-/*            var ground = new THREE.Mesh(
-                new THREE.PlaneGeometry( 1, 1),
-                new THREE.MeshBasicMaterial( {color: 0x777777})
-            );
-            ground.position.set(0,0,0);
-            ground.scale.set(1000, 1000, 1);
-            scene.add(ground);*/
             camera.rotateX(.3);
 
             scene.add( new THREE.AmbientLight( 0xcccccc ) );
@@ -68,7 +61,7 @@ define([
 
             function getImageFromTileStatus(status) {
                 if(status.ground==='water') {
-                    return DOK.SpriteSheet.spritesheet.water;
+                    return status.temperature==='freezing' ? DOK.SpriteSheet.spritesheet.ice : DOK.SpriteSheet.spritesheet.water;
                 } else {
                     return DOK.SpriteSheet.spritesheet.floor;
                 }
@@ -78,6 +71,7 @@ define([
             var images = {
                 floor: require.toUrl("dok/images/wood.png"),
                 water: require.toUrl("dok/images/water.gif"),
+                ice: require.toUrl("dok/images/ice.png"),
             };
             DOK.SpriteSheet.preLoad(images);
             var spriteRenderer = new DOK.SpriteRenderer();
@@ -97,7 +91,7 @@ define([
                 },
                 function(x,y) {
                     if(this.options.tiles) {
-                        var tile = this.options.tiles[x+"_"+y];
+                        var tile = this.options.tiles[x+"-"+y];
                         if (tile) {
                             var status = tile.status;
 
@@ -166,6 +160,18 @@ define([
             }
 
             this.start = initialize;
+
+
+
+            var statuses = {};
+            var tiles = game.getWorld().getAllTiles();
+            for(var i in tiles) {
+                var status = tiles[i].status;
+                for(var s in status) {
+                    statuses[s + "=" + status[s]] = true;
+                }
+            }
+            console.log(statuses);
 
         };
         return WorldViewer;
