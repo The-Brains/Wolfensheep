@@ -1,7 +1,7 @@
 define([
     'dok/utils',
     'dok/loop',
-    'dok/gifHandler',
+    'dok/gifhandler',
     'dok/camera',
     'dok/objectpool',
     'dok/spriteobject',
