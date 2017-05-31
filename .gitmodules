@@ -1,3 +1,0 @@
-[submodule "scripts/lib/dok"]
-	path = scripts/lib/dok
-	url = git@github.com:jacklehamster/dok.git
