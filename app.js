@@ -11,7 +11,7 @@ requirejs.config({
         lodash: 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min',
         seedRandom: 'https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.3/seedrandom.min',
         threejs: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/85/three.min',
-        dobuki: 'dok/dobuki',
+        dobuki: 'https://jacklehamster.github.io/dok/out/dok.min',
         jsgif: 'jsgif/gif'
     },
     urlArgs: "bust=" + Date.now(),
