@@ -14,8 +14,7 @@ requirejs.config({
         dobuki: 'https://jacklehamster.github.io/dok/out/dok.min',
         jsgif: 'jsgif/gif'
     },
-    urlArgs: "bust=" + Date.now(),
-    catchError:false,
+    urlArgs: (location.search.match(/\bdebug\b/g)) ? "bust=" + Date.now() : '',
 });
 
 define(function() {
