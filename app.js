@@ -23,11 +23,14 @@ requirejs.config({
         dobuki: 'https://jacklehamster.github.io/dok/out/dok.min',
         jsgif: 'jsgif/gif'
     },
-    urlArgs: "bust=" + Date.now(),
-    catchError: false,
 });
 
-define(function() {
+define(['scripts/util/find-get-param.js'], function(findGetParameter) {
+    var disable_cache = findGetParameter('disable_cache');
+    requirejs.config({
+        urlArgs: disable_cache ? "time=" + Date.now() : '',
+    });
+
     // Start loading the main app file. Put all of
     // your application logic in there.
     requirejs([
