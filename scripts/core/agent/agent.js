@@ -10,6 +10,9 @@ define([
         var generator = new Generator(objectDNA.getDNA());
         var previousLocations = [];
         var currentLocation = location;
+
+        var id = null;
+
         var agentData = {
             alive: true,
             age: 0,
@@ -337,6 +340,21 @@ define([
 
         this.getDNA = function() {
             return objectDNA.getDNA();
+        }
+
+        this.setID = function(newID) {
+            if (!_.isNil(id)) {
+                throw new `ID is already set. ID: ${id}`;
+            }
+
+            id = newID;
+        }
+
+        this.getID = function() {
+            if (_.isNil(id)) {
+                throw 'ID needs to be set for this agent.';
+            }
+            return id;
         }
         /////////////
 
