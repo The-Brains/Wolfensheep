@@ -66,12 +66,22 @@ define([
                 }
 
                 var agent = Agent.createNewAgent(generator, location);
+                agent.setID(_.size(agents));
+
                 agents.push(agent);
                 return agent;
             }
 
+            this.getAgent = function(id) {
+                return agents[id];
+            }
+
             this.getAgentQuantity = function() {
                 return _.size(agents);
+            }
+
+            this.getAllAgents = function() {
+                return agents;
             }
 
             initializeWorld();

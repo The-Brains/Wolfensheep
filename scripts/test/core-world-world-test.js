@@ -32,5 +32,14 @@ define(
             expect(env.serialize()).to.be
                 .equal('{"humidity":"humid","temperature":"warm","ground":"rock","wind":"quiet","cloud":"clear"}');
         });
+
+        testWrapper.execTest(mainName, 'should add agents', function() {
+            var world = new World('cool seed', 20, 20);
+
+            var agentCreated = world.addNewAgent();
+            expect(agentCreated.getID()).to.equal(0);
+            var agentFetched = world.getAgent(0);
+            expect(agentFetched.serialize()).to.equal(agentCreated.serialize());
+        });
     }
 );

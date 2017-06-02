@@ -20,7 +20,7 @@ define([
         this.$testTimer =
             this.$testReportContainer.find('.tests-time');
 
-        this.grepSearch = FindGetParam('grep');
+        this.grepSearch = _.replace(_.toLower(FindGetParam('grep')), new RegExp(/\+/g), ' ');
         this.failOnly = !!$.parseJSON(FindGetParam('failOnly'));
 
         this.execTest = function(mainName, testName, testFn) {
@@ -28,8 +28,8 @@ define([
             var validTest = true;
 
             if (this.grepSearch) {
-                validTest = _.includes(mainName, this.grepSearch)
-                    || _.includes(testName, this.grepSearch);
+                validTest = _.includes(_.toLower(mainName), this.grepSearch)
+                    || _.includes(_.toLower(testName), this.grepSearch);
             }
 
             if (!validTest) {
