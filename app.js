@@ -4,7 +4,7 @@
 // except for 'app' ones, which are in a sibling
 // directory.
 requirejs.config({
-    // enforceDefine: true,
+    enforceDefine: true,
     baseUrl: 'scripts/lib',
     paths: {
         jquery: [
@@ -24,7 +24,7 @@ requirejs.config({
         jsgif: 'jsgif/gif'
     },
     urlArgs: "bust=" + Date.now(),
-    catchError:false,
+    catchError: false,
 });
 
 define(function() {
