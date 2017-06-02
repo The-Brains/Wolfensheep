@@ -8,9 +8,18 @@ requirejs.config({
     baseUrl: 'scripts/lib',
     paths: {
         chai: 'chai',
-        jquery: 'https://code.jquery.com/jquery-3.2.1.slim.min',
-        lodash: 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min',
-        seedRandom: 'https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.3/seedrandom.min',
+        jquery: [
+            'https://code.jquery.com/jquery-3.2.1.slim.min',
+            'jquery-3.2.1.slim.min',
+        ],
+        lodash: [
+            'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min',
+            'lodash.min',
+        ],
+        seedRandom: [
+            'https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.3/seedrandom.min',
+            'seedrandom.min',
+        ],
     },
 });
 
@@ -18,6 +27,7 @@ define(function() {
     // Start loading the main app file. Put all of
     // your application logic in there.
     requirejs([
+        'scripts/lib/material.min.js',
         'scripts/test/core-agent-agent-test.js',
         'scripts/test/core-agent-dnaHardcodedGene-test.js',
         'scripts/test/core-agent-dnaRandomGene-test.js',
