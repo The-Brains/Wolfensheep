@@ -21,6 +21,7 @@ requirejs.config({
             'seedrandom.min',
         ],
     },
+    urlArgs: "bust=" + Date.now(),
 });
 
 define(function() {
