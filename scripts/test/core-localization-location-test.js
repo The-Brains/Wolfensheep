@@ -1,5 +1,5 @@
 define(
-    ['chai', './test-wrapper.js', '../core/localization/location.js'],
+    ['chai', 'testWrapper', '../core/localization/location.js'],
     function(chai, testWrapper, Location) {
         var expect = chai.expect;
         var mainName = 'core-localization-location';

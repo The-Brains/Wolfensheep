@@ -1,5 +1,5 @@
 define(
-    ['chai', './test-wrapper.js' ,'../core/random.js'],
+    ['chai', 'testWrapper' ,'../core/random.js'],
     function(chai, testWrapper, Random) {
         var expect = chai.expect;
         var mainName = 'core-random';

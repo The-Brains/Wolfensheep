@@ -20,6 +20,7 @@ requirejs.config({
             'https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.3/seedrandom.min',
             'seedrandom.min',
         ],
+        testWrapper: 'https://the-brains.github.io/TestSuite/scripts/test/test-wrapper',
     },
     urlArgs: "bust=" + Date.now(),
 });

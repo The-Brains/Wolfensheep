@@ -2,7 +2,7 @@ define(
     [
         'chai',
         'lodash',
-        './test-wrapper.js',
+        'testWrapper',
         '../core/world/world.js',
         '../core/localization/location.js',
     ],

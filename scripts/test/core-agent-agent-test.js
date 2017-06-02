@@ -2,7 +2,7 @@ define(
     [
         'chai',
         'lodash',
-        './test-wrapper.js',
+        'testWrapper',
         '../core/agent/dna-random-gene.js',
         '../core/localization/location.js',
         '../core/agent/agent.js',

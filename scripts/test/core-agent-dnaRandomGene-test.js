@@ -1,5 +1,5 @@
 define(
-    ['chai', './test-wrapper.js', '../core/agent/dna-random-gene.js'],
+    ['chai', 'testWrapper', '../core/agent/dna-random-gene.js'],
     function(chai, testWrapper, classDNA) {
         var expect = chai.expect;
         var mainName = 'core-agent-dnaRandomGene';
