@@ -2,9 +2,9 @@ define([
     '../../util/agent-goals.js',
     '../random.js',
     '../localization/location.js',
-    '../world/world-status.js',
+    '../../util/world-parameters.js',
     './dna-random-gene.js',
-], function (AgentGoals, Generator, Location, WorldStatus, ObjectDNA) {
+], function (AgentGoals, Generator, Location, WorldParameters, ObjectDNA) {
     var Agent = function(objectDNA, location) {
         var myself = this;
         var generator = new Generator(objectDNA.getDNA());
@@ -30,6 +30,7 @@ define([
 
         // SPEEDS
         agentData.speed = {};
+        agentData.speed.mainSpeed = null;
         agentData.speed.speeds = null; // array of speed for every terrains.
         agentData.speed.canMove = true;
         var initializeSpeeds = function() {
@@ -40,10 +41,7 @@ define([
 
             if (plantRoll === 1) {
                 // is a plant
-                _.forEach(WorldStatus.getAllPossibleType(), function(ws) {
-                    var key = ws.serialize();
-                    agentData.speed.speeds[key] = 0;
-                });
+                agentData.speed.mainSpeed = 0;
                 agentData.speed.canMove = false;
             } else {
                 // is a moving creature
@@ -55,15 +53,18 @@ define([
                     minSpeed,
                     maxMaxSpeed
                 );
-
-                _.forEach(WorldStatus.getAllPossibleType(), function(ws) {
-                    var key = ws.serialize();
-                    agentData.speed.speeds[key] = generator.getFloatInRange(
-                        minSpeed,
-                        maxSpeed
-                    );
-                });
+                agentData.speed.mainSpeed = generator.getFloatInRange(
+                    minSpeed,
+                    maxSpeed
+                );
             }
+            var seed = objectDNA.getSpeedSeed();
+            var speedGenerator = new Generator(seed);
+
+            _.forEach(WorldParameters, function(terrainParamter) {
+
+            })
+
         }
 
         this.isPlant = function() {

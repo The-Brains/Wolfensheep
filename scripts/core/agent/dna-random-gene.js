@@ -9,6 +9,11 @@ define(
             this.dna = seed;
             this.generator = new Generator(seed);
 
+            var speedSeed = null;
+            _.times(DNA_LENGTH, function() {
+                speedSeed = speedSeed + generator.getChar();
+            });
+
             this.serialize = function() {
                 return this.seed;
             };
@@ -16,6 +21,11 @@ define(
             this.getDNA = function() {
                 return this.dna;
             };
+
+            this.getSpeedSeed = function() {
+                return speedSeed;
+            }
+
         };
 
         classDNA.deserialize = function(input) {
