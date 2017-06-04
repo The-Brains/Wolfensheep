@@ -7,7 +7,7 @@ define(
             var myself = this;
             this.seed = seed;
             this.dna = seed;
-            this.generator = new Generator(seed);
+            var generator = new Generator(seed);
 
             var speedSeed = null;
             _.times(DNA_LENGTH, function() {
