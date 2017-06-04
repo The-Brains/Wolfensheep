@@ -4,8 +4,10 @@ define([
         './imagestore.js',
     ],
     function(THREE, DOK, ImageStore) {
-        var TilesView = function (cameraHandler, spriteRenderer, cellSize) {
+        var TilesView = function (cameraHandler, spriteRenderer, cellSize, game) {
             var range = 100;
+            var worldWidth = game.getWidth();
+            var worldHeight = game.getHeight();
 
             var collection = new DOK.Collection(
                 {
@@ -22,7 +24,10 @@ define([
                 },
                 function (x, y) {
                     if (this.options.tiles) {
-                        var tile = this.options.tiles[x + "-" + y];
+                        var tileX = ((x % worldWidth) + worldWidth) % worldWidth;
+                        var tileY = ((y % worldHeight) + worldHeight) % worldHeight;
+
+                        var tile = this.options.tiles[tileX + "-" + tileY];
                         if (tile) {
                             var status = tile.status;
 
