@@ -4,7 +4,7 @@
 // except for 'app' ones, which are in a sibling
 // directory.
 requirejs.config({
-    enforceDefine: true,
+//    enforceDefine: true,
     baseUrl: 'scripts/lib',
     paths: {
         jquery: [
@@ -27,8 +27,13 @@ requirejs.config({
 
 define(['scripts/util/find-get-param.js'], function(findGetParameter) {
     var disable_cache = findGetParameter('disable_cache');
+    var debug = findGetParameter('debug');
     requirejs.config({
         urlArgs: disable_cache ? "time=" + Date.now() : '',
+        paths: {
+            dobuki: debug ? 'https://jacklehamster.github.io/dok/out/dok'
+                    : 'https://jacklehamster.github.io/dok/out/dok.min',
+        }
     });
 
     // Start loading the main app file. Put all of
