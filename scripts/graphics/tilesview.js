@@ -29,9 +29,7 @@ define([
 
                         var tile = this.options.tiles[tileX + "-" + tileY];
                         if (tile) {
-                            var status = tile.status;
-
-                            var img = ImageStore.getImageFromTileStatus(status);
+                            var img = ImageStore.getImageFromTile(tile);
 
                             return DOK.SpriteObject.create().init(
                                 x * cellSize, y * cellSize, 0,//c!==0?0:-64,

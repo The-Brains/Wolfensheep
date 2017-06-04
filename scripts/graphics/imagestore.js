@@ -1,12 +1,12 @@
 define(['dobuki',],
     function(DOK) {
-        function getImageFromTileStatus(status) {
-            if(status.ground==='water') {
-                return status.temperature==='freezing'
+        function getImageFromTile(tile) {
+            if(tile.getParameter('ground')==='water') {
+                return tile.getParameter('temperature')==='freezing'
                     ? DOK.SpriteSheet.spritesheet.tiles.ice
                     : DOK.SpriteSheet.spritesheet.tiles.water;
             } else {
-                return DOK.SpriteSheet.spritesheet.tiles[status.ground];
+                return DOK.SpriteSheet.spritesheet.tiles[tile.getParameter('ground')];
             }
         }
 
@@ -24,6 +24,6 @@ define(['dobuki',],
         DOK.SpriteSheet.preLoad(images);
 
         return {
-            getImageFromTileStatus: getImageFromTileStatus,
+            getImageFromTile: getImageFromTile,
         };
 });
