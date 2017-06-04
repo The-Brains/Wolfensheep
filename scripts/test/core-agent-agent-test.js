@@ -2,7 +2,7 @@ define(
     [
         'chai',
         'lodash',
-        './test-wrapper.js',
+        'testWrapper',
         '../core/agent/dna-random-gene.js',
         '../core/localization/location.js',
         '../core/agent/agent.js',
@@ -16,7 +16,6 @@ define(
             var dna = new objectDNA('test seed');
             var agent = new Agent(dna, new Location(0, 0));
 
-            expect(_.size(agent.getData().speed.speeds)).to.be.equal(WorldStatus.getAllPossibleType().length);
             expect(agent.getSpeed(WorldStatus.getAllPossibleType()[0])).to.exists;
             expect(_.isNumber(agent.getSpeed(WorldStatus.getAllPossibleType()[0]))).to.be.true;
         });
@@ -142,6 +141,7 @@ define(
             var agent = new Agent(dna, new Location(0, 0));
 
             expect(agent.isPlant()).to.be.true;
+            var speed = agent.getSpeed(WorldStatus.getAllPossibleType()[0]);
             expect(agent.getSpeed(WorldStatus.getAllPossibleType()[0])).to.equal(0);
 
             var cycleQuantity = 0;

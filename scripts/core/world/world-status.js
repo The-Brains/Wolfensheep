@@ -5,32 +5,31 @@ define([
     ],
     function(_, Generator, Parameters) {
         var WorldStatus = function(location, locationSeed, parameters) {
-            var myself = this;
-            this.location = location;
-            this.generator = new Generator(locationSeed);
-            this.serialized = null;
+            var location = location;
+            var generator = new Generator(locationSeed);
+            var serialized = null;
 
-            this.status = {};
+            var status = {};
             if (parameters) {
                 _.forEach(Parameters, function(p, key) {
-                    myself.status[key] = parameters[key];
+                    status[key] = parameters[key];
                 });
             } else {
                 _.each(Parameters, function(p, key) {
-                    myself.status[key] = p[myself.generator.getInt(0, p.length)];
+                    status[key] = p[generator.getInt(0, p.length)];
                 });
             }
 
             this.getParameter = function(parameterKey) {
-                return this.status[parameterKey];
+                return status[parameterKey];
             };
 
             this.getLocation = function() {
-                return this.location;
+                return location;
             };
 
             this.getParameters = function() {
-                return this.status;
+                return status;
             };
 
             this.allowedNeighbors = function() {
@@ -39,7 +38,7 @@ define([
             }
 
             this.serialize = function() {
-                return JSON.stringify(this.status);
+                return JSON.stringify(status);
             }
         };
 

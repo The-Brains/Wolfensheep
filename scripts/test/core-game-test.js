@@ -1,6 +1,6 @@
 define([
     'chai',
-    './test-wrapper.js',
+    'testWrapper',
     '../core/game.js',
 ],
 function(chai, testWrapper, Game) {

@@ -1,7 +1,7 @@
 define(
     [
         'chai',
-        './test-wrapper.js',
+        'testWrapper',
         '../core/world/world-status.js',
         '../core/localization/location.js',
     ],
