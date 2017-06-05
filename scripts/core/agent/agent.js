@@ -124,27 +124,46 @@ define([
 
         // Reproduction
         agentData.reproduction = {};
-        agentData.reproduction.kidQuantity = null;
+        agentData.reproduction.kidQuantity = {
+            min: null,
+            max: null,
+        };
+        agentData.reproduction.mutationRate = null;
+        agentData.reproduction.failingBirthRate = null;
+        agentData.reproduction.waitingPeriod = null;
+        agentData.reproduction.timeToNextKid = 0;
         var initializeReproductiveFunction = function() {
-            agentData.reproduction.kidQuantity = {
-                min: null,
-                max: null,
-            };
             var maxPossibleKid = generator.getInt(1, 100) * generator.getFloatInRange(0.1, 0.6);
             agentData.reproduction.kidQuantity.max = generator.getInt(1, maxPossibleKid);
-            agentData.reproduction.kidQuantity.min = generator.getInt(1, agentData.reproduction.kidQuantity.max);
-            agentData.reproduction.mutationRate = generator.getInt(0, 100);
-            agentData.reproduction.failingBirthRate = generator.getInt(0, 100);
+            agentData.reproduction.kidQuantity.min =
+                generator.getInt(1, agentData.reproduction.kidQuantity.max);
 
-            // TODO: create a way so agent has to wait N cycle before reproducing again.
+            var maxMutationRate = generator.getFloatInRange(0, 0.9);
+            agentData.reproduction.mutationRate = generator.getFloatInRange(0, maxMutationRate);
+
+            var maxFailingBirthRate = generator.getFloatInRange(0, 0.9);
+            agentData.reproduction.failingBirthRate =
+                generator.getFloatInRange(0, maxFailingBirthRate);
+
+            // TODO: When we run a few agent, we need to see how many cycle they live
+            // in average. We want them to be able to reproduce at least once.
+            // the max of this number should be 1.5 times their life expectancy.
+            var maxWaitingTime = generator.getInt(2, 50);
+            agentData.reproduction.waitingPeriod = generator.getInt(1, maxWaitingTime);
         }
 
         this.canReproduceWith = function(agent) {
+            if (agentData.reproduction.timeToNextKid > 0) {
+                return false;
+            }
             // TODO
             return true;
         }
 
         var createChildWith = function(agent) {
+            if (!myself.canReproduceWith(agent) || !agent.canReproduceWith(myself)) {
+                return null;
+            }
             var myDNA = myself.getDNA();
             var myDNALength = myDNA.length;
             var otherDNA = agent.getDNA();
@@ -158,7 +177,7 @@ define([
                 var gene = '';
                 var myDNAAvailable = i < myDNALength;
                 var otherDNAAvailable = i < otherDNALength;
-                var willMutate = generator.getInt(0, 100) < agentData.reproduction.mutationRate;
+                var willMutate = generator.getFloat() < agentData.reproduction.mutationRate;
                 var WillStop = i > (myDNALength + otherDNALength) / 2.0 * (0.5 + generator.getFloat());
 
                 if (WillStop) {
@@ -166,33 +185,32 @@ define([
                 }
 
                 if (willMutate) {
-                    newDNA[i] = generator.getChar();
+                    newDNA += generator.getChar();
                 } else {
                     if (myDNAAvailable && otherDNAAvailable) {
-                        newDNA[i] = generator.getInt(0, 100) < 50
+                        newDNA += generator.getFloat() <= 0.5
                             ? myDNA[i]
                             : otherDNA[i];
                     }
 
                     if (!myDNAAvailable && !otherDNAAvailable) {
-                        newDNA[i] = generator.getChar();
+                        newDNA += generator.getChar();
                     }
 
                     if (!myDNAAvailable && otherDNAAvailable) {
-                        newDNA[i] = otherDNA[i];
+                        newDNA += otherDNA[i];
                     }
 
                     if (myDNAAvailable && !otherDNAAvailable) {
-                        newDNA[i] = myDNA[i];
+                        newDNA += myDNA[i];
                     }
                 }
             }
 
             var newObjectDNA = new ObjectDNA(newDNA);
-
             var child = new Agent(newObjectDNA, newLocation);
 
-            if (generator.getInt(0, 100) < agentData.reproduction.failingBirthRate) {
+            if (generator.getFloat() < agentData.reproduction.failingBirthRate) {
                 child.kill();
             }
 
@@ -200,6 +218,10 @@ define([
         }
 
         this.reproduceWith = function(agent) {
+            if (!myself.canReproduceWith(agent) || !agent.canReproduceWith(myself)) {
+                return [];
+            }
+
             var kidQuantity = generator.getInt(
                 agentData.reproduction.kidQuantity.min,
                 agentData.reproduction.kidQuantity.max
@@ -209,6 +231,9 @@ define([
             _.times(kidQuantity, function() {
                 kids.push(createChildWith(agent));
             });
+
+            agentData.reproduction.timeToNextKid = agentData.reproduction.waitingPeriod;
+            agent.getData().reproduction.timeToNextKid = agent.getData().reproduction.waitingPeriod;
 
             return kids;
         }
@@ -269,6 +294,8 @@ define([
 
         // Brain
         var decideGoal = function() {
+            // TODO: Should build a system which for each "Goal" has 4 steps
+            // intent / search / move / action
             var allGoals = _.cloneDeep(AgentGoals);
 
             if (!agentData.alive) {
@@ -278,26 +305,49 @@ define([
                 allGoals.dead.score = 0;
             }
 
+            // Fun
             allGoals.exploring.score = agentData.playful.curiosity;
             allGoals.play.score = agentData.playful.playful;
+            ////
 
             // going to get food
             var closeToDieFromHunger = agentData.food.deathByHunger - agentData.food.hungry;
             allGoals.lookingForFood.score = 100.0 / closeToDieFromHunger;
             if (currentTarget && myself.canEat(currentTarget)) {
+                allGoals.goingToTarget.score = allGoals.lookingForFood.score;
                 allGoals.lookingForFood.score = 0;
-                allGoals.goingToTarget = 100.0 / closeToDieFromHunger;
             }
+            /////
 
             // going to sleep
             var closeToDieFromExhaustion =
                 agentData.energy.deathByExhaustion - agentData.energy.tired;
             allGoals.sleeping.score = 100.0 / closeToDieFromExhaustion;
+            //////
+
+            // reproduce
+            if (allGoals.goingToTarget.score < 70
+                && allGoals.lookingForFood.score < 70
+                && allGoals.sleeping.score < 70 ) {
+
+                var closeToAbleToReproduce =
+                    agentData.reproduction.timeToNextKid / agentData.reproduction.waitingPeriod;
+                if (currentTarget
+                    && myself.canReproduceWith(currentTarget)
+                    && currentTarget.canReproduceWith(myself)) {
+
+                    allGoals.reproduction.score = 100 - (closeToDieFromHunger * 100.0);
+                    allGoals.lookingForMate.score = 0;
+                } else {
+                    allGoals.lookingForMate.score = 100 - (closeToDieFromHunger * 100.0);
+                    allGoals.reproduction.score = allGoals.lookingForMate.score - 1;
+                }
+            }
+            /////
 
             currentGoal = _.head(_.sortBy(allGoals, function(g) {
                 return g.score;
             }));
-
             return currentGoal;
         }
 
@@ -328,11 +378,18 @@ define([
             spendEnergy(agentData.energy.exhaustionRate);
 
             agentData.age += 0.1;
+            if (agentData.reproduction.timeToNextKid > 0) {
+                agentData.reproduction.timeToNextKid -= 1;
+            }
             loseFun();
         }
 
         this.kill = function() {
-            agentData.alive = false;
+            die();
+        }
+
+        this.isAlive = function() {
+            return agentData.alive;
         }
 
         // GET METHODS

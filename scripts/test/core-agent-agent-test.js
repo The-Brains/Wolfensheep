@@ -167,5 +167,49 @@ define(
 
         // TODO: Check that reproduction value are being created properly
         // TOOD: Check that reproduction works.
+        testWrapper.execTest(mainName, 'should have reproduction trait', function() {
+            var dna = new objectDNA('test seed');
+            var agent = new Agent(dna, new Location(0, 0));
+            var data = agent.getData().reproduction;
+
+            // test for number and integer
+            expect(_.isNumber(data.kidQuantity.min)).to.be.true;
+            expect(data.kidQuantity.min).to.be.a('number');
+            expect(data.kidQuantity.min % 1).to.be.equal(0);
+
+            expect(data.kidQuantity.min).to.be.at.least(0);
+
+            expect(_.isNumber(data.kidQuantity.max)).to.be.true;
+            expect(data.kidQuantity.max).to.be.a('number');
+            expect(data.kidQuantity.max % 1).to.be.equal(0);
+
+            expect(data.kidQuantity.max).to.be.at.least(data.kidQuantity.min);
+
+            expect(_.isNumber(data.mutationRate)).to.be.true;
+            expect(data.mutationRate).to.be.a('number');
+            expect(data.mutationRate).to.be.above(0);
+            expect(data.mutationRate).to.be.below(1);
+
+            expect(_.isNumber(data.failingBirthRate)).to.be.true;
+            expect(data.failingBirthRate).to.be.a('number');
+            expect(data.failingBirthRate).to.be.above(0);
+            expect(data.failingBirthRate).to.be.below(1);
+        });
+
+        testWrapper.execTest(mainName, 'should be able to reproduce', function() {
+            var dna1 = new objectDNA('test seed');
+            var agent1 = new Agent(dna1, new Location(0, 0));
+
+            var dna2 = new objectDNA('other seed');
+            var agent2 = new Agent(dna2, new Location(0, 0));
+
+            expect(agent1.canReproduceWith(agent2)).to.be.true;
+            var kids = agent1.reproduceWith(agent2);
+            expect(kids).to.exist;
+            expect(agent1.getData().reproduction.timeToNextKid).to.be.above(0);
+            expect(agent2.getData().reproduction.timeToNextKid).to.be.above(0);
+            expect(agent1.reproduceWith(agent2).length).to.equal(0);
+            expect(agent2.reproduceWith(agent1).length).to.equal(0);
+        });
     }
 );
