@@ -22,20 +22,12 @@ define([
 
             game = new Game(seed, width, height);
             $('.world-creation-form').addClass('is-hidden');
-            $('.input-button-add-agent').attr('disabled', null);
 
             var worldView = new WorldView(game, document.getElementById('canvas'))
-
-            $('.CanvasArea').removeClass('is-hidden');
-
             worldView.start();
 
-            // TODO: Pass the game object to the canvas generation part.
-            // something like:
-            // var frontEnd = new FrontEnd(game, function() {
-            //      // callback when world is ready to show.
-            //      $('.CanvasArea').removeClass('is-hidden');
-            // });
+            $('.input-button-add-agent').attr('disabled', null);
+            $('.CanvasArea').removeClass('is-hidden');
         };
 
         $('.input-world-generate').on('click', function() {
@@ -44,8 +36,7 @@ define([
 
         $('.input-button-add-agent').on('click', function() {
             var agent = game.getWorld().addNewAgent();
-            // console.log(agent.serialize());
-            console.log(game.getWorld().getAgentQuantity());
+            // TODO: Hooked agent to front end logic.
         })
 
         console.log('App started.');
