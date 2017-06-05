@@ -10,7 +10,6 @@ define(['jquery', 'lodash'], function($, _) {
         $('.CanvasArea').width(width);
         canvasDrawing.width(width);
         canvasDrawing.height(height);
-        console.log('resized: W:' + width + ', H: ' + height);
     };
 
     $(window).resize(_.debounce(resizeCanvas, 200, {

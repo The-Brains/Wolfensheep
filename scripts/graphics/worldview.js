@@ -11,7 +11,7 @@ define([
             var cellSize = 64;
             var width = canvas.width;
             var height = canvas.height;
-            debugger;
+
             var renderer = new THREE.WebGLRenderer({
                 canvas: canvas,
             });
