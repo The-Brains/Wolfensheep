@@ -145,7 +145,10 @@ define([
             agentData.reproduction.failingBirthRate =
                 generator.getFloatInRange(0, maxFailingBirthRate);
 
-            var maxWaitingTime = generator.getInt(2, 10);
+            // TODO: When we run a few agent, we need to see how many cycle they live
+            // in average. We want them to be able to reproduce at least once.
+            // the max of this number should be 1.5 times their life expectancy.
+            var maxWaitingTime = generator.getInt(2, 50);
             agentData.reproduction.waitingPeriod = generator.getInt(1, maxWaitingTime);
         }
 
@@ -291,6 +294,8 @@ define([
 
         // Brain
         var decideGoal = function() {
+            // TODO: Should build a system which for each "Goal" has 4 steps
+            // intent / search / move / action
             var allGoals = _.cloneDeep(AgentGoals);
 
             if (!agentData.alive) {
@@ -300,26 +305,49 @@ define([
                 allGoals.dead.score = 0;
             }
 
+            // Fun
             allGoals.exploring.score = agentData.playful.curiosity;
             allGoals.play.score = agentData.playful.playful;
+            ////
 
             // going to get food
             var closeToDieFromHunger = agentData.food.deathByHunger - agentData.food.hungry;
             allGoals.lookingForFood.score = 100.0 / closeToDieFromHunger;
             if (currentTarget && myself.canEat(currentTarget)) {
+                allGoals.goingToTarget.score = allGoals.lookingForFood.score;
                 allGoals.lookingForFood.score = 0;
-                allGoals.goingToTarget = 100.0 / closeToDieFromHunger;
             }
+            /////
 
             // going to sleep
             var closeToDieFromExhaustion =
                 agentData.energy.deathByExhaustion - agentData.energy.tired;
             allGoals.sleeping.score = 100.0 / closeToDieFromExhaustion;
+            //////
+
+            // reproduce
+            if (allGoals.goingToTarget.score < 70
+                && allGoals.lookingForFood.score < 70
+                && allGoals.sleeping.score < 70 ) {
+
+                var closeToAbleToReproduce =
+                    agentData.reproduction.timeToNextKid / agentData.reproduction.waitingPeriod;
+                if (currentTarget
+                    && myself.canReproduceWith(currentTarget)
+                    && currentTarget.canReproduceWith(myself)) {
+
+                    allGoals.reproduction.score = 100 - (closeToDieFromHunger * 100.0);
+                    allGoals.lookingForMate.score = 0;
+                } else {
+                    allGoals.lookingForMate.score = 100 - (closeToDieFromHunger * 100.0);
+                    allGoals.reproduction.score = allGoals.lookingForMate.score - 1;
+                }
+            }
+            /////
 
             currentGoal = _.head(_.sortBy(allGoals, function(g) {
                 return g.score;
             }));
-
             return currentGoal;
         }
 
