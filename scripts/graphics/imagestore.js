@@ -19,19 +19,19 @@ define(['dobuki'],
 
         var images = {
             tiles: {
-                water: require.toUrl("dok/images/water.gif"),
-                ice: require.toUrl("dok/images/ice.png"),
-                dirt: require.toUrl("dok/images/dirt.png"),
-                mud: require.toUrl("dok/images/mud.png"),
-                rock: require.toUrl("dok/images/rock.png"),
-                sand: require.toUrl("dok/images/sand.png"),
+                water: "https://the-brains.github.io/Wolfensheep/scripts/lib/dok/images/water.gif",
+                ice: "https://the-brains.github.io/Wolfensheep/scripts/lib/dok/images/ice.png",
+                dirt: "https://the-brains.github.io/Wolfensheep/scripts/lib/dok/images/dirt.png",
+                mud: "https://the-brains.github.io/Wolfensheep/scripts/lib/dok/images/mud.png",
+                rock: "https://the-brains.github.io/Wolfensheep/scripts/lib/dok/images/rock.png",
+                sand: "https://the-brains.github.io/Wolfensheep/scripts/lib/dok/images/sand.png",
             },
             creatures: {
                 squid: [
-                    require.toUrl("dok/images/squid.png") + '|0,0,32,32',
-                    require.toUrl("dok/images/squid.png") + '|32,0,32,32',
-                    require.toUrl("dok/images/squid.png") + '|0,32,32,32',
-                    require.toUrl("dok/images/squid.png") + '|32,32,32,32',
+                    "https://the-brains.github.io/Wolfensheep/scripts/lib/dok/images/squid.png" + '|0,0,32,32',
+                    "https://the-brains.github.io/Wolfensheep/scripts/lib/dok/images/squid.png" + '|32,0,32,32',
+                    "https://the-brains.github.io/Wolfensheep/scripts/lib/dok/images/squid.png" + '|0,32,32,32',
+                    "https://the-brains.github.io/Wolfensheep/scripts/lib/dok/images/squid.png" + '|32,32,32,32',
                 ],
             },
         };
