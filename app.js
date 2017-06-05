@@ -21,7 +21,7 @@ requirejs.config({
         ],
         threejs: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/85/three.min',
         dobuki: 'https://jacklehamster.github.io/dok/out/dok.min',
-        jsgif: 'jsgif/gif'
+        jsgif: 'jsgif/gif',
     },
 });
 
@@ -31,15 +31,15 @@ define(['scripts/util/find-get-param.js'], function(findGetParameter) {
     requirejs.config({
         urlArgs: disable_cache ? "time=" + Date.now() : '',
         paths: {
-            dobuki: debug ? 'https://jacklehamster.github.io/dok/out/dok'
-                    : 'https://jacklehamster.github.io/dok/out/dok.min',
+            dobuki: debug
+                ? 'https://jacklehamster.github.io/dok/out/dok'
+                : 'https://jacklehamster.github.io/dok/out/dok.min',
         }
     });
 
     // Start loading the main app file. Put all of
     // your application logic in there.
     requirejs([
-        'scripts/lib/material.min.js',
         'scripts/main.js',
     ]);
 });
