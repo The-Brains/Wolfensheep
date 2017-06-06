@@ -40,6 +40,7 @@ define([
 
             function update() {
                 collection.options.agents = game.getWorld().getAllAgents();
+                console.dir(collection.options.agents);
                 collection.forEach(spriteRenderer.display);
             }
 

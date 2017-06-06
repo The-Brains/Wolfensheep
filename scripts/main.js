@@ -36,6 +36,7 @@ define([
 
         $('.input-button-add-agent').on('click', function() {
             var agent = game.getWorld().addNewAgent();
+            $('.agent_quantity').text(game.getWorld().getAgentQuantity());
             // TODO: Hooked agent to front end logic.
         })
 
