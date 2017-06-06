@@ -125,7 +125,9 @@ define([
             }
 
             this.getAllAgents = function() {
-                return agentsByID;
+                return _.map(agentsByID, function(agent) {
+                    return agent;
+                });
             }
 
             this.getAgentsAt = function(location) {
