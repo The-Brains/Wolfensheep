@@ -11,7 +11,10 @@ define([
             var myself = this;
             var tiles = {};
             var generator = new Generator(seed);
-            var agents = [];
+            var agentsByID = {};
+            var agentsByLocation = {};
+
+            this.seed = seed;
 
             this.getWidth = function() {
                 return width;
@@ -57,6 +60,44 @@ define([
                 return tiles;
             }
 
+            var subUpdateAgentPerLocation = function(agent, newLocation, oldLocation) {
+                if (oldLocation && agentsByLocation[oldLocation.serialize()]) {
+                    delete agentsByLocation[oldLocation.serialize()][agent.getID()];
+                    if (_.size(agentsByLocation[oldLocation.serialize()]) === 0) {
+                        delete agentsByLocation[oldLocation.serialize()];
+                    }
+                }
+
+                if (newLocation) {
+                    if (!agentsByLocation[newLocation.serialize()]) {
+                        agentsByLocation[newLocation.serialize()] = {};
+                    }
+                    agentsByLocation[newLocation.serialize()][agent.getID()] = agent;
+                }
+            }
+
+            this.updateAgentPerLocation = function(agent, newLocation, oldLocation = null) {
+                subUpdateAgentPerLocation(agent, newLocation, oldLocation);
+                subUpdateAgentPerLocation(
+                    agent,
+                    newLocation
+                        ? new Location(
+                            _.round(newLocation.getX()),
+                            _.round(newLocation.getY()))
+                        : null,
+                    oldLocation
+                        ? new Location(
+                            _.round(oldLocation.getX()),
+                            _.round(oldLocation.getY()))
+                        : null,
+                );
+            }
+
+            this.removeAgent = function(agent, location) {
+                delete agentsByID[agent.getID()];
+                myself.updateAgentPerLocation(agent, null, location);
+            }
+
             this.addNewAgent = function(location = null) {
                 if (!location) {
                     location = new Location(
@@ -66,22 +107,33 @@ define([
                 }
 
                 var agent = Agent.createNewAgent(generator, location);
-                agent.setID(_.size(agents));
+                agent.setID(_.size(agentsByID));
+                agent.setWorld(myself);
 
-                agents.push(agent);
+                agentsByID[agent.getID()] = agent;
+                myself.updateAgentPerLocation(agent, agent.getLocation());
+
                 return agent;
             }
 
             this.getAgent = function(id) {
-                return agents[id];
+                return agentsByID[id];
             }
 
             this.getAgentQuantity = function() {
-                return _.size(agents);
+                return _.size(agentsByID);
             }
 
             this.getAllAgents = function() {
-                return agents;
+                return _.map(agentsByID, function(agent) {
+                    return agent;
+                });
+            }
+
+            this.getAgentsAt = function(location) {
+                return agentsByLocation[location.serialize()]
+                    ? agentsByLocation[location.serialize()]
+                    : {};
             }
 
             initializeWorld();
