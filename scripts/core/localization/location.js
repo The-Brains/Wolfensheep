@@ -3,27 +3,33 @@ define(['lodash'], function(_) {
         if(!_.isNumber(x) || !_.isNumber(y)) {
             throw new Error('X and Y has to be numbers.');
         }
-        this.x = x;
-        this.y = y;
+        var locX = x;
+        var locY = y;
 
         this.getX = function() {
-            return this.x;
+            return locX;
         };
 
         this.getY = function() {
-            return this.y;
+            return locY;
         };
 
         this.serialize = function() {
-            return this.x + '-' + this.y;
-        }
+            return locX + '-' + locY;
+        };
 
         this.distance = function(location) {
-            var x = location.x - this.x;
-            var y = location.y - this.y;
+            var xx = location.getX() - locX;
+            var yy = location.getY() - locY;
 
-            return Math.sqrt(x*x + y*y);
-        }
+            return Math.sqrt(xx*xx + yy*yy);
+        };
+
+        this.equals = function(location) {
+            return location.getX() === locX && location.getY() === locY;
+        };
+
+        this.serialized = this.serialize();
     };
 
     Location.deserialize = function(input) {

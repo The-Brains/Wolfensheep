@@ -1,10 +1,11 @@
 define([
+    'lodash',
     '../../util/agent-goals.js',
     '../random.js',
     '../localization/location.js',
     '../../util/world-parameters.js',
     './dna-random-gene.js',
-], function (AgentGoals, Generator, Location, WorldParameters, ObjectDNA) {
+], function (_, AgentGoals, Generator, Location, WorldParameters, ObjectDNA) {
     var Agent = function(objectDNA, location) {
         var myself = this;
         var generator = new Generator(objectDNA.getDNA());
@@ -21,12 +22,18 @@ define([
         var currentGoal = null;
         var currentTarget = null;
 
+        var containerWorld = null;
+
         this.weight = 0;
         this.threat = 0;
 
         var die = function() {
             agentData.alive = false;
-        }
+
+            if(!_.isNil(myself.getWorld())) {
+                myself.getWorld().removeAgent(myself, currentLocation);
+            }
+        };
 
         // SPEEDS
         agentData.speed = {};
@@ -75,7 +82,7 @@ define([
 
         this.isPlant = function() {
             return !agentData.speed.canMove;
-        }
+        };
 
         /**
         * get the speed of the agent for the given WorldStatus
@@ -86,7 +93,7 @@ define([
                 speed = speed * agentData.speed.speeds[terrainParamter][option];
             });
             return speed;
-        }
+        };
         ///////////////
 
         // FOOD PART
@@ -106,7 +113,7 @@ define([
 
             agentData.food.hungerRate = generator.getFloatInRange(0.1, hungerMaxOriginal / 3.0);
             agentData.food.hungerMove = generator.getFloatInRange(0, 1);
-        }
+        };
 
         var spendHunger = function(hungerSpent) {
             agentData.food.hungry = agentData.food.hungry + hungerSpent;
@@ -114,12 +121,12 @@ define([
             if (agentData.food.hungry >= agentData.food.deathByHunger) {
                 die();
             }
-        }
+        };
 
         this.canEat = function(agent) {
             // TODO
             return true;
-        }
+        };
         ///////////////
 
         // Reproduction
@@ -150,7 +157,7 @@ define([
             // the max of this number should be 1.5 times their life expectancy.
             var maxWaitingTime = generator.getInt(2, 50);
             agentData.reproduction.waitingPeriod = generator.getInt(1, maxWaitingTime);
-        }
+        };
 
         this.canReproduceWith = function(agent) {
             if (agentData.reproduction.timeToNextKid > 0) {
@@ -158,7 +165,7 @@ define([
             }
             // TODO
             return true;
-        }
+        };
 
         var createChildWith = function(agent) {
             if (!myself.canReproduceWith(agent) || !agent.canReproduceWith(myself)) {
@@ -215,7 +222,7 @@ define([
             }
 
             return child;
-        }
+        };
 
         this.reproduceWith = function(agent) {
             if (!myself.canReproduceWith(agent) || !agent.canReproduceWith(myself)) {
@@ -236,7 +243,7 @@ define([
             agent.getData().reproduction.timeToNextKid = agent.getData().reproduction.waitingPeriod;
 
             return kids;
-        }
+        };
         ///////////////
 
 
@@ -257,7 +264,7 @@ define([
 
             agentData.energy.exhaustionRate = generator.getFloatInRange(0.1, sleepMaxOriginal / 3.0);
             agentData.energy.exhaustionMove = generator.getFloatInRange(0, 1);
-        }
+        };
 
         var spendEnergy = function(energySpent) {
             agentData.energy.tired = agentData.energy.tired + energySpent;
@@ -265,7 +272,7 @@ define([
             if (agentData.energy.tired >= agentData.energy.deathByExhaustion) {
                 die();
             }
-        }
+        };
         /////////////
 
         // Extra Traits
@@ -282,14 +289,14 @@ define([
             // playful
             agentData.playful.playful = generator.getInt(10, 90);
             agentData.playful.loosePlayfulWithAgeCoef = generator.getFloatInRange(0.01, 0.99);
-        }
+        };
 
         var loseFun = function() {
             agentData.playful.curiosity =
                 agentData.playful.curiosity * agentData.playful.looseCuriosityWithAgeCoef;
             agentData.playful.playful =
                 agentData.playful.playful * agentData.playful.loosePlayfulWithAgeCoef;
-        }
+        };
         /////////////
 
         // Brain
@@ -349,14 +356,23 @@ define([
                 return g.score;
             }));
             return currentGoal;
-        }
+        };
 
         this.getCurrentGoal = function() {
             return currentGoal;
-        }
+        };
         /////////////
 
         var moveTo = function(location) {
+            if(!_.isNil(myself.getWorld())) {
+                if (location && !location.equals(currentLocation)) {
+                    myself.getWorld().updateAgentPerLocation(
+                        myself,
+                        location,
+                        currentLocation);
+                }
+            }
+
             if (!location) {
                 previousLocations.push(currentLocation);
                 return;
@@ -369,7 +385,7 @@ define([
 
             previousLocations.push(currentLocation);
             currentLocation = location;
-        }
+        };
 
         this.cycle = function(newLocation = null) {
             decideGoal();
@@ -382,32 +398,32 @@ define([
                 agentData.reproduction.timeToNextKid -= 1;
             }
             loseFun();
-        }
+        };
 
         this.kill = function() {
             die();
-        }
+        };
 
         this.isAlive = function() {
             return agentData.alive;
-        }
+        };
 
         // GET METHODS
         this.getLocation = function() {
             return currentLocation;
-        }
+        };
 
         this.getAge = function() {
             return agentData.age;
-        }
+        };
 
         this.getData = function() {
             return agentData;
-        }
+        };
 
         this.getDNA = function() {
             return objectDNA.getDNA();
-        }
+        };
 
         this.setID = function(newID) {
             if (!_.isNil(id)) {
@@ -415,19 +431,27 @@ define([
             }
 
             id = newID;
-        }
+        };
 
         this.getID = function() {
             if (_.isNil(id)) {
                 throw 'ID needs to be set for this agent.';
             }
             return id;
-        }
+        };
+
+        this.setWorld = function(world) {
+            containerWorld = world;
+        };
+
+        this.getWorld = function() {
+            return containerWorld;
+        };
         /////////////
 
         this.serialize = function() {
             return JSON.stringify(agentData);
-        }
+        };
 
         var initAll = function() {
             initializeSpeeds();
@@ -435,7 +459,7 @@ define([
             initializeSleep();
             initializeExtraTraits();
             initializeReproductiveFunction();
-        }
+        };
 
         initAll();
     };

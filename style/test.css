@@ -39,3 +39,8 @@
 .mdl-textfield.is-focused .mdl-textfield__label:after {
     background-color: rgb(66,66,66);
 }
+
+.InvisibleLink {
+    color: rgb(66,66,66);
+    text-decoration: none;
+}

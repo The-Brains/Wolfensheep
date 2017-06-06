@@ -41,5 +41,77 @@ define(
             var agentFetched = world.getAgent(0);
             expect(agentFetched.serialize()).to.equal(agentCreated.serialize());
         });
+
+        testWrapper.execTest(mainName, 'should add several agents', function() {
+            var world = new World('cool seed', 20, 20);
+
+            var agentCreated1 = world.addNewAgent();
+            expect(agentCreated1.getID()).to.equal(0);
+
+            var agentCreated2 = world.addNewAgent();
+            expect(agentCreated2.getID()).to.equal(1);
+        });
+
+        testWrapper.execTest(mainName, 'should fetch agent with location', function() {
+            var world = new World('cool seed', 20, 20);
+
+            var agentCreated1 = world.addNewAgent();
+            expect(agentCreated1.getID()).to.equal(0);
+            expect(world.getAgentsAt(agentCreated1.getLocation())[0].getID()).to.equal(0);
+
+            var agentCreated2 = world.addNewAgent();
+            expect(agentCreated2.getID()).to.equal(1);
+            expect(world.getAgentsAt(agentCreated2.getLocation())[agentCreated2.getID()].getID())
+                .to.equal(agentCreated2.getID());
+        });
+
+        testWrapper.execTest(mainName, 'should fetch agent with location after moving', function() {
+            var world = new World('cool seed', 20, 20);
+
+            var agentCreated2 = world.addNewAgent();
+            expect(agentCreated2.getID()).to.equal(0);
+            expect(world.getAgentsAt(agentCreated2.getLocation())[agentCreated2.getID()].getID())
+                .to.equal(agentCreated2.getID());
+
+            var oldLoc = agentCreated2.getLocation();
+            var loc = new Location(1, 1);
+            agentCreated2.cycle(loc);
+
+            expect(_.size(world.getAgentsAt(loc))).to.equal(1);
+            expect(world.getAgentsAt(loc)[agentCreated2.getID()].getID())
+                .to.equal(agentCreated2.getID());
+            expect(_.size(world.getAgentsAt(oldLoc))).to.equal(0);
+        });
+
+        testWrapper.execTest(mainName, 'should fetch agent with location after moving with float location', function() {
+            var world = new World('cool seed', 20, 20);
+
+            var agentCreated2 = world.addNewAgent();
+            expect(agentCreated2.getID()).to.equal(0);
+            expect(world.getAgentsAt(agentCreated2.getLocation())[agentCreated2.getID()].getID())
+                .to.equal(agentCreated2.getID());
+
+            var oldLoc = agentCreated2.getLocation();
+            var loc = new Location(1.34, 1.12);
+            agentCreated2.cycle(loc);
+
+            expect(_.size(world.getAgentsAt(loc))).to.equal(1);
+            expect(_.size(world.getAgentsAt(new Location(1, 1)))).to.equal(1);
+            expect(world.getAgentsAt(loc)[agentCreated2.getID()].getID())
+                .to.equal(agentCreated2.getID());
+            expect(_.size(world.getAgentsAt(oldLoc))).to.equal(0);
+        });
+
+        testWrapper.execTest(mainName, 'should remove agent when they die', function() {
+            var world = new World('cool seed', 20, 20);
+
+            var agentCreated1 = world.addNewAgent();
+            expect(agentCreated1.getID()).to.equal(0);
+            expect(world.getAgentsAt(agentCreated1.getLocation())[0].getID()).to.equal(0);
+
+            agentCreated1.kill();
+            expect(_.size(world.getAgentsAt(agentCreated1.getLocation()))).to.equal(0);
+            expect(_.size(world.getAllAgents())).to.equal(0);
+        });
     }
 );
