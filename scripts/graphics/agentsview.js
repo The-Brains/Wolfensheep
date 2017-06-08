@@ -25,10 +25,12 @@ define([
                     agentsCache: {},
                 },
                 function (x, y) {
-                    if(this.options.agentsCache[x+"-"+y] === undefined) {
-                        this.options.agentsCache[x+"-"+y] = game.getWorld().getAgentsAt(new Location(x,y));
+                    var tileX = ((x % worldWidth) + worldWidth) % worldWidth;
+                    var tileY = ((y % worldHeight) + worldHeight) % worldHeight;
+                    if(this.options.agentsCache[tileX+"-"+tileY] === undefined) {
+                        this.options.agentsCache[tileX+"-"+tileY] = game.getWorld().getAgentsAt(new Location(tileX,tileY));
                     }
-                    var agents = this.options.agentsCache[x+"-"+y];
+                    var agents = this.options.agentsCache[tileX+"-"+tileY];
                     tempArray.length = 0;
                     for(var a in agents) {
                         var agent = agents[a];
@@ -52,6 +54,18 @@ define([
             function update() {
                 collection.forEach(spriteRenderer.display);
             }
+
+            function clearCache(x,y) {
+                var tileX = ((x % worldWidth) + worldWidth) % worldWidth;
+                var tileY = ((y % worldHeight) + worldHeight) % worldHeight;
+                var key = tileX + "-" + tileY;
+                delete collection.options.agentsCache[key];
+            }
+
+            game.getWorld().setAgentCallback(function(agent, locationFrom, locationTo) {
+                clearCache(locationFrom.getX(), locationFrom.getY());
+                clearCache(locationTo.getX(), locationTo.getY());
+            });
 
             this.update = update;
         }
