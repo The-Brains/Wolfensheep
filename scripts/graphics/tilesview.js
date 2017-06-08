@@ -4,7 +4,7 @@ define([
         './imagestore.js',
     ],
     function(THREE, DOK, ImageStore) {
-        var TilesView = function (cameraHandler, spriteRenderer, cellSize, game) {
+        return function (cameraHandler, spriteRenderer, cellSize, game) {
             var range = 100;
             var worldWidth = game.getWidth();
             var worldHeight = game.getHeight();
@@ -20,19 +20,19 @@ define([
                     width: range,
                     height: range,
                     tiles: null,
-                    imageCache: {},
+                    imageCache: DOK.Utils.makeArray(worldHeight, worldWidth),
                 },
                 function (x, y) {
                     if (this.options.tiles) {
                         var tileX = ((x % worldWidth) + worldWidth) % worldWidth;
                         var tileY = ((y % worldHeight) + worldHeight) % worldHeight;
-                        var key = tileX + "-" + tileY;
 
-                        if (this.options.imageCache[key]===undefined) {
+                        if (this.options.imageCache[tileY][tileX]===undefined) {
+                            var key = tileX + "-" + tileY;
                             var tile = collection.options.tiles[key];
-                            this.options.imageCache[key] = tile ? ImageStore.getImageFromTile(tile) : null;
+                            this.options.imageCache[tileY][tileX] = tile ? ImageStore.getImageFromTile(tile) : null;
                         }
-                        var img = this.options.imageCache[key];
+                        var img = this.options.imageCache[tileY][tileX];
 
                         if (img !== null) {
                             return DOK.SpriteObject.create(
@@ -56,8 +56,7 @@ define([
             function clearCache(x,y) {
                 var tileX = ((x % worldWidth) + worldWidth) % worldWidth;
                 var tileY = ((y % worldHeight) + worldHeight) % worldHeight;
-                var key = tileX + "-" + tileY;
-                delete collection.options.imageCache[key];
+                delete collection.options.imageCache[tileY][tileX];
             }
 
             game.getWorld().setTileCallback(function(tileStatus) {
@@ -67,6 +66,4 @@ define([
 
             this.update = update;
         };
-
-        return TilesView;
 });
