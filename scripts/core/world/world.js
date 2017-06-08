@@ -13,6 +13,8 @@ define([
             var generator = new Generator(seed);
             var agentsByID = {};
             var agentsByLocation = {};
+            var agentUpdateCallback = _.noop;
+            var tileUpdateCallback = _.noop;
 
             this.seed = seed;
 
@@ -91,11 +93,13 @@ define([
                             _.round(oldLocation.getY()))
                         : null,
                 );
+                agentUpdateCallback(agent, newLocation, oldLocation);
             }
 
             this.removeAgent = function(agent, location) {
                 delete agentsByID[agent.getID()];
                 myself.updateAgentPerLocation(agent, null, location);
+                agentUpdateCallback(agent, null, location);
             }
 
             this.addNewAgent = function(location = null) {
@@ -112,6 +116,7 @@ define([
 
                 agentsByID[agent.getID()] = agent;
                 myself.updateAgentPerLocation(agent, agent.getLocation());
+                agentUpdateCallback(agent, agent.getLocation(), null);
 
                 return agent;
             }
@@ -134,6 +139,14 @@ define([
                 return agentsByLocation[location.serialize()]
                     ? agentsByLocation[location.serialize()]
                     : {};
+            }
+
+            this.setAgentCallback = function(cb) {
+                agentUpdateCallback = cb;
+            }
+
+            this.setTileCallback = function(cb) {
+                tileUpdateCallback = cb;
             }
 
             initializeWorld();

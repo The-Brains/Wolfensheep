@@ -113,5 +113,46 @@ define(
             expect(_.size(world.getAgentsAt(agentCreated1.getLocation()))).to.equal(0);
             expect(_.size(world.getAllAgents())).to.equal(0);
         });
+
+        testWrapper.execTest(mainName, 'should call callback when agent create', function() {
+            var world = new World('cool seed', 20, 20);
+
+            var birthLocation = new Location(5, 5);
+            world.setAgentCallback(function(agent, newLocation, oldLocation) {
+                expect(agent.getID()).to.equal(0);
+                expect(oldLocation).to.not.exists;
+                expect(newLocation.serialize()).to.equal(birthLocation.serialize());
+            });
+            var agentCreated = world.addNewAgent(birthLocation);
+        });
+
+        testWrapper.execTest(mainName, 'should call callback when agent move', function() {
+            var world = new World('cool seed', 20, 20);
+
+            var birthLocation = new Location(5, 5);
+            var agentCreated = world.addNewAgent(birthLocation);
+
+            var moveLocation = new Location(10, 10);
+            world.setAgentCallback(function(agent, newLocation, oldLocation) {
+                expect(agent.getID()).to.equal(0);
+                expect(oldLocation.serialize()).to.equal(birthLocation.serialize());
+                expect(newLocation.serialize()).to.equal(moveLocation.serialize());
+            });
+            agentCreated.cycle(moveLocation);
+        });
+
+        testWrapper.execTest(mainName, 'should call callback when agent die', function() {
+            var world = new World('cool seed', 20, 20);
+
+            var birthLocation = new Location(5, 5);
+            var agentCreated = world.addNewAgent(birthLocation);
+
+            world.setAgentCallback(function(agent, newLocation, oldLocation) {
+                expect(agent.getID()).to.equal(0);
+                expect(oldLocation.serialize()).to.equal(birthLocation.serialize());
+                expect(newLocation).to.not.exists;
+            });
+            agentCreated.kill();
+        });
     }
 );
