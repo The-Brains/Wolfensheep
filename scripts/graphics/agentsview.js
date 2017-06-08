@@ -63,8 +63,10 @@ define([
             }
 
             game.getWorld().setAgentCallback(function(agent, locationFrom, locationTo) {
-                clearCache(locationFrom.getX(), locationFrom.getY());
-                clearCache(locationTo.getX(), locationTo.getY());
+                if(locationFrom)
+                    clearCache(locationFrom.getX(), locationFrom.getY());
+                if(locationTo)
+                    clearCache(locationTo.getX(), locationTo.getY());
             });
 
             this.update = update;
