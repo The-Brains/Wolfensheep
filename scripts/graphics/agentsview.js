@@ -5,7 +5,7 @@ define([
         '../core/localization/location.js',
     ],
     function(THREE, DOK, ImageStore, Location) {
-        var AgentsView = function (cameraHandler, spriteRenderer, cellSize, game) {
+        return function (cameraHandler, spriteRenderer, cellSize, game) {
             var range = 100;
             var worldWidth = game.getWidth();
             var worldHeight = game.getHeight();
@@ -22,15 +22,15 @@ define([
                     },
                     width: range,
                     height: range,
-                    agentsCache: {},
+                    agentsCache: DOK.Utils.makeArray(worldHeight, worldWidth),
                 },
                 function (x, y) {
                     var tileX = ((x % worldWidth) + worldWidth) % worldWidth;
                     var tileY = ((y % worldHeight) + worldHeight) % worldHeight;
-                    if(this.options.agentsCache[tileX+"-"+tileY] === undefined) {
-                        this.options.agentsCache[tileX+"-"+tileY] = game.getWorld().getAgentsAt(new Location(tileX,tileY));
+                    if(this.options.agentsCache[tileY][tileX] === undefined) {
+                        this.options.agentsCache[tileY][tileX] = game.getWorld().getAgentsAt(new Location(tileX,tileY));
                     }
-                    var agents = this.options.agentsCache[tileX+"-"+tileY];
+                    var agents = this.options.agentsCache[tileY][tileX];
                     tempArray.length = 0;
                     for(var a in agents) {
                         var agent = agents[a];
@@ -58,8 +58,7 @@ define([
             function clearCache(x,y) {
                 var tileX = ((x % worldWidth) + worldWidth) % worldWidth;
                 var tileY = ((y % worldHeight) + worldHeight) % worldHeight;
-                var key = tileX + "-" + tileY;
-                delete collection.options.agentsCache[key];
+                delete collection.options.agentsCache[tileY][tileX];
             }
 
             game.getWorld().setAgentCallback(function(agent, locationFrom, locationTo) {
@@ -70,7 +69,5 @@ define([
             });
 
             this.update = update;
-        }
-
-        return AgentsView;
+        };
 });
