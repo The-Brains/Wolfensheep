@@ -181,7 +181,7 @@ define([
             }
 
             this.cycle = function() {
-                return Promise.all(_.map(agentsByID, (agent) => {
+                return Promise.all(_.map(_.shuffle(agentsByID), (agent) => {
                     return agent.cycle(null, true);
                 }));
             }
