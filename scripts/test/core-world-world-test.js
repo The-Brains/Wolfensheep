@@ -111,7 +111,7 @@ define(
             expect(agentCreated1.getID()).to.equal(0);
             expect(world.getAgentsAt(agentCreated1.getLocation())[0].getID()).to.equal(0);
 
-            agentCreated1.kill();
+            agentCreated1.kill('test');
             expect(_.size(world.getAgentsAt(agentCreated1.getLocation()))).to.equal(0);
             expect(_.size(world.getAllAgents())).to.equal(0);
         });
@@ -154,7 +154,7 @@ define(
                 expect(oldLocation.serialize()).to.equal(birthLocation.serialize());
                 expect(newLocation).to.not.exists;
             });
-            agentCreated.kill();
+            agentCreated.kill('test');
         });
 
         testWrapper.execTest(mainName, 'should return agent sorted per distance', function() {
@@ -173,14 +173,12 @@ define(
             var agentCreated4 = world.addNewAgent(birthLocation4);
 
             return world.getClosestAgents(agentCreated1)
-                .then((agents) => {
-                    expect(_.size(agents)).to.equal(4);
-                    expect(agents[0].distance).to.equal(0);
-                    expect(agents[1].location.serialize()).to.equal(birthLocation2.serialize());
-                    expect(agents[2].distance).to.equal(10);
-                    expect(agents[3].distance).to.equal(10);
-                });
-
+            .then((agents) => {
+                expect(_.size(agents)).to.equal(3);
+                expect(agents[0].location.serialize()).to.equal(birthLocation2.serialize());
+                expect(agents[1].distance).to.equal(10);
+                expect(agents[2].distance).to.equal(10);
+            });
         });
     }
 );

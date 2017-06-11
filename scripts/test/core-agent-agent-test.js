@@ -151,14 +151,9 @@ define(
 
             var moveQuantity = 0;
             var executeCycle = function() {
-                var location = new Location(
-                    0,
-                    agent.getLocation().getY()
-                        + agent.getSpeed(WorldStatus.getAllPossibleType()[0])
-                );
                 moveQuantity += 1;
 
-                return agent.cycle(location)
+                return agent.cycle(null, true)
                 .then(() => {
                     if (agent.getData().alive && moveQuantity < 1000) {
                         return executeCycle();
@@ -171,7 +166,9 @@ define(
                 expect(agent.getLocation().getX()).to.be.equal(0);
                 expect(agent.getLocation().getY()).to.be.equal(0);
                 expect(agent.getData().alive).to.be.false;
-                expect(agent.getData().food.hungry).to.be.at.least(agent.getData().food.deathByHunger);
+
+                expect(agent.getData().food.hungry).to.be.at
+                    .least(agent.getData().food.deathByHunger);
 
                 // you do not want agent which would die right away
                 expect(moveQuantity).to.be.at.least(10);

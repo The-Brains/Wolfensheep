@@ -15,6 +15,7 @@ define([
             var agentsByLocation = {};
             var agentUpdateCallback = _.noop;
             var tileUpdateCallback = _.noop;
+            var agentIndex = 0;
 
             this.seed = seed;
 
@@ -102,7 +103,7 @@ define([
                 agentUpdateCallback(agent, null, location);
             }
 
-            this.addNewAgent = function(location = null) {
+            this.addNewAgent = function(location = null, agent = null) {
                 if (!location) {
                     location = new Location(
                         generator.getInt(0, width),
@@ -110,8 +111,12 @@ define([
                     );
                 }
 
-                var agent = Agent.createNewAgent(generator, location);
-                agent.setID(_.size(agentsByID));
+                if (_.isNil(agent)) {
+                    agent = Agent.createNewAgent(generator, location);
+                }
+
+                agent.setID(agentIndex);
+                agentIndex++;
                 agent.setWorld(myself);
 
                 agentsByID[agent.getID()] = agent;
@@ -153,10 +158,10 @@ define([
                 return new Promise((resolve, reject) => {
                     setTimeout(() => {
                         var center = mainAgent.getLocation();
-                        var sortedAgent = _.map(agentsByID, (agent) => {
+                        var sortedAgent = _.map(agentsByID, (agent, id) => {
                             var location = agent.getLocation();
                             var distance = center.distance(location);
-                            if (!_.isNil(radius) && distance > radius) {
+                            if (!_.isNil(radius) && distance > radius || id == mainAgent.getID()) {
                                 return null;
                             }
                             return {

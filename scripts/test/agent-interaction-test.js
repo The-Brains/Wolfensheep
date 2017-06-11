@@ -9,7 +9,7 @@ define(
         var mainName = 'agent-interaction';
 
         testWrapper.execTest(mainName, 'should return null when not present', function() {
-            var game = new Game('nice seed', 100, 100);
+            var game = new Game('awesome seed', 10, 10);
             var agent1 = game.getWorld().addNewAgent();
             var agent2 = game.getWorld().addNewAgent();
             var agent3 = game.getWorld().addNewAgent();
@@ -21,7 +21,8 @@ define(
                     if (agent1.isAlive()
                         || agent2.isAlive()
                         || agent3.isAlive()
-                        || agent4.isAlive()) {
+                        || agent4.isAlive()
+                    ) {
                         return executeCycle();
                     } else {
                         return Promise.resolve();
@@ -35,6 +36,10 @@ define(
                 expect(agent2.isAlive()).to.be.false;
                 expect(agent3.isAlive()).to.be.false;
                 expect(agent4.isAlive()).to.be.false;
+                var world = game.getWorld();
+                expect(world.getAgentQuantity()).to.be.above(0);
+                var agents = world.getAllAgents();
+                expect(agents[0].getID()).to.be.above(4);
             });
         });
     }

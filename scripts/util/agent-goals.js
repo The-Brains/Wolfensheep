@@ -1,6 +1,6 @@
 define({
     sleeping: {
-        name: 'sleeping',
+        name: 'sleep',
     },
     exploring: {
         name: 'exploring',

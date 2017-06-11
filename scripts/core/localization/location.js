@@ -18,6 +18,10 @@ define(['lodash'], function(_) {
             return locX + '-' + locY;
         };
 
+        this.toString = function() {
+            return this.serialize();
+        }
+
         this.distance = function(location) {
             var xx = location.getX() - locX;
             var yy = location.getY() - locY;

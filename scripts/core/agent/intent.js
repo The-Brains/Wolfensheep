@@ -35,11 +35,7 @@ define([
         var evaluateEnvironment = () => {
             if (needToEvaluateEnvironment) {
                 if (_.isNil(world)) {
-                    return Promise.resolve({
-                        agent: agent,
-                        location: agent.getLocation(),
-                        distance: 0,
-                    });
+                    return Promise.resolve([]);
                 }
 
                 return world.getClosestAgents(
@@ -58,7 +54,7 @@ define([
         };
 
         this.canAct = () => {
-            return !needToEvaluateEnvironment
+            return (!world || !needToEvaluateEnvironment)
                 && !needToDecideGoal
                 && !needToChooseTarget
                 && !needToMoveToTarget
@@ -84,24 +80,41 @@ define([
 
             return evaluateEnvironment()
             .then((closestAgents) => {
-                if (_.isNil(currentGoal)) {
+                if (_.isNil(currentGoal) || needToDecideGoal) {
                     currentGoal = agent.decideGoal(closestAgents);
                     needToDecideGoal = false;
                 }
 
-                if (needToChooseTarget) {
+                if (_.isNil(currentTarget) || needToChooseTarget) {
                     currentTarget = agent.decideTarget(closestAgents, currentGoal);
                     needToChooseTarget = false;
                 }
 
-                if (_.isNil(currentTarget)
-                    || agent.getLocation().distance(currentTarget.location)
-                        < agent.getActionDistance()) {
-                    needToMoveToTarget = false;
-                    needToAct = true;
+                if (!_.isNil(currentTarget)) {
+                    if (!_.isNil(currentTarget.location)) {
+                        // There is a target location and we are in range, no need to move,
+                        // time to act.
+                        if(agent.getLocation().distance(currentTarget.location)
+                            <= agent.getActionDistance()) {
+                            needToMoveToTarget = false;
+                            needToAct = true;
+                        } else {
+                            // There is a target location but too far away so, need to move
+                            needToMoveToTarget = true;
+                            needToAct = false;
+                        }
+                    } else {
+                        needToMoveToTarget = false;
+                        needToAct = true;
+                    }
+
+                    if (currentTarget.noAction) {
+                        needToAct = false;
+                        this.hasActed();
+                    }
                 }
 
-                return Promise.resolve(needToMoveToTarget
+                return Promise.resolve(needToMoveToTarget && !_.isNil(currentTarget.location)
                     ? currentTarget.location
                     : agent.getLocation());
             });
