@@ -36,6 +36,10 @@ define([
             if(!_.isNil(myself.getWorld())) {
                 myself.getWorld().removeAgent(myself, currentLocation);
             }
+
+            if (window.agentDeathDebug) {
+                console.log(`Agent #${id}: Die from '${causeOfDeath}'.`);
+            }
         };
 
         // SPEEDS

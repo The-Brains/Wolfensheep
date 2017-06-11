@@ -26,6 +26,10 @@ define([
             var worldView = new WorldView(game, document.getElementById('canvas'))
             worldView.start();
 
+            setInterval(() => {
+                game.cycle();
+            }, 1000)
+
             $('.input-button-add-agent').attr('disabled', null);
             $('.CanvasArea').removeClass('is-hidden');
         };
