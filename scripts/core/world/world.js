@@ -149,6 +149,12 @@ define([
                 tileUpdateCallback = cb;
             }
 
+            this.cycle = function() {
+                _.forEach(agentsByID, (agent) => {
+                    agent.cycle(null, true);
+                });
+            }
+
             initializeWorld();
         };
 

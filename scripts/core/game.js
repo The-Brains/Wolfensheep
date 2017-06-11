@@ -33,6 +33,10 @@ define([
                 return height;
             }
 
+            this.cycle = function() {
+                world.cycle();
+            }
+
             initializeWorld();
         };
 

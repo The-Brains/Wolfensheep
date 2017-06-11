@@ -387,7 +387,7 @@ define([
             currentLocation = location;
         };
 
-        this.cycle = function(newLocation = null) {
+        this.cycle = function(newLocation = null, autonomous = false) {
             decideGoal();
             moveTo(newLocation);
             spendHunger(agentData.food.hungerRate);
