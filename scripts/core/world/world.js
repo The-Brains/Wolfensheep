@@ -149,10 +149,36 @@ define([
                 tileUpdateCallback = cb;
             }
 
-            this.cycle = function() {
-                _.forEach(agentsByID, (agent) => {
-                    agent.cycle(null, true);
+            this.getClosestAgents = function(mainAgent, radius = null, limit = null) {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        var center = mainAgent.getLocation();
+                        var sortedAgent = _.map(agentsByID, (agent) => {
+                            var location = agent.getLocation();
+                            var distance = center.distance(location);
+                            if (!_.isNil(radius) && distance > radius) {
+                                return null;
+                            }
+                            return {
+                                agent: agent,
+                                distance: distance,
+                                location: location,
+                            };
+                        });
+                        sortedAgent = _.compact(sortedAgent);
+                        sortedAgent = _.sortBy(sortedAgent, ['distance']);
+                        if (!_.isNil(limit)) {
+                            sortedAgent = _.take(sortedAgent, limit);
+                        }
+                        return resolve(sortedAgent);
+                    });
                 });
+            }
+
+            this.cycle = function() {
+                return Promise.all(_.map(agentsByID, (agent) => {
+                    return agent.cycle(null, true);
+                }));
             }
 
             initializeWorld();

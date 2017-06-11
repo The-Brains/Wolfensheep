@@ -38,5 +38,6 @@ define(function() {
         'scripts/test/core-world-world-test.js',
         'scripts/test/core-world-world-status-test.js',
         'scripts/test/util-find-get-param-test.js',
+        'scripts/test/agent-interaction-test.js',
     ]);
 });

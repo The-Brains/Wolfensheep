@@ -34,5 +34,53 @@ define(
             expect(loc1.distance(loc2)).to.equal(10);
             expect(loc2.distance(loc1)).to.equal(10);
         });
+
+        testWrapper.execTest(mainName, 'should get point to target at distance (1)', function() {
+            var loc1 = new Location(1, 0);
+            var loc2 = new Location(1, 50);
+            var expected = new Location(1, 10);
+            expect(loc1.getLocationAwayToward(10, loc2).serialize())
+                .to.equal(expected.serialize());
+        });
+
+        testWrapper.execTest(mainName, 'should get point to target at distance (2)', function() {
+            var loc1 = new Location(1, 50);
+            var loc2 = new Location(1, 0);
+            var expected = new Location(1, 40);
+            expect(loc1.getLocationAwayToward(10, loc2).serialize())
+                .to.equal(expected.serialize());
+        });
+
+        testWrapper.execTest(mainName, 'should get point to target at distance (3)', function() {
+            var loc1 = new Location(50, 1);
+            var loc2 = new Location(0, 1);
+            var expected = new Location(40, 1);
+            expect(loc1.getLocationAwayToward(10, loc2).serialize())
+                .to.equal(expected.serialize());
+        });
+
+        testWrapper.execTest(mainName, 'should get point to target at distance (4)', function() {
+            var loc1 = new Location(0, 1);
+            var loc2 = new Location(50, 1);
+            var expected = new Location(10, 1);
+            expect(loc1.getLocationAwayToward(10, loc2).serialize())
+                .to.equal(expected.serialize());
+        });
+
+        testWrapper.execTest(mainName, 'should get point to target at distance (5)', function() {
+            var loc1 = new Location(0, 0);
+            var loc2 = new Location(50, 50);
+            var expected = new Location(25, 25);
+            expect(loc1.getLocationAwayToward(25 * Math.sqrt(2), loc2).serialize())
+                .to.equal(expected.serialize());
+        });
+
+        testWrapper.execTest(mainName, 'should get point to target at distance (6)', function() {
+            var loc1 = new Location(50, 50);
+            var loc2 = new Location(0, 0);
+            var expected = new Location(25, 25);
+            expect(loc1.getLocationAwayToward(25 * Math.sqrt(2), loc2).serialize())
+                .to.equal(expected.serialize());
+        });
     }
 );

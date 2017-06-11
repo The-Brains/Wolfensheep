@@ -29,6 +29,40 @@ define(['lodash'], function(_) {
             return location.getX() === locX && location.getY() === locY;
         };
 
+        this.getLocationAwayToward = function(distance, target) {
+            if (this.equals(target)) {
+                return this;
+            }
+            var slop = (target.getY() - locY) / (target.getX() - locX);
+
+            if (target.getX() === locX) {
+                var x = locX;
+            } else {
+                var delta = Math.sqrt((distance * distance) / (1 + (slop * slop)))
+                if (target.getX() > locX) {
+                    var x = locX + delta;
+                } else {
+                    var x = locX - delta;
+                }
+            }
+
+            if (target.getY() === locY) {
+                var y = locY
+            } else {
+                if (target.getX() === locX) {
+                    if (target.getY() > locY) {
+                        var y = locY + distance;
+                    } else {
+                        var y = locY - distance;
+                    }
+                } else {
+                    var y = slop * (x - locX) + locY;
+                }
+            }
+
+            return new Location(x, y);
+        }
+
         this.serialized = this.serialize();
     };
 

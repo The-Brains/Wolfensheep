@@ -5,7 +5,8 @@ define([
     '../localization/location.js',
     '../../util/world-parameters.js',
     './dna-random-gene.js',
-], function (_, AgentGoals, Generator, Location, WorldParameters, ObjectDNA) {
+    './intent.js',
+], function (_, AgentGoals, Generator, Location, WorldParameters, ObjectDNA, Intent) {
     var Agent = function(objectDNA, location) {
         var myself = this;
         var generator = new Generator(objectDNA.getDNA());
@@ -19,13 +20,12 @@ define([
             age: 0,
         };
 
-        var currentGoal = null;
-        var currentTarget = null;
-
         var containerWorld = null;
 
         this.weight = 0;
         this.threat = 0;
+
+        var intent = new Intent();
 
         var die = function() {
             agentData.alive = false;
@@ -96,6 +96,25 @@ define([
         };
         ///////////////
 
+        // Global feature
+        agentData.global = {};
+        agentData.global.radiusVision = null;
+        agentData.global.attentionTargetSpan = null;
+        agentData.global.actionDistance = null;
+        var initializeGlobalFeature = function() {
+            var visionMax = generator.getInt(
+                0,
+                _.isNil(containerWorld)
+                    ? 30
+                    : (containerWorld.getWidth() + containerWorld.getHeight()) / 4
+            );
+            agentData.global.radiusVision = generator.getFloatInRange(1, visionMax);
+
+            agentData.global.attentionTargetSpan = generator.getInt(1, 10);
+
+            agentData.global.actionDistance = generator.getFloatInRange(0.5, 3);
+        };
+
         // FOOD PART
         agentData.food = {};
         agentData.food.hungry = null; // current hunger status.
@@ -103,9 +122,9 @@ define([
         agentData.food.hungerRate = null; // hunger spend every cycle.
         agentData.food.hungerMove = null; // hunger spend every 1 unit of movement done.
         var initializeHunger = function() {
-            var hungerMaxOriginal = generator.getInt(0, 30);
+            var hungerMaxOriginal = generator.getInt(0, 20);
             agentData.food.hungry = generator.getInt(0, hungerMaxOriginal);
-            var bonusHungerSurvival = generator.getFloatInRange(0.6, 5);
+            var bonusHungerSurvival = generator.getFloatInRange(0.7, 5);
             agentData.food.deathByHunger = generator.getInt(
                 hungerMaxOriginal,
                 100 * bonusHungerSurvival
@@ -139,6 +158,7 @@ define([
         agentData.reproduction.failingBirthRate = null;
         agentData.reproduction.waitingPeriod = null;
         agentData.reproduction.timeToNextKid = 0;
+        agentData.reproduction.ageToReproduction = null;
         var initializeReproductiveFunction = function() {
             var maxPossibleKid = generator.getInt(1, 100) * generator.getFloatInRange(0.1, 0.6);
             agentData.reproduction.kidQuantity.max = generator.getInt(1, maxPossibleKid);
@@ -151,6 +171,9 @@ define([
             var maxFailingBirthRate = generator.getFloatInRange(0, 0.9);
             agentData.reproduction.failingBirthRate =
                 generator.getFloatInRange(0, maxFailingBirthRate);
+
+            agentData.reproduction.ageToReproduction =
+                generator.getFloatInRange(0.2, 5);
 
             // TODO: When we run a few agent, we need to see how many cycle they live
             // in average. We want them to be able to reproduce at least once.
@@ -246,7 +269,6 @@ define([
         };
         ///////////////
 
-
         // Sleep
         agentData.energy = {};
         agentData.energy.tired = null;
@@ -300,14 +322,14 @@ define([
         /////////////
 
         // Brain
-        var decideGoal = function() {
+        this.decideGoal = function(closestOtherAgent = {}) {
             // TODO: Should build a system which for each "Goal" has 4 steps
             // intent / search / move / action
             var allGoals = _.cloneDeep(AgentGoals);
 
             if (!agentData.alive) {
-                currentGoal = allGoals.dead;
-                return currentGoal;
+                allGoals.dead.score = 1000;
+                return allGoals.dead;
             } else {
                 allGoals.dead.score = 0;
             }
@@ -319,11 +341,7 @@ define([
 
             // going to get food
             var closeToDieFromHunger = agentData.food.deathByHunger - agentData.food.hungry;
-            allGoals.lookingForFood.score = 100.0 / closeToDieFromHunger;
-            if (currentTarget && myself.canEat(currentTarget)) {
-                allGoals.goingToTarget.score = allGoals.lookingForFood.score;
-                allGoals.lookingForFood.score = 0;
-            }
+            allGoals.food.score = 100.0 / closeToDieFromHunger;
             /////
 
             // going to sleep
@@ -333,37 +351,68 @@ define([
             //////
 
             // reproduce
-            if (allGoals.goingToTarget.score < 70
-                && allGoals.lookingForFood.score < 70
-                && allGoals.sleeping.score < 70 ) {
+            if (allGoals.food.score < 70
+                && allGoals.sleeping.score < 70
+                && agentData.age >= agentData.reproduction.ageToReproduction) {
 
                 var closeToAbleToReproduce =
                     agentData.reproduction.timeToNextKid / agentData.reproduction.waitingPeriod;
-                if (currentTarget
-                    && myself.canReproduceWith(currentTarget)
-                    && currentTarget.canReproduceWith(myself)) {
-
-                    allGoals.reproduction.score = 100 - (closeToDieFromHunger * 100.0);
-                    allGoals.lookingForMate.score = 0;
-                } else {
-                    allGoals.lookingForMate.score = 100 - (closeToDieFromHunger * 100.0);
-                    allGoals.reproduction.score = allGoals.lookingForMate.score - 1;
-                }
+                allGoals.reproduction.score = 100 - (closeToAbleToReproduce * 100.0);
             }
             /////
 
-            currentGoal = _.head(_.sortBy(allGoals, function(g) {
-                return g.score;
+            var currentGoal = _.head(_.sortBy(allGoals, function(g) {
+                if (_.isNil(g.score)) {
+                    return 0;
+                }
+                return -g.score;
             }));
             return currentGoal;
         };
 
+        this.decideTarget = function(closestAgents, currentGoal) {
+            switch(currentGoal.name) {
+                case 'dead':
+                    return null;
+                case 'exploring':
+                    var currentLocation = myself.getLocation();
+                    var newLocation = new Location(
+                        currentLocation.getX() + generator.getFloatInRange(-5, 5),
+                        currentLocation.getY() + generator.getFloatInRange(-5, 5),
+                    );
+                    return {
+                        agent: null,
+                        location: newLocation,
+                    };
+                case 'play':
+                    return null;
+                case 'reproduction':
+                    var mate = _.find(closestAgents, (agentItem) => {
+                        return myself.canReproduceWith(agentItem.agent);
+                    }).agent;
+                    if (_.isNil(mate)) {
+                        return myself.decideTarget(closestAgents, AgentGoals.exploring);
+                    }
+                    return {
+                        agent: mate,
+                        location: mate.getLocation(),
+                    };
+                default:
+                    console.log('Not parsed goal: ' + currentGoal.name);
+                    return null;
+            }
+        };
+
+        var act = function(currentGaol, currentTarget) {
+            // TODO: Implement eat / sleep / attack / etc...
+        }
+
         this.getCurrentGoal = function() {
-            return currentGoal;
+            return intent.getCurrentGoal();
         };
         /////////////
 
-        var moveTo = function(location) {
+        var moveTo = function(location, forced = false) {
             if(!_.isNil(myself.getWorld())) {
                 if (location && !location.equals(currentLocation)) {
                     myself.getWorld().updateAgentPerLocation(
@@ -380,6 +429,15 @@ define([
 
             var distance = location.distance(currentLocation);
 
+            if (!forced && !_.isNil(myself.getWorld())) {
+                var currentTile = myself.getWorld().getWorldStatus(currentLocation);
+                var speed = myself.getSpeed(currentTile);
+                if (distance > speed) {
+                    location = currentLocation.getLocationAwayToward(speed, location);
+                    distance = location.distance(currentLocation);
+                }
+            }
+
             spendHunger(agentData.food.hungerMove * distance);
             spendEnergy(agentData.energy.exhaustionMove * distance);
 
@@ -387,17 +445,29 @@ define([
             currentLocation = location;
         };
 
-        this.cycle = function(newLocation = null, autonomous = false) {
-            decideGoal();
-            moveTo(newLocation);
-            spendHunger(agentData.food.hungerRate);
-            spendEnergy(agentData.energy.exhaustionRate);
+        this.cycle = function(inputLocation = null, autonomous = false) {
+            return intent.cycle(inputLocation)
+            .then((newLocation) => {
+                if (agentData.alive) {
+                    moveTo(newLocation, !_.isNil(inputLocation) && !autonomous);
+                    spendHunger(agentData.food.hungerRate);
+                    spendEnergy(agentData.energy.exhaustionRate);
 
-            agentData.age += 0.1;
-            if (agentData.reproduction.timeToNextKid > 0) {
-                agentData.reproduction.timeToNextKid -= 1;
-            }
-            loseFun();
+                    agentData.age += 0.1;
+                    if (agentData.reproduction.timeToNextKid > 0) {
+                        agentData.reproduction.timeToNextKid -= 1;
+                    }
+                    loseFun();
+
+                    if (intent.canAct()) {
+                        var result = act(intent.getCurrentGoal(), intent.getCurrentTarget());
+                        if (result) {
+                            intent.hasActed();
+                        }
+                    }
+                }
+                return Promise.resolve();
+            });
         };
 
         this.kill = function() {
@@ -409,6 +479,22 @@ define([
         };
 
         // GET METHODS
+        this.getRadiusVision = function() {
+            return agentData.global.radiusVision;
+        };
+
+        this.getAttentionTargetSpan = function() {
+            return agentData.global.attentionTargetSpan;
+        }
+
+        this.getActionDistance = function() {
+            return agentData.global.actionDistance
+        }
+
+        this.getLocationHistory = function() {
+            return previousLocations;
+        }
+
         this.getLocation = function() {
             return currentLocation;
         };
@@ -442,6 +528,7 @@ define([
 
         this.setWorld = function(world) {
             containerWorld = world;
+            intent.setWorld(containerWorld);
         };
 
         this.getWorld = function() {
@@ -454,11 +541,13 @@ define([
         };
 
         var initAll = function() {
+            initializeGlobalFeature();
             initializeSpeeds();
             initializeHunger();
             initializeSleep();
             initializeExtraTraits();
             initializeReproductiveFunction();
+            intent.setAgent(myself);
         };
 
         initAll();
