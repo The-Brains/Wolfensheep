@@ -112,28 +112,33 @@ define(
             expect(agent.isPlant()).to.be.false;
 
             var moveQuantity = 0;
-            while(agent.getData().alive) {
+            var executeCycle = function() {
                 var location = new Location(
                     0,
                     agent.getLocation().getY()
                         + agent.getSpeed(WorldStatus.getAllPossibleType()[0])
                 );
                 moveQuantity += 1;
-                agent.cycle(location);
-                expect(agent.getCurrentGoal().name === 'looking for food'
-                    || agent.getCurrentGoal().name === 'dead').to.be.true;
-                if (moveQuantity > 1000) {
-                    break;
-                }
-            }
 
-            expect(agent.getLocation().getX()).to.be.equal(0);
-            expect(agent.getLocation().getY()).to.be.above(0);
-            expect(agent.getData().alive).to.be.false;
-            expect(agent.getData().food.hungry).to.be.at.least(agent.getData().food.deathByHunger);
+                return agent.cycle(location)
+                .then(() => {
+                    if (agent.getData().alive && moveQuantity < 1000) {
+                        return executeCycle();
+                    }
+                    return Promise.resolve();
+                });
+            };
 
-            // you do not want agent which would die right away
-            expect(moveQuantity).to.be.at.least(10);
+            return executeCycle()
+            .then(() => {
+                expect(agent.getLocation().getX()).to.be.equal(0);
+                expect(agent.getLocation().getY()).to.be.above(0);
+                expect(agent.getData().alive).to.be.false;
+                expect(agent.getData().food.hungry).to.be.at.least(agent.getData().food.deathByHunger);
+
+                // you do not want agent which would die right away
+                expect(moveQuantity).to.be.at.least(10);
+            });
         });
 
         testWrapper.execTest(mainName, 'should not move as a plant', function() {
@@ -144,25 +149,30 @@ define(
             var speed = agent.getSpeed(WorldStatus.getAllPossibleType()[0]);
             expect(agent.getSpeed(WorldStatus.getAllPossibleType()[0])).to.equal(0);
 
-            var cycleQuantity = 0;
-            while(agent.getData().alive) {
-                cycleQuantity += 3;
-                agent.cycle();
-                agent.cycle();
-                agent.cycle();
+            var moveQuantity = 0;
+            var executeCycle = function() {
+                moveQuantity += 1;
 
-                if (cycleQuantity > 1000) {
-                    break;
-                }
-            }
+                return agent.cycle(null, true)
+                .then(() => {
+                    if (agent.getData().alive && moveQuantity < 1000) {
+                        return executeCycle();
+                    }
+                    return Promise.resolve();
+                });
+            };
+            return executeCycle()
+            .then(() => {
+                expect(agent.getLocation().getX()).to.be.equal(0);
+                expect(agent.getLocation().getY()).to.be.equal(0);
+                expect(agent.getData().alive).to.be.false;
 
-            expect(agent.getLocation().getX()).to.be.equal(0);
-            expect(agent.getLocation().getY()).to.be.equal(0);
-            expect(agent.getData().alive).to.be.false;
-            expect(agent.getData().food.hungry).to.be.at.least(agent.getData().food.deathByHunger);
+                expect(agent.getData().food.hungry).to.be.at
+                    .least(agent.getData().food.deathByHunger);
 
-            // you do not want agent which would die right away
-            expect(cycleQuantity).to.be.at.least(10);
+                // you do not want agent which would die right away
+                expect(moveQuantity).to.be.at.least(10);
+            });
         });
 
         // TODO: Check that reproduction value are being created properly

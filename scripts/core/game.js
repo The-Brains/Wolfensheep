@@ -13,9 +13,7 @@ define([
             var initializeWorld = function() {
                 var worldSeed = '';
                 _.times(WORLD_SEED_LENGTH, function() {
-                    worldSeed = worldSeed + generator.getChar(
-                        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_=+~;:"<>,./?|'
-                    );
+                    worldSeed = worldSeed + generator.getChar();
                 });
 
                 world = new World(worldSeed, width, height);
@@ -31,6 +29,13 @@ define([
 
             this.getHeight = function() {
                 return height;
+            }
+
+            /**
+            * This is a promise.
+            */
+            this.cycle = function() {
+                return world.cycle();
             }
 
             initializeWorld();

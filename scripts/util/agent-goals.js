@@ -1,15 +1,12 @@
 define({
-    lookingForFood: {
-        name: 'looking for food',
-    },
     sleeping: {
-        name: 'sleeping',
+        name: 'sleep',
     },
     exploring: {
         name: 'exploring',
     },
-    feeding: {
-        name: 'feeding',
+    food: {
+        name: 'food',
     },
     fighting: {
         name: 'fighting',
@@ -17,22 +14,13 @@ define({
     runningAway: {
         name: 'running away',
     },
-    dying: {
-        name: 'dying',
-    },
     dead: {
         name: 'dead',
     },
     reproduction: {
         name: 'reproduction',
     },
-    lookingForMate: {
-        name: 'looking for mate',
-    },
     play: {
         name: 'play',
     },
-    goingToTarget: {
-        name: 'moving',
-    }
 });

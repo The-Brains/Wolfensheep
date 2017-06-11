@@ -15,6 +15,7 @@ define([
             var agentsByLocation = {};
             var agentUpdateCallback = _.noop;
             var tileUpdateCallback = _.noop;
+            var agentIndex = 0;
 
             this.seed = seed;
 
@@ -102,7 +103,7 @@ define([
                 agentUpdateCallback(agent, null, location);
             }
 
-            this.addNewAgent = function(location = null) {
+            this.addNewAgent = function(location = null, agent = null) {
                 if (!location) {
                     location = new Location(
                         generator.getInt(0, width),
@@ -110,8 +111,12 @@ define([
                     );
                 }
 
-                var agent = Agent.createNewAgent(generator, location);
-                agent.setID(_.size(agentsByID));
+                if (_.isNil(agent)) {
+                    agent = Agent.createNewAgent(generator, location);
+                }
+
+                agent.setID(agentIndex);
+                agentIndex++;
                 agent.setWorld(myself);
 
                 agentsByID[agent.getID()] = agent;
@@ -147,6 +152,38 @@ define([
 
             this.setTileCallback = function(cb) {
                 tileUpdateCallback = cb;
+            }
+
+            this.getClosestAgents = function(mainAgent, radius = null, limit = null) {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        var center = mainAgent.getLocation();
+                        var sortedAgent = _.map(agentsByID, (agent, id) => {
+                            var location = agent.getLocation();
+                            var distance = center.distance(location);
+                            if (!_.isNil(radius) && distance > radius || id == mainAgent.getID()) {
+                                return null;
+                            }
+                            return {
+                                agent: agent,
+                                distance: distance,
+                                location: location,
+                            };
+                        });
+                        sortedAgent = _.compact(sortedAgent);
+                        sortedAgent = _.sortBy(sortedAgent, ['distance']);
+                        if (!_.isNil(limit)) {
+                            sortedAgent = _.take(sortedAgent, limit);
+                        }
+                        return resolve(sortedAgent);
+                    });
+                });
+            }
+
+            this.cycle = function() {
+                return Promise.all(_.map(agentsByID, (agent) => {
+                    return agent.cycle(null, true);
+                }));
             }
 
             initializeWorld();
