@@ -34,9 +34,29 @@ define(['dobuki',],function(DOK) {
             }
         );
 
+        var zoombar = 0;
+        DOK.Mouse.setOnWheel(
+            function(dx,dy) {
+                zoombar = Math.max(0,Math.min(1,zoombar - dy/300));
+            }
+        );
+
+        DOK.Mouse.setOnZoom(
+            function(pinchSize) {
+                zoombar = Math.max(0,Math.min(1,zoombar + pinchSize/200));
+            }
+        );
+
+        var zoomState = [
+            { distance: 400, angle: 1.1 },
+            { distance: 1000, angle: .3 },
+        ];
+
         function updateCamera() {
             camera.position.x += (camGoal.x - camera.position.x) / 3;
             camera.position.y += (camGoal.y - camera.position.y) / 3;
+            camera.position.z = zoombar*zoomState[0].distance + (1-zoombar)*zoomState[1].distance;
+            camera.rotation.x = zoombar*zoomState[0].angle + (1-zoombar)*zoomState[1].angle;
         }
 
         this.getCamPos = getCamPos;

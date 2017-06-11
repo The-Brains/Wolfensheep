@@ -29,8 +29,6 @@ define([
             light.position.set( -50, 250, 50 );
             scene.add( light );
 
-            renderer.setClearColor (0xffffff, 1);
-
             var spriteRenderer = new DOK.SpriteRenderer();
             spriteRenderer.curvature = 1;
             var camHandler = new CameraHandler(DOK.Camera.getCamera(), cellSize);
@@ -59,7 +57,7 @@ define([
 
             function gameLoaded() {
                 document.body.removeChild(DOK.Loader.getLoadingBar());
-                renderer.setClearColor (0xffffff, 1);
+                renderer.setClearColor (0xefffff, 1);
                 renderer.render(scene,DOK.Camera.getCamera());
                 startGame();
             }
