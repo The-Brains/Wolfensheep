@@ -7,6 +7,7 @@ define(['lodash'], function(_) {
         var locY = y;
         var roundedLocX = Math.round(x);
         var roundedLocY = Math.round(y);
+        var roundedLocation = new Location(roundedLocX, roundedLocY);
 
         this.getX = function() {
             return locX;
@@ -23,6 +24,10 @@ define(['lodash'], function(_) {
         this.getRoundedY = function() {
             return roundedLocY;
         };
+
+        this.getRoundedLocation = function() {
+            return roundedLocation;
+        }
 
         this.serialize = function() {
             return locX + '-' + locY;
