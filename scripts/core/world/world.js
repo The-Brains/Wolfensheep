@@ -83,16 +83,8 @@ define([
                 subUpdateAgentPerLocation(agent, newLocation, oldLocation);
                 subUpdateAgentPerLocation(
                     agent,
-                    newLocation
-                        ? new Location(
-                            _.round(newLocation.getX()),
-                            _.round(newLocation.getY()))
-                        : null,
-                    oldLocation
-                        ? new Location(
-                            _.round(oldLocation.getX()),
-                            _.round(oldLocation.getY()))
-                        : null,
+                    newLocation ? newLocation.getRoundedLocation() : null,
+                    oldLocation ? oldLocation.getRoundedLocation() : null,
                 );
                 agentUpdateCallback(agent, newLocation, oldLocation);
             }
