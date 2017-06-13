@@ -5,8 +5,9 @@ define([
         '../localization/location.js',
         '../agent/agent.js',
         './world-status.js',
+        '../../util/find-get-param.js',
     ],
-    function(_, Generator, Parameters, Location, Agent, WorldStatus) {
+    function(_, Generator, Parameters, Location, Agent, WorldStatus, FindGetParam) {
         var World = function(seed, width, height) {
             var myself = this;
             var tiles = {};
@@ -27,17 +28,126 @@ define([
                 return height;
             };
 
-            var initializeRow = function(rowIndex) {
+            var setTile = function(location, param) {
+                var key = location.serialize();
+                tiles[key] = new WorldStatus(location, `${seed}+${key}`, param);
+            }
+
+            var initializeRow = function(rowIndex, param = null) {
                 _.times(width, function(w) {
-                    myself.getWorldStatus(new Location(w, rowIndex));
-                })
+                    var loc = new Location(w, rowIndex);
+                    if (param) {
+                        setTile(loc, param);
+                    } else {
+                        myself.getWorldStatus(loc);
+                    }
+                });
             };
 
-            var initializeWorld = function() {
+            var initializeWorld = function(param = null) {
                 _.times(height, function(h) {
-                    initializeRow(h);
-                })
+                    initializeRow(h, param);
+                });
             };
+
+            var getRandomKey = function(generator, object) {
+                var keys = _.keys(object);
+                var index = generator.getInt(0, _.size(keys));
+                return keys[index];
+            }
+
+            var drawTerrain = function(terrainItem, paramType, paramOption) {
+                var insertParamInWorld = (center, radius, paramType, paramOption) => {
+                    _.times(height, function(h) {
+                        _.times(width, function(w) {
+                            var loc = new Location(w, h);
+                            if (loc.distance(center) <= radius) {
+                                var key = loc.serialize();
+                                tiles[key].setStatus(paramType, paramOption);
+                            }
+                        });
+                    });
+                };
+
+                insertParamInWorld(
+                    new Location(terrainItem.centerX, terrainItem.centerY),
+                    terrainItem.radius,
+                    paramType,
+                    paramOption
+                );
+            }
+
+            var initializeWorldWithBiomes = function() {
+                var surface = width * height;
+
+                // default values
+                var param = {};
+                _.forEach(Parameters, (paramOptions, paramType) => {
+                    param[paramType] = paramOptions[0];
+                });
+                initializeWorld(param);
+
+                // generate biomes
+                var terrains = {};
+                _.forEach(Parameters, (paramOptions, paramType) => {
+                    _.forEach(paramOptions, (paramOption, key) => {
+                        if(key !== 0) {
+                            if (!terrains[paramType]) {
+                                terrains[paramType] = {};
+                            }
+
+                            var quantity = generator.getInt(0, 1 + Math.ceil(surface / 1000.0));
+                            terrains[paramType][paramOption] = {
+                                quantity: quantity,
+                                terrains: [],
+                            };
+
+                            _.times(quantity, () => {
+                                var item = {
+                                    centerX: generator.getInt(0, width),
+                                    centerY: generator.getInt(0, height),
+                                    radius: generator.getInt(1, Math.ceil(surface / 500)),
+                                };
+                                terrains[paramType][paramOption].terrains.push(item);
+                            });
+                        }
+                    });
+                });
+
+                // draw biomes
+                var workingCopy = _.cloneDeep(terrains);
+                while(!_.isEmpty(workingCopy)) {
+                    var currentParamTypeKey = getRandomKey(generator, workingCopy);
+
+                    var currentParamOptions = workingCopy[currentParamTypeKey];
+
+                    var currentParamOptionKey = getRandomKey(generator, currentParamOptions);
+                    var currentParamOption = currentParamOptions[currentParamOptionKey];
+
+                    if (_.isEmpty(currentParamOption.terrains)) {
+                        delete workingCopy[currentParamTypeKey][currentParamOptionKey];
+                        if (_.isEmpty(workingCopy[currentParamTypeKey])) {
+                            delete workingCopy[currentParamTypeKey];
+                        }
+                    } else {
+                        var terrainIndex = getRandomKey(
+                            generator,
+                            currentParamOption.terrains
+                        );
+
+                        var terrainItem = _.pullAt(currentParamOption.terrains, [terrainIndex])[0];
+                        drawTerrain(terrainItem, currentParamTypeKey, currentParamOptionKey);
+
+                        if (_.isEmpty(workingCopy[currentParamTypeKey][currentParamOptionKey]
+                            .terrains)) {
+                            delete workingCopy[currentParamTypeKey][currentParamOptionKey];
+                            if (_.isEmpty(workingCopy[currentParamTypeKey])) {
+                                delete workingCopy[currentParamTypeKey];
+                            }
+                        }
+                    }
+                }
+            }
 
             this.getWorldStatus = function(location) {
                 if (location.getX() < 0
@@ -178,7 +288,11 @@ define([
                 }));
             }
 
-            initializeWorld();
+            if (FindGetParam('with-biomes')) {
+                initializeWorldWithBiomes();
+            } else {
+                initializeWorld();
+            }
         };
 
         return World;

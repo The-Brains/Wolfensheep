@@ -7,7 +7,9 @@ define(['lodash'], function(_) {
         var locY = y;
         var roundedLocX = Math.round(x);
         var roundedLocY = Math.round(y);
-        var roundedLocation = new Location(roundedLocX, roundedLocY);
+        var roundedLocation = (locX === roundedLocX && locY === roundedLocY)
+            ? this
+            : new Location(roundedLocX, roundedLocY);
 
         this.getX = function() {
             return locX;

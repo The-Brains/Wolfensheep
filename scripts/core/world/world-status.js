@@ -40,6 +40,10 @@ define([
             this.serialize = function() {
                 return JSON.stringify(status);
             }
+
+            this.setStatus = function(paramType, newParam) {
+                status[paramType] = newParam;
+            }
         };
 
         WorldStatus.allPossibleTerrains = null;

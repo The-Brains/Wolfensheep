@@ -26,6 +26,7 @@ requirejs.config({
 });
 
 define(function() {
+    window.testFileName = 'test.html';
     // Start loading the main app file. Put all of
     // your application logic in there.
     requirejs([
@@ -34,6 +35,7 @@ define(function() {
         'scripts/test/core-agent-dnaRandomGene-test.js',
         'scripts/test/core-game-test.js',
         'scripts/test/core-localization-location-test.js',
+        'scripts/test/core-localization-quadrant-manager-test.js',
         'scripts/test/core-random-test.js',
         'scripts/test/core-world-world-test.js',
         'scripts/test/core-world-world-status-test.js',
