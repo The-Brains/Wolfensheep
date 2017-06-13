@@ -180,5 +180,30 @@ define(
                 expect(agents[2].distance).to.equal(10);
             });
         });
+
+        testWrapper.execTest(mainName, 'should return agent at location after cycle(null,true)', function() {
+            var world = new World('cool seed', 20, 20);
+            var agent = world.addNewAgent();
+
+            return agent.cycle(null, true).then(() => {
+                expect(_.size(world.getAgentsAt(agent.getLocation()))).to.equal(1);
+            });
+        });
+        
+        testWrapper.execTest(mainName, 'should not find agents any other place after cycle(null,true)', function() {
+            var world = new World('cool seed', 20, 20);
+            var agent = world.addNewAgent();
+
+            return agent.cycle(null, true).then(() => {
+                var loc = agent.getLocation();
+                for(var y=0;y<20;y++) {
+                    for(var x=0;x<20;x++) {
+                        if(x!==loc.getRoundedX() || y!==loc.getRoundedY()) {
+                            expect(_.size(world.getAgentsAt(new Location(x,y)))).to.equal(0);
+                        }
+                    }
+                }
+            });
+        });
     }
 );
