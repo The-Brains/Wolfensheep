@@ -26,6 +26,7 @@ requirejs.config({
 });
 
 define(function() {
+    window.testFileName = 'test.html';
     // Start loading the main app file. Put all of
     // your application logic in there.
     requirejs([
