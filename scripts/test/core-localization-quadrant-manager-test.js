@@ -4,8 +4,9 @@ define(
         'testWrapper',
         '../core/localization/quadrant-manager.js',
         '../core/localization/location.js',
+        '../util/round.js',
     ],
-    function(chai, testWrapper, QuadrantManager, Location) {
+    function(chai, testWrapper, QuadrantManager, Location, Round) {
         var expect = chai.expect;
         var mainName = 'core-localization-quadrantManager';
 
@@ -26,16 +27,20 @@ define(
                 expect(childs.length).to.equal(4);
 
                 _.forEach(childs, (child) => {
+                    if (_.isNil(child)) {
+                        var l = childs;
+                        debugger;
+                    }
                     expect(child).to.exist;
-                    expect(child.getWidth()).to.equal(sizeExpected);
-                    expect(child.getHeight()).to.equal(sizeExpected);
+                    expect(child.getWidth() - sizeExpected).to.be.below(0.01);
+                    expect(child.getHeight() - sizeExpected).to.be.below(0.01);
                     expect(child.getDepth()).to.equal(expectedDepth);
 
                     if (_.isNil(child.getChilds())) {
                         expect(child.getWidth()).to.be.at.most(1);
                         expect(child.getHeight()).to.be.at.most(1);
                     } else {
-                        testChilds(child.getChilds(), sizeExpected / 2, expectedDepth + 1);
+                        testChilds(child.getChilds(), Round(sizeExpected / 2.0, 2), expectedDepth + 1);
                     }
                 });
             }

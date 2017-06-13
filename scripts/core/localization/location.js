@@ -1,12 +1,12 @@
-define(['lodash'], function(_) {
+define(['lodash', '../../util/round.js'], function(_, Round) {
     var Location = function(x, y) {
         if(!_.isNumber(x) || !_.isNumber(y)) {
             throw new Error('X and Y has to be numbers.');
         }
-        var locX = x;
-        var locY = y;
-        var roundedLocX = Math.round(x);
-        var roundedLocY = Math.round(y);
+        var locX = Round(x, 2);
+        var locY = Round(y, 2);
+        var roundedLocX = Round(locX, 0);
+        var roundedLocY = Round(locY, 0);
         var roundedLocation = (locX === roundedLocX && locY === roundedLocY)
             ? this
             : new Location(roundedLocX, roundedLocY);
