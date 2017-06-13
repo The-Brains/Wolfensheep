@@ -20,7 +20,6 @@ define([
 
         if (upLeftLoc.getX() + currentWidth !== downRightLoc.getX()
             || upLeftLoc.getY() + currentHeight !== downRightLoc.getY()) {
-            debugger;
             throw new Error(`[Quadrant] Corrupted coordinate: W: ${currentWidth}, H:
                 ${currentHeight}, UpLeft: ${upLeftLoc.serialize()},
                 DownRight: ${downRightLoc.serialize()}`);
