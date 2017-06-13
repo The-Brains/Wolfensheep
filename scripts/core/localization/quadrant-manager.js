@@ -1,7 +1,8 @@
 define([
     'lodash',
-    './location.js'
-], function(_, Location) {
+    './location.js',
+    '../../util/round.js',
+], function(_, Location, Round) {
     var Quadrant = function(
             depth,
             upLeftLoc,
@@ -13,13 +14,14 @@ define([
             globalHeight
         ) {
         var myself = this;
-        var currentWidth = globalWidth / Math.pow(2, depth);
-        var currentHeight = globalHeight / Math.pow(2, depth);
+        var currentWidth = Round(globalWidth / Math.pow(2, depth), 2);
+        var currentHeight = Round(globalHeight / Math.pow(2, depth), 2);
         var childs = null;
         this.serialized = '';
 
-        if (upLeftLoc.getX() + currentWidth !== downRightLoc.getX()
-            || upLeftLoc.getY() + currentHeight !== downRightLoc.getY()) {
+        if (Round(upLeftLoc.getX() + currentWidth - downRightLoc.getX(), 2) > 0.01
+            || Round(upLeftLoc.getY() + currentHeight - downRightLoc.getY(), 2) > 0.01) {
+            debugger;
             throw new Error(`[Quadrant] Corrupted coordinate: W: ${currentWidth}, H:
                 ${currentHeight}, UpLeft: ${upLeftLoc.serialize()},
                 DownRight: ${downRightLoc.serialize()}`);
@@ -59,6 +61,7 @@ define([
                     globalHeight
                 );
             } catch (error) {
+                debugger;
                 return null;
             }
         }

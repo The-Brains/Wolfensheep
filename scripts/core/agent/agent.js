@@ -530,43 +530,45 @@ define([
                 return;
             }
 
-            if(!_.isNil(myself.getWorld())) {
-                if (location && !location.equals(currentLocation)) {
-                    myself.getWorld().updateAgentPerLocation(
-                        myself,
-                        location,
-                        currentLocation);
-                }
-            }
-
-            if (myself.isPlant()) {
-                location = currentLocation;
-            }
-
             previousLocations.push({
                 location: currentLocation,
                 goal: _.isNil(myself.getCurrentGoal()) ? 'null' : myself.getCurrentGoal().name,
             });
 
+            if (myself.isPlant()) {
+                location = currentLocation;
+                distance = 0;
+            }
+
             var distance = location.distance(currentLocation);
 
             if (distance === 0) {
                 return;
-            }
-
-            if (!forced && !_.isNil(myself.getWorld())) {
-                var currentTile = myself.getWorld().getWorldStatus(currentLocation);
-                var speed = myself.getSpeed(currentTile);
-                if (distance > speed) {
-                    location = currentLocation.getLocationAwayToward(speed, location);
-                    distance = location.distance(currentLocation);
+            } else {
+                if (!forced && !_.isNil(myself.getWorld())) {
+                    var currentTile = myself.getWorld().getWorldStatus(currentLocation);
+                    var speed = myself.getSpeed(currentTile);
+                    if (distance > speed) {
+                        location = currentLocation.getLocationAwayToward(speed, location);
+                        distance = location.distance(currentLocation);
+                    }
                 }
-            }
 
-            spendHunger(agentData.food.hungerMove * distance);
-            spendWeight(agentData.food.weightLossMove * distance);
-            spendEnergy(agentData.energy.exhaustionMove * distance);
-            currentLocation = location;
+
+                if(!_.isNil(myself.getWorld())) {
+                    if (location && !location.equals(currentLocation)) {
+                        myself.getWorld().updateAgentPerLocation(
+                            myself,
+                            location,
+                            currentLocation);
+                    }
+                }
+
+                spendHunger(agentData.food.hungerMove * distance);
+                spendWeight(agentData.food.weightLossMove * distance);
+                spendEnergy(agentData.energy.exhaustionMove * distance);
+                currentLocation = location;
+            }
         };
 
         this.cycle = function(inputLocation = null, autonomous = false) {
