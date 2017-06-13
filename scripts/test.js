@@ -35,6 +35,8 @@ define(function() {
         'scripts/test/core-agent-dnaRandomGene-test.js',
         'scripts/test/core-game-test.js',
         'scripts/test/core-localization-location-test.js',
+        'scripts/test/core-localization-quadrant-test.js',
+        'scripts/test/core-localization-quadrant-manager-test.js',
         'scripts/test/core-random-test.js',
         'scripts/test/core-world-world-test.js',
         'scripts/test/core-world-world-status-test.js',
