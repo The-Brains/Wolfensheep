@@ -23,12 +23,16 @@ define([
             game = new Game(seed, width, height);
             $('.world-creation-form').addClass('is-hidden');
 
+            game.getWorld().setAgentCounterCallback((agentQuantity) => {
+                $('.agent_quantity').text(game.getWorld().getAgentQuantity());
+            });
+
             var worldView = new WorldView(game, document.getElementById('canvas'))
             worldView.start();
 
             setInterval(() => {
                 game.cycle();
-            }, 1000)
+            }, 1000);
 
             $('.input-button-add-agent').attr('disabled', null);
             $('.CanvasArea').removeClass('is-hidden');
@@ -40,8 +44,6 @@ define([
 
         $('.input-button-add-agent').on('click', function() {
             var agent = game.getWorld().addNewAgent();
-            $('.agent_quantity').text(game.getWorld().getAgentQuantity());
-            // TODO: Hooked agent to front end logic.
         })
 
         console.log('App started.');
