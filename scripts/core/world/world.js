@@ -16,6 +16,7 @@ define([
             var agentsByLocation = {};
             var agentUpdateCallback = _.noop;
             var tileUpdateCallback = _.noop;
+            var agentCounterCallback = _.noop;
             var agentIndex = 0;
 
             this.seed = seed;
@@ -197,12 +198,12 @@ define([
                     oldLocation ? oldLocation.getRoundedLocation() : null,
                 );
                 agentUpdateCallback(agent, newLocation, oldLocation);
+                agentCounterCallback(this.getAgentQuantity());
             }
 
             this.removeAgent = function(agent, location) {
                 delete agentsByID[agent.getID()];
                 myself.updateAgentPerLocation(agent, null, location);
-                agentUpdateCallback(agent, null, location);
             }
 
             this.addNewAgent = function(location = null, agent = null) {
@@ -223,7 +224,6 @@ define([
 
                 agentsByID[agent.getID()] = agent;
                 myself.updateAgentPerLocation(agent, agent.getLocation());
-                agentUpdateCallback(agent, agent.getLocation(), null);
 
                 return agent;
             }
@@ -254,6 +254,10 @@ define([
 
             this.setTileCallback = function(cb) {
                 tileUpdateCallback = cb;
+            }
+
+            this.setAgentCounterCallback = function(cb) {
+                agentCounterCallback = cb;
             }
 
             this.getClosestAgents = function(mainAgent, radius = null, limit = null) {

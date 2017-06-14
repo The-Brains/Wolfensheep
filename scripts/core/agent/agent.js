@@ -532,10 +532,12 @@ define([
 
             previousLocations.push({
                 location: currentLocation,
-                goal: _.isNil(myself.getCurrentGoal()) ? 'null' : myself.getCurrentGoal().name,
+                goal: _.isNil(myself.getCurrentGoal())
+                    ? 'null'
+                    : myself.getCurrentGoal().name,
             });
 
-            if (myself.isPlant()) {
+            if (myself.isPlant() && !forced) {
                 location = currentLocation;
                 distance = 0;
             }
@@ -545,25 +547,26 @@ define([
             if (distance === 0) {
                 return;
             } else {
+                // normal logic. when agent is part of a world and not forced to move
                 if (!forced && !_.isNil(myself.getWorld())) {
                     var currentTile = myself.getWorld().getWorldStatus(currentLocation);
                     var speed = myself.getSpeed(currentTile);
+                    // if location target is too far away
                     if (distance > speed) {
                         location = currentLocation.getLocationAwayToward(speed, location);
                         distance = location.distance(currentLocation);
                     }
                 }
 
-
+                // if world exists, update location
                 if(!_.isNil(myself.getWorld())) {
-                    if (location && !location.equals(currentLocation)) {
-                        myself.getWorld().updateAgentPerLocation(
-                            myself,
-                            location,
-                            currentLocation);
-                    }
+                    myself.getWorld().updateAgentPerLocation(
+                        myself,
+                        location,
+                        currentLocation);
                 }
 
+                // Spend distance and update currentLocation.
                 spendHunger(agentData.food.hungerMove * distance);
                 spendWeight(agentData.food.weightLossMove * distance);
                 spendEnergy(agentData.energy.exhaustionMove * distance);
