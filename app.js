@@ -28,14 +28,22 @@ requirejs.config({
 define(['scripts/util/find-get-param.js'], function(findGetParameter) {
     var disable_cache = findGetParameter('disable_cache');
     var debug = findGetParameter('debug');
-    requirejs.config({
+    var config = {
         urlArgs: disable_cache ? "time=" + Date.now() : '',
         paths: {
             dobuki: debug
                 ? 'https://jacklehamster.github.io/dok/out/dok'
                 : 'https://jacklehamster.github.io/dok/out/dok.min',
         }
-    });
+    };
+
+    var dok_lib = findGetParameter('dok_lib');
+    if (dok_lib) {
+        config.baseUrl = dok_lib;
+        config.paths.dobuki = dok_lib + 'dobuki';
+    }
+
+    requirejs.config(config);
 
     // Start loading the main app file. Put all of
     // your application logic in there.
