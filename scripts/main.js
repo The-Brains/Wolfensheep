@@ -7,44 +7,61 @@ define([
         var game = null;
 
         var generateWorld = function() {
-            var width = _.parseInt($('.input-world-width').val());
-            var height = _.parseInt($('.input-world-height').val());
-            var seed = $('.input-world-seed').val();
+            return Promise.resolve()
+            .then(() => {
+                var width = _.parseInt($('.input-world-width').val());
+                var height = _.parseInt($('.input-world-height').val());
+                var seed = $('.input-world-seed').val();
 
-            if (!_.isNumber(width)
-                || width <= 0
-                || !_.isNumber(height)
-                || height <= 0
-                || seed === ''
-            ) {
-                throw 'You cannot create world without width, height, and seed';
-            }
+                if (!_.isNumber(width)
+                    || width <= 0
+                    || !_.isNumber(height)
+                    || height <= 0
+                    || seed === ''
+                ) {
+                    throw 'You cannot create world without width, height, and seed';
+                }
 
-            game = new Game(seed, width, height);
-            $('.world-creation-form').addClass('is-hidden');
+                game = new Game(seed, width, height);
+                $('.world-creation-form').addClass('is-hidden');
 
-            game.getWorld().setAgentCounterCallback((agentQuantity) => {
-                $('.agent_quantity').text(game.getWorld().getAgentQuantity());
-            });
+                game.getWorld().setAgentCounterCallback((agentQuantity) => {
+                    $('.agent_quantity').text(game.getWorld().getAgentQuantity());
+                });
 
-            game.initialize((processName, progress, total) => {
-                console.log(`${processName}: ${progress}/${total}`);
-            })
-            .then((game) => {
-                var worldView = new WorldView(game, document.getElementById('canvas'))
-                worldView.start();
+                $('.world-generation-progress').removeClass('is-hidden');
+                setTimeout(() => {
+                    return game.initialize((processName, progress, total) => {
+                        console.log(`${processName}: ${progress}/${total}`);
+                        $('.world-generation-progress').append($('<div>', {
+                            text: `${processName}: ${progress}/${total}`
+                        }));
+                    })
+                    .then((game) => {
+                        $('.world-generation-progress').addClass('is-hidden');
+                        var worldView = new WorldView(game, document.getElementById('canvas'))
+                        worldView.start();
 
-                setInterval(() => {
-                    game.cycle();
-                }, 1000);
+                        setInterval(() => {
+                            game.cycle();
+                        }, 1000);
 
-                $('.input-button-add-agent').attr('disabled', null);
-                $('.CanvasArea').removeClass('is-hidden');
+                        $('.input-button-add-agent').attr('disabled', null);
+                        $('.CanvasArea').removeClass('is-hidden');
+                        return Promise.resolve();
+                    });
+                }, 10);
             });
         };
 
         $('.input-world-generate').on('click', function() {
-            generateWorld();
+            $('.input-world-generate').attr('disabled', 'disabled');
+            setTimeout(()=>{
+                generateWorld()
+                .then(() => {
+                    console.log('done generating game');
+                })
+            }, 10);
         });
 
         $('.input-button-add-agent').on('click', function() {

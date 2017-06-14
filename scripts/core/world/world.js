@@ -38,24 +38,40 @@ define([
             var initializeWorld = function(param = null, progressCallback = _.noop,
                     extraProgressName = '')
             {
-                var surface = height * width;
-                progressCallback(`${extraProgressName} world-filling`, 0, surface);
+                return new Promise((resolve, reject) => {
+                    var surface = height * width;
+                    progressCallback(`${extraProgressName} world-filling`, 0, surface);
+                    var counter = 0;
 
-                _.times(height, function(h) {
-                    _.times(width, function(w) {
-                        var loc = new Location(w, h);
-                        if (param) {
-                            setTile(loc, param);
-                        } else {
-                            myself.getWorldStatus(loc);
-                        }
+                    _.times(height, function(h) {
+                        _.times(width, function(w) {
+                            setTimeout(() => {
+                                var loc = new Location(w, h);
+                                if (param) {
+                                    setTile(loc, param);
+                                } else {
+                                    myself.getWorldStatus(loc);
+                                }
 
-                        progressCallback(`${extraProgressName} world-filling`,
-                            h * width + (w + 1), surface);
+                                progressCallback(`${extraProgressName} world-filling`,
+                                    counter, surface);
+                                counter++;
+                            }, 10);
+                        });
                     });
-                });
 
-                progressCallback(`${extraProgressName} world-filling`, surface, surface);
+                    var isItDone = function() {
+                        setTimeout(() => {
+                            if (counter < surface) {
+                                isItDone();
+                            }
+                            progressCallback(`${extraProgressName} world-filling`, surface, surface);
+                            resolve();
+                        }, 10);
+                    }
+
+                    isItDone();
+                });
             };
 
             var getRandomKey = function(generator, object) {
@@ -115,92 +131,93 @@ define([
                     });
                     progressCallback('setup default tile', totalCounter, totalCounter);
 
-                    initializeWorld(param, progressCallback, 'Filling with default tile');
+                    return initializeWorld(param, progressCallback, 'Filling with default tile')
+                    .then(() => {
+                        // generate biomes
+                        var terrains = {};
+                        var counter = 0;
+                        var biomesQuantity = 0;
+                        progressCallback('creating biomes regions', counter, totalPossibleTerrains);
+                        _.forEach(Parameters, (paramOptions, paramType) => {
+                            _.forEach(paramOptions, (paramOption, key) => {
+                                if(key !== 0) {
+                                    if (!terrains[paramType]) {
+                                        terrains[paramType] = {};
+                                    }
 
-                    // generate biomes
-                    var terrains = {};
-                    var counter = 0;
-                    var biomesQuantity = 0;
-                    progressCallback('creating biomes regions', counter, totalPossibleTerrains);
-                    _.forEach(Parameters, (paramOptions, paramType) => {
-                        _.forEach(paramOptions, (paramOption, key) => {
-                            if(key !== 0) {
-                                if (!terrains[paramType]) {
-                                    terrains[paramType] = {};
-                                }
-
-                                var quantity = generator.getInt(0, 1 + Math.ceil(surface / 1000.0));
-                                terrains[paramType][paramOption] = {
-                                    quantity: quantity,
-                                    terrains: [],
-                                };
-
-                                _.times(quantity, () => {
-                                    var item = {
-                                        centerX: generator.getInt(0, width),
-                                        centerY: generator.getInt(0, height),
-                                        radius: generator.getInt(1, Math.ceil(surface / 500)),
+                                    var quantity = generator.getInt(0, 1 + Math.ceil(surface / 1000.0));
+                                    terrains[paramType][paramOption] = {
+                                        quantity: quantity,
+                                        terrains: [],
                                     };
-                                    terrains[paramType][paramOption].terrains.push(item);
-                                });
 
-                                biomesQuantity = biomesQuantity + quantity;
+                                    _.times(quantity, () => {
+                                        var item = {
+                                            centerX: generator.getInt(0, width),
+                                            centerY: generator.getInt(0, height),
+                                            radius: generator.getInt(1, Math.ceil(surface / 500)),
+                                        };
+                                        terrains[paramType][paramOption].terrains.push(item);
+                                    });
 
-                                counter++;
-                                progressCallback('creating biomes regions', counter, totalPossibleTerrains);
-                            }
+                                    biomesQuantity = biomesQuantity + quantity;
+
+                                    counter++;
+                                    progressCallback('creating biomes regions', counter, totalPossibleTerrains);
+                                }
+                            });
                         });
-                    });
-                    progressCallback('creating biomes regions', totalPossibleTerrains, totalPossibleTerrains);
+                        progressCallback('creating biomes regions', totalPossibleTerrains, totalPossibleTerrains);
 
-                    // draw biomes
-                    var workingCopy = _.cloneDeep(terrains);
-                    var counter = 0;
-                    var startCounter = 0;
-                    var finishedCounter = 0;
-                    var biomeFillingPromise = [];
-                    while(!_.isEmpty(workingCopy)) {
-                        var currentParamTypeKey = getRandomKey(generator, workingCopy);
+                        // draw biomes
+                        var workingCopy = _.cloneDeep(terrains);
+                        var counter = 0;
+                        var startCounter = 0;
+                        var finishedCounter = 0;
+                        var biomeFillingPromise = [];
+                        while(!_.isEmpty(workingCopy)) {
+                            var currentParamTypeKey = getRandomKey(generator, workingCopy);
 
-                        var currentParamOptions = workingCopy[currentParamTypeKey];
+                            var currentParamOptions = workingCopy[currentParamTypeKey];
 
-                        var currentParamOptionKey = getRandomKey(generator, currentParamOptions);
-                        var currentParamOption = currentParamOptions[currentParamOptionKey];
+                            var currentParamOptionKey = getRandomKey(generator, currentParamOptions);
+                            var currentParamOption = currentParamOptions[currentParamOptionKey];
 
-                        if (_.isEmpty(currentParamOption.terrains)) {
-                            delete workingCopy[currentParamTypeKey][currentParamOptionKey];
-                            if (_.isEmpty(workingCopy[currentParamTypeKey])) {
-                                delete workingCopy[currentParamTypeKey];
-                            }
-                        } else {
-                            var terrainIndex = getRandomKey(
-                                generator,
-                                currentParamOption.terrains
-                            );
-
-                            var terrainItem = _.pullAt(currentParamOption.terrains, [terrainIndex])[0];
-                            startCounter++;
-                            biomeFillingPromise.push(
-                                drawTerrain(
-                                    terrainItem,
-                                    currentParamTypeKey,
-                                    currentParamOptionKey,
-                                    progressCallback,
-                                    extraTitle
-                                )
-                            );
-
-                            if (_.isEmpty(workingCopy[currentParamTypeKey][currentParamOptionKey]
-                                .terrains)) {
+                            if (_.isEmpty(currentParamOption.terrains)) {
                                 delete workingCopy[currentParamTypeKey][currentParamOptionKey];
                                 if (_.isEmpty(workingCopy[currentParamTypeKey])) {
                                     delete workingCopy[currentParamTypeKey];
                                 }
+                            } else {
+                                var terrainIndex = getRandomKey(
+                                    generator,
+                                    currentParamOption.terrains
+                                );
+
+                                var terrainItem = _.pullAt(currentParamOption.terrains, [terrainIndex])[0];
+                                startCounter++;
+                                biomeFillingPromise.push(
+                                    drawTerrain(
+                                        terrainItem,
+                                        currentParamTypeKey,
+                                        currentParamOptionKey,
+                                        progressCallback,
+                                        extraTitle
+                                    )
+                                );
+
+                                if (_.isEmpty(workingCopy[currentParamTypeKey][currentParamOptionKey]
+                                    .terrains)) {
+                                    delete workingCopy[currentParamTypeKey][currentParamOptionKey];
+                                    if (_.isEmpty(workingCopy[currentParamTypeKey])) {
+                                        delete workingCopy[currentParamTypeKey];
+                                    }
+                                }
                             }
                         }
-                    }
 
-                    return Promise.all(biomeFillingPromise);
+                        return Promise.all(biomeFillingPromise);
+                    });
                 });
             }
 
@@ -354,11 +371,7 @@ define([
                     if (withBiomes && false) {
                         return initializeWorldWithBiomes(progressCallback);
                     } else {
-                        return Promise.resolve()
-                        .then(() => {
-                            initializeWorld(null, progressCallback);
-                            return Promise.resolve();
-                        });
+                        return initializeWorld(null, progressCallback);
                     }
                 })
                 .then(() => {
