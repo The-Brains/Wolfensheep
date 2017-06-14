@@ -27,15 +27,20 @@ define([
                 $('.agent_quantity').text(game.getWorld().getAgentQuantity());
             });
 
-            var worldView = new WorldView(game, document.getElementById('canvas'))
-            worldView.start();
+            game.initialize((processName, progress, total) => {
+                console.log(`${processName}: ${progress}/${total}`);
+            })
+            .then((game) => {
+                var worldView = new WorldView(game, document.getElementById('canvas'))
+                worldView.start();
 
-            setInterval(() => {
-                game.cycle();
-            }, 1000);
+                setInterval(() => {
+                    game.cycle();
+                }, 1000);
 
-            $('.input-button-add-agent').attr('disabled', null);
-            $('.CanvasArea').removeClass('is-hidden');
+                $('.input-button-add-agent').attr('disabled', null);
+                $('.CanvasArea').removeClass('is-hidden');
+            });
         };
 
         $('.input-world-generate').on('click', function() {
