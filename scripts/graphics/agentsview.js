@@ -10,8 +10,9 @@ define([
             var worldWidth = game.getWidth();
             var worldHeight = game.getHeight();
 
-            var tempArray = [];
+            var agentsLoc = {};
 
+            var tempArray = [];
             var collection = new DOK.Collection({
                     type: "grid",
                     get x() {
@@ -34,10 +35,22 @@ define([
                     tempArray.length = 0;
                     for(var a in agents) {
                         var agent = agents[a];
+                        var agentLoc = agentsLoc[agent.getID()];
+                        if(!agentLoc) {
+                            agentLoc = agentsLoc[agent.getID()] = {
+                                x : agent.getLocation().getX(),
+                                y : agent.getLocation().getY(),
+                            };
+                        }
+
+                        var goal = agent.getLocation();
+                        agentLoc.x += (goal.getX() - agentLoc.x) / 10;
+                        agentLoc.y += (goal.getY() - agentLoc.y) / 10;
+
                         var img = ImageStore.getImageFromAgent(agent);
 
                         var spriteObj = DOK.SpriteObject.create(
-                            x * cellSize, y * cellSize, cellSize,
+                            agentLoc.x * cellSize, agentLoc.y * cellSize, cellSize,
                             cellSize*3, cellSize*3,
                             null,
                             1,
