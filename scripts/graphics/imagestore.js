@@ -10,10 +10,18 @@ define(['dobuki'],
             }
         }
 
-        function getImageFromAgent(agent) {
+        function getImageFromAgent(agent, move) {
+            var type = agent.getDNA().charCodeAt(0)%2;
+
             var time = DOK.Loop.time;
-            var animation = DOK.SpriteSheet.spritesheet.creatures.squid;
-            return animation[Math.floor(time/100) % animation.length];
+            if(type===0) {
+                return move.dist>.01
+                    ? DOK.SpriteSheet.spritesheet.creatures.blob.move
+                    : DOK.SpriteSheet.spritesheet.creatures.blob.still;
+            } else {
+                var animation = DOK.SpriteSheet.spritesheet.creatures.squid;
+                return animation[Math.floor(time/100) % animation.length];
+            }
         }
 
 
@@ -27,6 +35,10 @@ define(['dobuki'],
                 sand: "https://the-brains.github.io/Wolfensheep/scripts/lib/dok/images/sand.png",
             },
             creatures: {
+                blob: {
+                    still: 'https://the-brains.github.io/Wolfensheep/assets/blob.gif',
+                    move: 'https://the-brains.github.io/Wolfensheep/assets/blob_move.gif',
+                },
                 squid: [
                     "https://the-brains.github.io/Wolfensheep/scripts/lib/dok/images/squid.png" + '|0,0,32,32',
                     "https://the-brains.github.io/Wolfensheep/scripts/lib/dok/images/squid.png" + '|32,0,32,32',

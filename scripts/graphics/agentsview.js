@@ -40,14 +40,24 @@ define([
                             agentLoc = agentsLoc[agent.getID()] = {
                                 x : agent.getLocation().getX(),
                                 y : agent.getLocation().getY(),
+                                dx: 0,
+                                dy: 0,
+                                dist: 0,
                             };
                         }
 
                         var goal = agent.getLocation();
-                        agentLoc.x += (goal.getX() - agentLoc.x) / 10;
-                        agentLoc.y += (goal.getY() - agentLoc.y) / 10;
+                        agentLoc.dx = (goal.getX() - agentLoc.x);
+                        agentLoc.dy = (goal.getY() - agentLoc.y);
+                        agentLoc.dist = Math.sqrt(agentLoc.dx*agentLoc.dx + agentLoc.dy*agentLoc.dy);
+                        if(agentLoc.dist > .01) {
+                            var speed = Math.min(agentLoc.dist,.1);
+                            agentLoc.x += speed*agentLoc.dx/agentLoc.dist;
+                            agentLoc.y += speed*agentLoc.dy/agentLoc.dist;
+                        }
 
-                        var img = ImageStore.getImageFromAgent(agent);
+
+                        var img = ImageStore.getImageFromAgent(agent, agentLoc);
 
                         var spriteObj = DOK.SpriteObject.create(
                             agentLoc.x * cellSize, agentLoc.y * cellSize, cellSize,
