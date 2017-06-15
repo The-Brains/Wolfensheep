@@ -76,36 +76,32 @@ define([
                 });
 
                 $('.world-generation-progress').removeClass('is-hidden');
-                setTimeout(() => {
-                    return game.initialize((processName, progress, total) => {
-                        console.log(`${processName}: ${progress}/${total}`);
-                        injectProgressBar(processName, Round(progress / total * 100.0, 2));
-                    })
-                    .then((game) => {
-                        $('.world-generation-progress').addClass('is-hidden');
-                        var worldView = new WorldView(game, document.getElementById('canvas'))
-                        worldView.start();
+                return game.initialize((processName, progress, total) => {
+                    // console.log(`${processName}: ${progress}/${total}`);
+                    injectProgressBar(processName, Round(progress / total * 100.0, 2));
+                })
+                .then((game) => {
+                    $('.world-generation-progress').addClass('is-hidden');
+                    var worldView = new WorldView(game, document.getElementById('canvas'))
+                    worldView.start();
 
-                        setInterval(() => {
-                            game.cycle();
-                        }, 1000);
+                    setInterval(() => {
+                        game.cycle();
+                    }, 1000);
 
-                        $('.input-button-add-agent').attr('disabled', null);
-                        $('.CanvasArea').removeClass('is-hidden');
-                        return Promise.resolve();
-                    });
-                }, 10);
+                    $('.input-button-add-agent').attr('disabled', null);
+                    $('.CanvasArea').removeClass('is-hidden');
+                    return Promise.resolve();
+                });
             });
         };
 
         $('.input-world-generate').on('click', function() {
             $('.input-world-generate').attr('disabled', 'disabled');
-            setTimeout(()=>{
-                generateWorld()
-                .then(() => {
-                    console.log('done generating game');
-                })
-            }, 10);
+            generateWorld()
+            .then(() => {
+                console.log('done generating game');
+            });
         });
 
         $('.input-button-add-agent').on('click', function() {

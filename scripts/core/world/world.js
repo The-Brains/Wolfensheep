@@ -105,13 +105,13 @@ define([
 
                             var isItDone = function() {
                                 setTimeout(() => {
-                                    if (counter < biomesQuantity) {
+                                    if (counter < totalSurface) {
                                         isItDone();
                                     }
 
                                     progressCallback('filling world with a biome', totalSurface, totalSurface);
 
-                                    resolve(biomeFillingPromise);
+                                    resolve();
                                 }, 10);
                             }
 
@@ -222,7 +222,6 @@ define([
                                         if (counter < totalPossibleTerrains) {
                                             isItDone();
                                         }
-                                        debugger;
                                         progressCallback('creating biomes regions',
                                             totalPossibleTerrains, totalPossibleTerrains);
                                         resolve();
@@ -237,78 +236,78 @@ define([
                     })
                     .then(() => {
                         var drawBiomes = function() {
-                            return new Promise((resolve, reject) => {
-                                // draw biomes
-                                var workingCopy = _.cloneDeep(terrains);
-                                var counter = 0;
-                                var startCounter = 0;
-                                var finishedCounter = 0;
-                                var biomeFillingPromise = [];
-                                while(!_.isEmpty(workingCopy)) {
-                                    setTimeout(() => {
-                                        var currentParamTypeKey = getRandomKey(generator, workingCopy);
+                            // draw biomes
+                            var workingCopy = _.cloneDeep(terrains);
+                            var counter = 0;
+                            var startCounter = 0;
+                            var finishedCounter = 0;
+                            var biomeFillingPromise = [];
 
-                                        var currentParamOptions = workingCopy[currentParamTypeKey];
+                            var treatTerrain = function() {
+                                progressCallback('Painting all biomes',
+                                    counter, biomesQuantity);
+                                return Promise.resolve()
+                                .then(() => {
+                                    return new Promise((resolve, reject) => {
+                                        setTimeout(() => {
+                                            var currentParamTypeKey = getRandomKey(generator, workingCopy);
 
-                                        var currentParamOptionKey = getRandomKey(generator, currentParamOptions);
-                                        var currentParamOption = currentParamOptions[currentParamOptionKey];
+                                            var currentParamOptions = workingCopy[currentParamTypeKey];
 
-                                        if (_.isEmpty(currentParamOption.terrains)) {
-                                            delete workingCopy[currentParamTypeKey][currentParamOptionKey];
-                                            if (_.isEmpty(workingCopy[currentParamTypeKey])) {
-                                                delete workingCopy[currentParamTypeKey];
-                                            }
-                                        } else {
-                                            var terrainIndex = getRandomKey(
-                                                generator,
-                                                currentParamOption.terrains
-                                            );
+                                            var currentParamOptionKey = getRandomKey(generator, currentParamOptions);
+                                            var currentParamOption = currentParamOptions[currentParamOptionKey];
 
-                                            var terrainItem = _.pullAt(currentParamOption.terrains, [terrainIndex])[0];
-                                            startCounter++;
-                                            biomeFillingPromise.push(
-                                                drawTerrain(
-                                                    terrainItem,
-                                                    currentParamTypeKey,
-                                                    currentParamOptionKey,
-                                                    progressCallback,
-                                                )
-                                            );
-                                            counter++;
-                                            progressCallback('Painting all biomes',
-                                                counter, biomesQuantity);
-
-                                            if (_.isEmpty(workingCopy[currentParamTypeKey][currentParamOptionKey]
-                                                .terrains)) {
+                                            if (_.isEmpty(currentParamOption.terrains)) {
                                                 delete workingCopy[currentParamTypeKey][currentParamOptionKey];
                                                 if (_.isEmpty(workingCopy[currentParamTypeKey])) {
                                                     delete workingCopy[currentParamTypeKey];
                                                 }
+                                                resolve();
+                                            } else {
+                                                var terrainIndex = getRandomKey(
+                                                    generator,
+                                                    currentParamOption.terrains
+                                                );
+
+                                                var terrainItem = _.pullAt(currentParamOption.terrains, [terrainIndex])[0];
+
+                                                if (_.isEmpty(workingCopy[currentParamTypeKey][currentParamOptionKey]
+                                                    .terrains)) {
+                                                    delete workingCopy[currentParamTypeKey][currentParamOptionKey];
+                                                    if (_.isEmpty(workingCopy[currentParamTypeKey])) {
+                                                        delete workingCopy[currentParamTypeKey];
+                                                    }
+                                                }
+
+                                                startCounter++;
+
+                                                drawTerrain(
+                                                    terrainItem,
+                                                    currentParamTypeKey,
+                                                    currentParamOptionKey,
+                                                    progressCallback)
+                                                .then(() => {
+                                                    counter++;
+                                                    progressCallback('Painting all biomes',
+                                                        counter, biomesQuantity);
+                                                    resolve();
+                                                });
                                             }
-                                        }
+                                        }, 1);
                                     });
-                                }
+                                })
+                                .then(() => {
+                                    if (counter < biomesQuantity) {
+                                        return treatTerrain();
+                                    }
+                                    return Promise.resolve();
+                                });
+                            }
 
-                                var isItDone = function() {
-                                    setTimeout(() => {
-                                        if (counter < biomesQuantity) {
-                                            isItDone();
-                                        }
-                                        progressCallback('Painting all biomes',
-                                            biomesQuantity, biomesQuantity);
-
-                                        resolve(biomeFillingPromise);
-                                    }, 10);
-                                }
-
-                                isItDone();
-                            });
+                            return treatTerrain();
                         }
 
                         return drawBiomes();
-                    })
-                    .then((biomeFillingPromise) => {
-                        return Promise.all(biomeFillingPromise);
                     });
                 });
             }
