@@ -3,8 +3,54 @@ define([
         'lodash',
         './core/game.js',
         './graphics/worldview.js',
-    ], function($, _, Game, WorldView) {
+        './util/round.js'
+    ], function($, _, Game, WorldView, Round) {
         var game = null;
+
+        var injectProgressBar = function(progressName, percent) {
+            var container = $('.world-generation-progress .container');
+            var progressBar = container.find(`[data-name="${progressName}"]`);
+
+            if (_.isEmpty(progressBar)) {
+                var newProgressBar = $('<div>', {
+                    class: 'progress-bar',
+                    'data-name': progressName,
+                });
+                var progressBarName = $('<span>', {
+                    text: progressName,
+                    class: 'progress-title mdl-typography--headline',
+                });
+                var progressBarContainer = $('<div>', {
+                    class: 'progress-bar-container',
+                });
+                var progressBarFilling = $('<div>', {
+                    class: 'progress-bar-filling',
+                });
+                var progressBarPercent = $('<span>', {
+                    class: 'progress-bar-percent mdl-typography--title',
+                    text: `${percent}%`,
+                });
+                var progressBarRow = $('<div>', {
+                    class: 'progress-bar-row',
+                });
+
+                progressBarContainer.append(progressBarFilling);
+                progressBarRow.append(progressBarContainer);
+                progressBarRow.append(progressBarPercent);
+
+                newProgressBar.append(progressBarName);
+                newProgressBar.append(progressBarRow);
+
+                container.append(newProgressBar);
+
+                injectProgressBar(progressName, percent);
+            } else {
+                progressBar.find('.progress-bar-filling').css('width', `${percent}%`);
+                progressBar.find('.progress-bar-percent').text(`${percent}%`)
+            }
+
+
+        }
 
         var generateWorld = function() {
             return Promise.resolve()
@@ -33,9 +79,7 @@ define([
                 setTimeout(() => {
                     return game.initialize((processName, progress, total) => {
                         console.log(`${processName}: ${progress}/${total}`);
-                        $('.world-generation-progress').append($('<div>', {
-                            text: `${processName}: ${progress}/${total}`
-                        }));
+                        injectProgressBar(processName, Round(progress / total * 100.0, 2));
                     })
                     .then((game) => {
                         $('.world-generation-progress').addClass('is-hidden');
