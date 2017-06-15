@@ -19,7 +19,6 @@ define([
             var agentIndex = 0;
             var worldGenerated = false;
 
-
             this.seed = seed;
 
             this.getWidth = function() {
