@@ -12,7 +12,10 @@ define(
 
         testWrapper.execTest(mainName, 'should generate all tiles', function() {
             var world = new World('cool seed', 20, 20);
-            expect(_.size(world.getAllTiles())).to.equal(20 * 20);
+            return world.generateWorld(_.noop, false)
+            .then(() => {
+                expect(_.size(world.getAllTiles())).to.equal(20 * 20);
+            });
         });
 
         testWrapper.execTest(mainName, 'should generate parameters', function() {

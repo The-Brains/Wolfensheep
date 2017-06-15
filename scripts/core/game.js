@@ -31,6 +31,13 @@ define([
                 return height;
             }
 
+            this.initialize = function(progressCallback = _.noop, withBiomes = true) {
+                return world.generateWorld(progressCallback, withBiomes)
+                .then(() => {
+                    return myself;
+                });
+            }
+
             /**
             * This is a promise.
             */

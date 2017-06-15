@@ -9,3 +9,30 @@
 .mdl-grid.mdl-grid--bleed {
     padding: 0;
 }
+
+.world-generation-progress .progress-bar {
+    width: 100%;
+    border-radius: 4px;
+}
+
+.world-generation-progress .progress-bar .progress-bar-row {
+    display: flex;
+    align-items: center;
+}
+
+.world-generation-progress .progress-bar .progress-bar-percent {
+    flex: 2;
+}
+
+.world-generation-progress .progress-bar .progress-bar-container {
+    height: 3px;
+    width: 100%;
+    background-color: rgba(0,0,0,.12);
+    margin-right: 10px;
+    flex: 8;
+}
+
+.world-generation-progress .progress-bar .progress-bar-container .progress-bar-filling {
+    height: 3px;
+    background-color: rgb(3,169,244);
+}
