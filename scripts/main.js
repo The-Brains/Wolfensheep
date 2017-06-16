@@ -81,7 +81,7 @@ define([
                     }
 
                     if (e.data.message === 'game start') {
-                        var game = Game.parseFromJson(e.data.game);
+                        game = Game.parseFromJson(e.data.game);
                         worker.terminate();
                         $('.input-button-cancel-worker').remove();
                         resolve(game);
