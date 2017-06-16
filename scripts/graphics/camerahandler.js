@@ -1,6 +1,6 @@
-define(['dobuki',],function(DOK) {
+define(['dobuki'],function(DOK) {
 
-    function CameraHandler(camera, cellSize) {
+    function CameraHandler(camera, domElement, cellSize) {
         var width, height;
         var selectedObj = {};
         function getCamPos() {
@@ -46,6 +46,8 @@ define(['dobuki',],function(DOK) {
                 zoombar = Math.max(0,Math.min(1,zoombar + pinchSize/200));
             }
         );
+
+        DOK.Mouse.setMainElement(domElement);
 
         var zoomState = [
             { distance: 400, angle: 1.1 },
