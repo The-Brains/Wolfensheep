@@ -75,7 +75,7 @@ define([
                     }
 
                     if (e.data.message === 'game start') {
-                        var game = Game.parseFromJson(e.data.game);
+                        game = Game.parseFromJson(e.data.game);
                         worker.terminate();
                         resolve(game);
                         return;
