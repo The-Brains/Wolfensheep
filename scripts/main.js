@@ -48,8 +48,10 @@ define([
                 progressBar.find('.progress-bar-filling').css('width', `${percent}%`);
                 progressBar.find('.progress-bar-percent').text(`${percent}%`)
             }
+        }
 
-
+        var generateWorldWithWorker = function() {
+            var worker = new Worker('world-generator-worker.js');
         }
 
         var generateWorld = function() {
@@ -76,10 +78,11 @@ define([
                 });
 
                 $('.world-generation-progress').removeClass('is-hidden');
-                return game.initialize((processName, progress, total) => {
-                    // console.log(`${processName}: ${progress}/${total}`);
-                    injectProgressBar(processName, Round(progress / total * 100.0, 2));
-                })
+                return generateWorldWithWorker()
+                // return game.initialize((processName, progress, total) => {
+                //     // console.log(`${processName}: ${progress}/${total}`);
+                //     injectProgressBar(processName, Round(progress / total * 100.0, 2));
+                // })
                 .then((game) => {
                     $('.world-generation-progress').addClass('is-hidden');
                     var worldView = new WorldView(game, document.getElementById('canvas'))
