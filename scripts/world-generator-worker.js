@@ -41,8 +41,7 @@ require({
 
                 var now = new Date();
                 var timeSpent = now - lastTimeUpdate[progressBarName];
-                // TODO: I think this is the pain point. If i send too much of
-                // the message, it freeze and if I dont send enough, nothing happen.
+
                 if (timeSpent >= 250 || progress === 0 || progress === progressTotal) {
                     worker.postMessage({
                         message: 'progress',
