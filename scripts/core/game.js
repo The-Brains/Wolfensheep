@@ -6,7 +6,6 @@ define([
 
         var Game = function(seed, width, height) {
             var myself = this;
-            var seed = seed;
             var generator = new Generator(seed);
             var world = null;
 
@@ -38,6 +37,27 @@ define([
                 });
             }
 
+            this.toJson = function() {
+                return {
+                    seed: seed,
+                    width: width,
+                    height: height,
+                    world: world.toJson(),
+                    generatorGeneration: generator.getGeneration(),
+                };
+            }
+
+            this.parseFromJson = function(json) {
+                seed = json.seed;
+                generator = new Generator(json.seed);
+                generator.advanceGeneration(json.generatorGeneration);
+
+                width = json.width;
+                height = json.height;
+
+                world = World.parseFromJson(json.world);
+            }
+
             /**
             * This is a promise.
             */
@@ -45,8 +65,16 @@ define([
                 return world.cycle();
             }
 
-            initializeWorld();
+            if (!_.isNil(width) && !_.isNil(height)) {
+                initializeWorld();
+            }
         };
 
-    return Game;
+        Game.parseFromJson = function(json) {
+            var game = new Game();
+            game.parseFromJson(json);
+            return game;
+        }
+
+        return Game;
 });

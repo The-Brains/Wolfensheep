@@ -2,8 +2,9 @@ define([
         'lodash',
         '../random.js',
         '../../util/world-parameters.js',
+        '../localization/location.js',
     ],
-    function(_, Generator, Parameters) {
+    function(_, Generator, Parameters, Location) {
         var WorldStatus = function(location, locationSeed, parameters) {
             var location = location;
             var generator = new Generator(locationSeed);
@@ -37,14 +38,38 @@ define([
                 // the goal is to create "biomes"
             }
 
+            this.toJson = function() {
+                return {
+                    location: location.toJson(),
+                    seed: locationSeed,
+                    status: status,
+                    generatorGeneration: generator.getGeneration(),
+                }
+            }
+
+            this.setGeneratorGeneration = function(step) {
+                generator.advanceGeneration(step);
+            }
+
             this.serialize = function() {
-                return JSON.stringify(status);
+                return JSON.stringify(this.toJson());
             }
 
             this.setStatus = function(paramType, newParam) {
                 status[paramType] = newParam;
             }
         };
+
+        WorldStatus.parseFromJson = function(json) {
+            var worldStatus = new WorldStatus(
+                Location.parseFromJson(json.location),
+                json.seed,
+                json.status
+            );
+            worldStatus.setGeneratorGeneration(json.generatorGeneration);
+
+            return worldStatus;
+        }
 
         WorldStatus.allPossibleTerrains = null;
         WorldStatus.getAllPossibleType = function() {

@@ -84,8 +84,19 @@ define(['lodash', '../../util/round.js'], function(_, Round) {
             return new Location(x, y);
         }
 
+        this.toJson = function() {
+            return {
+                x: locX,
+                y: locY
+            }
+        }
+
         this.serialized = this.serialize();
     };
+
+    Location.parseFromJson = function(json) {
+        return new Location(json.x, json.y);
+    }
 
     Location.deserialize = function(input) {
         var piece = _.split(input, '-');

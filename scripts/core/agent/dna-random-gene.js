@@ -26,7 +26,16 @@ define(
                 return speedSeed;
             }
 
+            this.toJson = function() {
+                return {
+                    seed: seed,
+                };
+            }
         };
+
+        classDNA.parseFromJson = function(json) {
+            return new classDNA(json.seed);
+        }
 
         classDNA.deserialize = function(input) {
             return new classDNA(input);

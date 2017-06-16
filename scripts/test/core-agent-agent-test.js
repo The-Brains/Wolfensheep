@@ -221,5 +221,17 @@ define(
             expect(agent1.reproduceWith(agent2).length).to.equal(0);
             expect(agent2.reproduceWith(agent1).length).to.equal(0);
         });
+
+        testWrapper.execTest(mainName, 'should json/parse json', function() {
+            var dna1 = new objectDNA('test seed');
+            var agent1 = new Agent(dna1, new Location(5, 5));
+            var expectedJson = agent1.toJson();
+
+            var resultAgent = Agent.parseFromJson(expectedJson);
+            var resultJson = resultAgent.toJson();
+
+            expect(resultJson).to.eql(expectedJson);
+
+        });
     }
 );

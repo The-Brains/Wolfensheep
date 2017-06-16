@@ -33,7 +33,7 @@ define(
             var env = world.getWorldStatus(new Location(5, 5));
 
             expect(env.serialize()).to.be
-                .equal('{"humidity":"humid","temperature":"hot","ground":"rock","wind":"quiet","cloud":"overcast"}');
+                .equal('{"location":{"x":5,"y":5},"seed":"cool seed+5-5","status":{"humidity":"humid","temperature":"hot","ground":"rock","wind":"quiet","cloud":"overcast"},"generatorGeneration":5}');
         });
 
         testWrapper.execTest(mainName, 'should add agents', function() {
@@ -206,6 +206,35 @@ define(
                         }
                     }
                 }
+            });
+        });
+
+        testWrapper.execTest(mainName, 'should json/parse json (1)', function() {
+            var world = new World('cool seed', 20, 20);
+            return world.generateWorld(_.noop, false)
+            .then(() => {
+                var expectedJson = world.toJson();
+
+                var resultWorld = World.parseFromJson(expectedJson);
+                var resultJson = resultWorld.toJson();
+
+                expect(resultJson).to.eql(expectedJson);
+            });
+        });
+
+        testWrapper.execTest(mainName, 'should json/parse json (2)', function() {
+            var world = new World('cool seed', 20, 20);
+            return world.generateWorld(_.noop, false)
+            .then(() => {
+                world.addNewAgent();
+                world.addNewAgent();
+
+                var expectedJson = world.toJson();
+
+                var resultWorld = World.parseFromJson(expectedJson);
+                var resultJson = resultWorld.toJson();
+
+                expect(resultJson).to.eql(expectedJson);
             });
         });
     }

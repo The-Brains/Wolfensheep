@@ -48,8 +48,48 @@ define([
                 progressBar.find('.progress-bar-filling').css('width', `${percent}%`);
                 progressBar.find('.progress-bar-percent').text(`${percent}%`)
             }
+        }
 
+        var generateWorldWithWorker = function(seed, width, height) {
+            return new Promise((resolve, reject) => {
+                var worker = new Worker('scripts/world-generator-worker.js');
 
+                $('.input-button-cancel-worker').attr('disabled', null);
+                $('.input-button-cancel-worker').on('click', () => {
+                    worker.terminate();
+                    window.location.href = 'index.html';
+                });
+
+                var errorHandler = function(e) {
+                    console.error(e.message, e);
+                }
+                worker.addEventListener("error", errorHandler, true);
+
+                worker.addEventListener("message", function(e) {
+                    if (e.data.message === 'progress') {
+                        injectProgressBar(e.data.progressBarName, e.data.percent);
+                        return;
+                    }
+                    if (e.data.message === 'ready') {
+                        console.log('trigger starting worker');
+                        worker.postMessage({
+                            width: width,
+                            height: height,
+                            seed: seed,
+                        });
+                        return;
+                    }
+
+                    if (e.data.message === 'game start') {
+                        game = Game.parseFromJson(e.data.game);
+                        worker.terminate();
+                        $('.input-button-cancel-worker').remove();
+                        resolve(game);
+                        return;
+                    }
+
+                }, false);
+            });
         }
 
         var generateWorld = function() {
@@ -68,18 +108,11 @@ define([
                     throw 'You cannot create world without width, height, and seed';
                 }
 
-                game = new Game(seed, width, height);
                 $('.world-creation-form').addClass('is-hidden');
 
-                game.getWorld().setAgentCounterCallback((agentQuantity) => {
-                    $('.agent_quantity').text(game.getWorld().getAgentQuantity());
-                });
-
                 $('.world-generation-progress').removeClass('is-hidden');
-                return game.initialize((processName, progress, total) => {
-                    // console.log(`${processName}: ${progress}/${total}`);
-                    injectProgressBar(processName, Round(progress / total * 100.0, 2));
-                })
+
+                return generateWorldWithWorker(seed,width, height)
                 .then((game) => {
                     $('.world-generation-progress').addClass('is-hidden');
                     var worldView = new WorldView(game, document.getElementById('canvas'))

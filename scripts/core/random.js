@@ -1,7 +1,9 @@
 define(
-    ['seedRandom'],
-    function(seedRandom) {
+    ['seedRandom', 'lodash'],
+    function(seedRandom, _) {
         var Generator = function(seed = null) {
+            var indexGenerator = 0;
+            var myself = this;
             this.myGenerator = new Math.seedrandom(seed);
 
             this.getInt = function(min, max) {
@@ -9,15 +11,16 @@ define(
             }
 
             this.getFloatInRange = function(min, max) {
-                return (this.myGenerator() * Math.abs(max - min)) + min;
+                return (this.getFloat() * Math.abs(max - min)) + min;
             }
 
             this.getFloat = function() {
+                indexGenerator++;
                 return this.myGenerator();
             }
 
             this.get32Int = function() {
-                return this.myGenerator.int32();
+                return this.getInt(0, Number.MAX_SAFE_INTEGER);
             }
 
             this.getChar = function(dictionary) {
@@ -25,6 +28,16 @@ define(
                     dictionary =  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_=+~;:"<>,./?|';
                 }
                 return dictionary[this.getInt(0, dictionary.length)];
+            }
+
+            this.advanceGeneration = function(steps) {
+                _.times(steps, () => {
+                    myself.getFloat();
+                });
+            }
+
+            this.getGeneration = function() {
+                return indexGenerator;
             }
         };
 
