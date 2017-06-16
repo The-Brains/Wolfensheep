@@ -24,4 +24,12 @@ function(chai, testWrapper, Game) {
         var game = new Game('nice seed', 5, 5);
         expect(game.getWorld().addNewAgent()).to.exists;
     });
+
+    testWrapper.execTest(mainName, 'should json/parse json', function() {
+        var expectedGame = new Game('nice seed', 5, 5);
+        var expectedSerialization = expectedGame.toJson();
+        var resultGame = Game.parseFromJson(expectedSerialization);
+        var resultSerialization = resultGame.toJson();
+        expect(resultSerialization).to.eql(expectedSerialization);
+    });
 });

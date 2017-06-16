@@ -7,9 +7,11 @@ define([
     './dna-random-gene.js',
     './intent.js',
 ], function (_, AgentGoals, Generator, Location, WorldParameters, ObjectDNA, Intent) {
-    var Agent = function(objectDNA, location) {
+    var Agent = function(objectDNA, location, initialize=true) {
         var myself = this;
-        var generator = new Generator(objectDNA.getDNA());
+        if (initialize) {
+            var generator = new Generator(objectDNA.getDNA());
+        }
         var previousLocations = [];
         var currentLocation = location;
 
@@ -642,7 +644,7 @@ define([
         };
 
         this.setID = function(newID) {
-            if (!_.isNil(id)) {
+            if (!_.isNil(id) && newID !== id) {
                 throw new `ID is already set. ID: ${id}`;
             }
 
@@ -674,6 +676,47 @@ define([
             return JSON.stringify(agentData);
         };
 
+        this.toJson = function() {
+            return {
+                dna: objectDNA.toJson(),
+                generatorGeneration: generator.getGeneration(),
+                agentData: agentData,
+                currentLocation: currentLocation.toJson(),
+                previousLocations: _.map(previousLocations, (prevLoc) => {
+                    return {
+                        location: prevLoc.location.toJson(),
+                        goal: prevLoc.goal,
+                    };
+                }),
+                id: id,
+            };
+        }
+
+        this.parseFromJson = function(json, newWorld = null) {
+            agentData = json.agentData;
+
+            objectDNA = ObjectDNA.parseFromJson(json.dna);
+            generator = new Generator(objectDNA.getDNA());
+            generator.advanceGeneration(json.generatorGeneration);
+
+            currentLocation = Location.parseFromJson(json.currentLocation);
+
+            previousLocations = _.map(json.previousLocations, (prevLoc) => {
+                return {
+                    location: Location.parseFromJson(prevLoc.location),
+                    goal: prevLoc.goal,
+                };
+            });
+
+            id = json.id;
+
+            if (newWorld) {
+                myself.setWorld(newWorld);
+            }
+
+            intent.setAgent(myself);
+        }
+
         var initAll = function() {
             initializeGlobalFeature();
             initializeSpeeds();
@@ -684,8 +727,16 @@ define([
             intent.setAgent(myself);
         };
 
-        initAll();
+        if (initialize) {
+            initAll();
+        }
     };
+
+    Agent.parseFromJson = function(json) {
+        var agent = new Agent(null, null, false);
+        agent.parseFromJson(json);
+        return agent;
+    }
 
     Agent.createNewAgent = function(generator, location) {
         var dna = ObjectDNA.createNewDNA(generator);

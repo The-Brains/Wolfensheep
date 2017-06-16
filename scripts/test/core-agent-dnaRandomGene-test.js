@@ -16,5 +16,22 @@ define(
             expect(returned.getDNA().length).to.equal(('cool seed').length);
             expect(expected.getDNA().length).to.equal(('cool seed').length);
         });
+
+        testWrapper.execTest(mainName, 'should json/parse json', function() {
+            var expected = new classDNA('cool seed');
+            var expectedJson = expected.toJson();
+            var expectedDna = expected.getDNA();
+            var expectedSpeedSeed = expected.getSpeedSeed();
+
+            var result = classDNA.parseFromJson(expected.toJson())
+            var resultJson = result.toJson();
+            var resultDna = result.getDNA();
+            var resultSpeedSeed = result.getSpeedSeed();
+
+            expect(expectedJson).to.eql(resultJson);
+            expect(expectedDna).to.equal(resultDna);
+            expect(expectedSpeedSeed).to.equal(resultSpeedSeed);
+
+        });
     }
 );

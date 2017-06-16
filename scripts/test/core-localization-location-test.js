@@ -82,5 +82,14 @@ define(
             expect(loc1.getLocationAwayToward(25 * Math.sqrt(2), loc2).serialize())
                 .to.equal(expected.serialize());
         });
+
+        testWrapper.execTest(mainName, 'should json/parse json', function() {
+            var loc1 = new Location(50, 50);
+            expect(loc1.toJson()).to.eql(Location.parseFromJson(loc1.toJson()).toJson());
+            var loc2 = new Location(0, 0);
+            expect(loc2.toJson()).to.eql(Location.parseFromJson(loc2.toJson()).toJson());
+            var loc3 = new Location(25, 25);
+            expect(loc3.toJson()).to.eql(Location.parseFromJson(loc3.toJson()).toJson());
+        });
     }
 );

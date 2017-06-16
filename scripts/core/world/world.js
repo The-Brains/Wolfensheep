@@ -19,8 +19,6 @@ define([
             var agentIndex = 0;
             var worldGenerated = false;
 
-            this.seed = seed;
-
             this.getWidth = function() {
                 return width;
             };
@@ -367,7 +365,7 @@ define([
                 myself.updateAgentPerLocation(agent, null, location);
             }
 
-            this.addNewAgent = function(location = null, agent = null) {
+            this.addNewAgent = function(location = null, agent = null, agentID = null) {
                 if (!location) {
                     location = new Location(
                         generator.getInt(0, width),
@@ -379,8 +377,10 @@ define([
                     agent = Agent.createNewAgent(generator, location);
                 }
 
-                agent.setID(agentIndex);
-                agentIndex++;
+                agent.setID(agentID ? agentID : agentIndex);
+                if (!agentID) {
+                    agentIndex++;
+                }
                 agent.setWorld(myself);
 
                 agentsByID[agent.getID()] = agent;
@@ -469,7 +469,58 @@ define([
                     return Promise.resolve();
                 });
             }
+
+            this.toJson = function() {
+                return {
+                    seed: seed,
+                    width: width,
+                    height: height,
+                    agentIndex: agentIndex,
+                    worldGenerated: worldGenerated,
+                    tiles: _.map(tiles, (tile, key) => {
+                        return {
+                            key: key,
+                            tile: tile.toJson(),
+                        }
+                    }),
+                    generatorGeneration: generator.getGeneration(),
+                    agents: _.map(agentsByID, (agent) => {
+                        return agent.toJson();
+                    }),
+                };
+            }
+
+            this.parseFromJson = function(json) {
+                seed = json.seed;
+                generator = new Generator(json.seed);
+                generator.advanceGeneration(json.generatorGeneration);
+
+                width = json.width;
+                height = json.height;
+
+                tiles = {};
+                _.forEach(json.tiles, (tile) => {
+                    tiles[tile.key] = WorldStatus.parseFromJson(tile.tile);
+                });
+
+                agentsByID = {};
+                agentsByLocation = {};
+
+                _.forEach(json.agents, (agentJson) => {
+                    var agent = Agent.parseFromJson(agentJson);
+                    myself.addNewAgent(agent.getLocation(), agent, agent.getID());
+                });
+
+                agentIndex = json.agentIndex;
+                worldGenerated = json.worldGenerated;
+            }
         };
+
+        World.parseFromJson = function(json) {
+            var world = new World();
+            world.parseFromJson(json);
+            return world;
+        }
 
         return World;
     }
