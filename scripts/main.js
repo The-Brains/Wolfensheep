@@ -54,6 +54,12 @@ define([
             return new Promise((resolve, reject) => {
                 var worker = new Worker('scripts/world-generator-worker.js');
 
+                $('.input-button-cancel-worker').attr('disabled', null);
+                $('.input-button-cancel-worker').on('click', () => {
+                    worker.terminate();
+                    window.location.href = 'index.html';
+                });
+
                 var errorHandler = function(e) {
                     console.error(e.message, e);
                 }
@@ -77,6 +83,7 @@ define([
                     if (e.data.message === 'game start') {
                         var game = Game.parseFromJson(e.data.game);
                         worker.terminate();
+                        $('.input-button-cancel-worker').remove();
                         resolve(game);
                         return;
                     }

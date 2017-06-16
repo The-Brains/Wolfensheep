@@ -38,8 +38,8 @@ define([
                 return Promise.resolve()
                 .then(() => {
                     var surface = height * width;
-                    progressCallback(`${extraProgressName} world-filling`, 0, surface);
                     var counter = 0;
+                    progressCallback(`${extraProgressName} world-filling`, counter, surface);
 
                     _.times(height, function(h) {
                         _.times(width, function(w) {
@@ -55,6 +55,9 @@ define([
                             counter++;
                         });
                     });
+
+                    progressCallback(`${extraProgressName} world-filling`,
+                                surface, surface);
 
                     return Promise.resolve();
                 });

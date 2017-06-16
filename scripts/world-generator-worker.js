@@ -30,22 +30,27 @@ require({
 
         worker.onmessage = function (e) {
             console.log('worker starting');
+
+            var lastTimeUpdate = {};
+
             game = new Game(e.data.seed, e.data.width, e.data.height);
             game.initialize((progressBarName, progress, progressTotal) => {
-                var percent = _.round(progress / progressTotal * 100.0, 2);
-                var percentRounded = _.round(progress / progressTotal);
+                if (!lastTimeUpdate[progressBarName]) {
+                    lastTimeUpdate[progressBarName] = 0;
+                }
+
+                var now = new Date();
+                var timeSpent = now - lastTimeUpdate[progressBarName];
                 // TODO: I think this is the pain point. If i send too much of
                 // the message, it freeze and if I dont send enough, nothing happen.
-                if (percentRounded % 10 === 0 || progress === progressTotal) {
-                    // I tried without the timeout but didnt work either :(
-                    setTimeout(() => {
-                        worker.postMessage({
-                            message: 'progress',
-                            progressBarName: progressBarName,
-                            percent: percent,
-                        });
+                if (timeSpent >= 250 || progress === 0 || progress === progressTotal) {
+                    worker.postMessage({
+                        message: 'progress',
+                        progressBarName: progressBarName,
+                        percent: _.round(progress / progressTotal * 100.0, 2),
+                    });
 
-                    }, 10);
+                    lastTimeUpdate[progressBarName] = now;
                 }
             })
             .then((game) => {
