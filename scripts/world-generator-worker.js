@@ -33,7 +33,7 @@ require({
 
             var lastTimeUpdate = {};
 
-            game = new Game(e.data.seed, e.data.width, e.data.height);
+            var game = new Game(e.data.seed, e.data.width, e.data.height);
             game.initialize((progressBarName, progress, progressTotal) => {
                 if (!lastTimeUpdate[progressBarName]) {
                     lastTimeUpdate[progressBarName] = 0;
