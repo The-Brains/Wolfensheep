@@ -31,7 +31,7 @@ define([
 
             var spriteRenderer = new DOK.SpriteRenderer();
             spriteRenderer.curvature = 1;
-            var camHandler = new CameraHandler(DOK.Camera.getCamera(), cellSize);
+            var camHandler = new CameraHandler(DOK.Camera.getCamera(), renderer.domElement, cellSize);
             var canvasResizer = new CanvasResizer(DOK.Camera.getCamera(), canvas, renderer);
             var tilesView = new TilesView(camHandler, spriteRenderer, cellSize, game);
             var agentsView = new AgentsView(camHandler, spriteRenderer, cellSize, game);
