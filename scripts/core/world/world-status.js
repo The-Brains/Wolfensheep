@@ -61,12 +61,13 @@ define([
         };
 
         WorldStatus.parseFromJson = function(json) {
+            var tile = json.tile;
             var worldStatus = new WorldStatus(
-                Location.parseFromJson(json.location),
-                json.seed,
-                json.status
+                Location.parseFromJson(tile.location),
+                tile.seed,
+                tile.status
             );
-            worldStatus.setGeneratorGeneration(json.generatorGeneration);
+            worldStatus.setGeneratorGeneration(tile.generatorGeneration);
 
             return worldStatus;
         }
