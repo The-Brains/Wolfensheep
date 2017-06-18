@@ -114,6 +114,14 @@ define([
 
                 return generateWorldWithWorker(seed,width, height)
                 .then((game) => {
+                    game.getWorld().setAgentCounterCallback((agentQuantity) => {
+                        $('.agent_quantity').text(agentQuantity);
+                    });
+
+                    game.setCycleCounterCallback((cycleCounter) => {
+                        $('.cycle_counter').text(cycleCounter);
+                    });
+
                     $('.world-generation-progress').addClass('is-hidden');
                     var worldView = new WorldView(game, document.getElementById('canvas'))
                     worldView.start();
