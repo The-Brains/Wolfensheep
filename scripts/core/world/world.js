@@ -42,8 +42,8 @@ define([
                     var counter = 0;
                     progressCallback(`${extraProgressName} world-filling`, counter, surface);
 
-                    _.times(height, function(h) {
-                        _.times(width, function(w) {
+                    for(var h = height - 1 ; h>=0 ; h--) {
+                        for(var w = width - 1 ; w>=0 ; w--) {
                             var loc = new Location(w, h);
                             if (param) {
                                 setTile(loc, param);
@@ -54,8 +54,8 @@ define([
                             progressCallback(`${extraProgressName} world-filling`,
                                 counter, surface);
                             counter++;
-                        });
-                    });
+                        };
+                    };
 
                     progressCallback(`${extraProgressName} world-filling`,
                                 surface, surface);
@@ -79,8 +79,8 @@ define([
                     var counter = 0;
 
                     progressCallback('filling world with a biome', 0, totalSurface);
-                    _.times(height, function(h) {
-                        _.times(width, function(w) {
+                    for(var h = height - 1 ; h>=0 ; h--) {
+                        for(var w = width - 1 ; w>=0 ; w--) {
                             var loc = new Location(w, h);
                             if (loc.distance(center) <= radius) {
                                 tiles[loc.getX()][loc.getY()].setStatus(paramType, paramOption);
@@ -88,8 +88,8 @@ define([
 
                             counter++;
                             progressCallback('filling world with a biome', counter, totalSurface);
-                        });
-                    });
+                        }
+                    }
 
                     return Promise.resolve();
                 });
