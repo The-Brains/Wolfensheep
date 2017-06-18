@@ -60,7 +60,7 @@ define([
                         var tileInfo = tilesView.getImgInfo(x,y);
 
                         var spriteObj = DOK.SpriteObject.create(
-                            agentLoc.x * cellSize, agentLoc.y * cellSize, cellSize,
+                            (x + agentLoc.x - Math.floor(agentLoc.x)) * cellSize, (y + agentLoc.y - Math.floor(agentLoc.y)) * cellSize, cellSize,
                             cellSize*3, cellSize*3,
                             null,
                             imgInfo.img,
