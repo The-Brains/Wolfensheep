@@ -8,6 +8,8 @@ define([
             var myself = this;
             var generator = new Generator(seed);
             var world = null;
+            var cycleCounter = 0;
+            var cycleCounterCallback = _.noop;
 
             var initializeWorld = function() {
                 var worldSeed = '';
@@ -37,6 +39,14 @@ define([
                 });
             }
 
+            this.getCycleCounter = function() {
+                return cycleCounter;
+            }
+
+            this.setCycleCounterCallback = function(cb) {
+                cycleCounterCallback = cb;
+            }
+
             this.toJson = function() {
                 return {
                     seed: seed,
@@ -62,7 +72,12 @@ define([
             * This is a promise.
             */
             this.cycle = function() {
-                return world.cycle();
+                return world.cycle()
+                .then(() => {
+                    cycleCounter++;
+                    cycleCounterCallback(cycleCounter);
+                    return Promise.resolve();
+                });
             }
 
             if (!_.isNil(width) && !_.isNil(height)) {
