@@ -1,10 +1,9 @@
 define([
-        'threejs',
         'dobuki',
         './imagestore.js',
         '../core/localization/location.js',
     ],
-    function(THREE, DOK, ImageStore, Location) {
+    function(DOK, ImageStore, Location) {
         return function (cameraHandler, spriteRenderer, cellSize, game) {
             var range = 100;
             var worldWidth = game.getWidth();
