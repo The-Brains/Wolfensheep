@@ -42,7 +42,7 @@ require({
                 var now = new Date();
                 var timeSpent = now - lastTimeUpdate[progressBarName];
 
-                if (timeSpent >= 250 || progress === 0 || progress === progressTotal) {
+                if (timeSpent >= 150 || progress === 0 || progress === progressTotal) {
                     worker.postMessage({
                         message: 'progress',
                         progressBarName: progressBarName,

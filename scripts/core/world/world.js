@@ -64,30 +64,40 @@ define([
                 return keys[index];
             }
 
-            var drawTerrainAtOnce = function(terrains, progressCallback = _.noop) {
+            var drawTerrainAtOnce = function(terrains, biomesQuantity, progressCallback = _.noop) {
                 var counter = 0;
+                counterBiome = 0;
                 var totalSurface = height * width;
+                progressCallback('filling world with all biomes', counter, totalSurface);
 
                 for(var h = height - 1 ; h>=0 ; h--) {
                     for(var w = width - 1 ; w>=0 ; w--) {
 
                         var loc = new Location(w, h);
+                        counterBiome = 0;
 
                         _.forEach(terrains, (terrainOptionTypes, paramType) => {
                             generator.shuffledForEach(terrainOptionTypes, (paramTerrain, paramOption) => {
                                 generator.shuffledForEach(paramTerrain.terrains, (biome) => {
                                     var center = new Location(biome.centerX, biome.centerY);
                                     var radius = biome.radius;
-                                    if (loc.distance(center) <= radius) {
-                                        tiles[loc.getX()][loc.getY()].setStatus(paramType, paramOption);
+                                    if (center.getX() + radius >= loc.getX()
+                                        && center.getX() - radius <= loc.getX()
+                                        && center.getY() + radius >= loc.getY()
+                                        && center.getY() - radius <= loc.getY()
+                                        && loc.distance(center) <= radius) {
+
+                                        tiles[loc.getX()][loc.getY()]
+                                            .setStatus(paramType, paramOption);
                                     }
+                                    counterBiome++;
+                                    progressCallback('Check for biomes at location', counterBiome, biomesQuantity);
                                 });
                             });
                         });
 
                         counter++;
                         progressCallback('filling world with all biomes', counter, totalSurface);
-
                     }
                 }
             }
@@ -160,7 +170,7 @@ define([
 
                 // draw biomes
                 var workingCopy = _.cloneDeep(terrains);
-                drawTerrainAtOnce(workingCopy, progressCallback);
+                drawTerrainAtOnce(workingCopy, biomesQuantity, progressCallback);
 
             }
 
