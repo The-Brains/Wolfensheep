@@ -28,18 +28,19 @@ define([
 
                         if (this.options.imageCache[tileY][tileX]===undefined) {
                             var tile = collection.options.tiles[tileX][tileY];
-                            this.options.imageCache[tileY][tileX] = tile ? ImageStore.getImageFromTile(tile) : null;
+                            this.options.imageCache[tileY][tileX] = tile
+                                ? ImageStore.getImageInfoFromTile(tile) : null;
                         }
-                        var img = this.options.imageCache[tileY][tileX];
-
-                        if (img !== null) {
+                        var imgInfo = this.options.imageCache[tileY][tileX];
+                        var light = 1;
+                        if (imgInfo !== null) {
                             return DOK.SpriteObject.create(
                                 x * cellSize, y * cellSize, 0,//c!==0?0:-64,
                                 cellSize, cellSize,
                                 DOK.Camera.quaternions.southQuaternionArray,
-                                img,
+                                imgInfo.img,
                                 light,
-                                0
+                                imgInfo.wave
                             );
                         }
                     }

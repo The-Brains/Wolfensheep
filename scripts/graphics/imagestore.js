@@ -1,27 +1,43 @@
 define(['dobuki'],
     function(DOK) {
-        function getImageFromTile(tile) {
+
+        function getImageInfoFromTile(tile) {
+            var imageInfo = {
+                img: null,
+                wave: 0,
+            };
+            imageInfo.wave = false;
             if(tile.getParameter('ground')==='water') {
-                return tile.getParameter('temperature')==='freezing'
-                    ? DOK.SpriteSheet.spritesheet.tiles.ice
-                    : DOK.SpriteSheet.spritesheet.tiles.water;
+                if (tile.getParameter('temperature')==='freezing') {
+                    imageInfo.img = DOK.SpriteSheet.spritesheet.tiles.ice;
+                } else {
+                    imageInfo.img = DOK.SpriteSheet.spritesheet.tiles.water;
+                    imageInfo.wave = 15;
+                }
             } else {
-                return DOK.SpriteSheet.spritesheet.tiles[tile.getParameter('ground')];
+                imageInfo.img = DOK.SpriteSheet.spritesheet.tiles[tile.getParameter('ground')];
             }
+            return imageInfo;
         }
 
-        function getImageFromAgent(agent, move) {
+        function getImageInfoFromAgent(agent, move) {
+            var imageInfo = {
+                img: null,
+            };
+            imageInfo.img = null;
+
             var type = agent.getDNA().charCodeAt(0)%2;
 
             var time = DOK.Loop.time;
             if(type===0) {
-                return move.dist>.01
+                imageInfo.img = move.dist>.01
                     ? DOK.SpriteSheet.spritesheet.creatures.blob.move
                     : DOK.SpriteSheet.spritesheet.creatures.blob.still;
             } else {
                 var animation = DOK.SpriteSheet.spritesheet.creatures.squid;
-                return animation[Math.floor(time/100) % animation.length];
+                imageInfo.img = animation[Math.floor(time/100) % animation.length];
             }
+            return imageInfo;
         }
 
 
@@ -50,7 +66,7 @@ define(['dobuki'],
         DOK.SpriteSheet.preLoad(images);
 
         return {
-            getImageFromTile: getImageFromTile,
-            getImageFromAgent: getImageFromAgent,
+            getImageInfoFromTile: getImageInfoFromTile,
+            getImageInfoFromAgent: getImageInfoFromAgent,
         };
 });

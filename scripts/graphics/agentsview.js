@@ -56,13 +56,13 @@ define([
                         }
 
 
-                        var img = ImageStore.getImageFromAgent(agent, agentLoc);
+                        var imgInfo = ImageStore.getImageFromAgent(agent, agentLoc);
 
                         var spriteObj = DOK.SpriteObject.create(
                             agentLoc.x * cellSize, agentLoc.y * cellSize, cellSize,
                             cellSize*3, cellSize*3,
                             null,
-                            img,
+                            imgInfo.img,
                             1,
                             0
                         );
