@@ -4,7 +4,7 @@ define([
         '../core/localization/location.js',
     ],
     function(DOK, ImageStore, Location) {
-        return function (cameraHandler, spriteRenderer, cellSize, game) {
+        return function (cameraHandler, spriteRenderer, tilesView, cellSize, game) {
             var range = 100;
             var worldWidth = game.getWidth();
             var worldHeight = game.getHeight();
@@ -57,6 +57,7 @@ define([
 
 
                         var imgInfo = ImageStore.getImageInfoFromAgent(agent, agentLoc);
+                        var tileInfo = tilesView.getImgInfo(x,y);
 
                         var spriteObj = DOK.SpriteObject.create(
                             agentLoc.x * cellSize, agentLoc.y * cellSize, cellSize,
@@ -64,7 +65,7 @@ define([
                             null,
                             imgInfo.img,
                             1,
-                            0
+                            tileInfo ? tileInfo.wave : 0
                         );
                         spriteObj.type = 'face';
                         tempArray.push(spriteObj);
