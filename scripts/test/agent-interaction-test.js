@@ -9,7 +9,7 @@ define(
         var mainName = 'agent-interaction';
 
         testWrapper.execTest(mainName, 'should iterate over cycles', function() {
-            var game = new Game('awesome seed plus plus', 10, 10);
+            var game = new Game('awesome seed plus plus', 5, 5);
 
             return game.initialize()
             .then(() => {
