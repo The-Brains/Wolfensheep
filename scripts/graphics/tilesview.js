@@ -1,9 +1,8 @@
 define([
-        'threejs',
         'dobuki',
         './imagestore.js',
     ],
-    function(THREE, DOK, ImageStore) {
+    function(DOK, ImageStore) {
         return function (cameraHandler, spriteRenderer, cellSize, game) {
             var range = 100;
             var worldWidth = game.getWidth();
