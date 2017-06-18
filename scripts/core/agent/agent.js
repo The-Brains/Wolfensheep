@@ -7,6 +7,8 @@ define([
     './dna-random-gene.js',
     './intent.js',
 ], function (_, AgentGoals, Generator, Location, WorldParameters, ObjectDNA, Intent) {
+    var MAX_HISTORY_LENGTH = 5;
+
     var Agent = function(objectDNA, location, initialize=true) {
         var myself = this;
         if (initialize) {
@@ -538,6 +540,9 @@ define([
                     ? 'null'
                     : myself.getCurrentGoal().name,
             });
+            while(previousLocations.length > MAX_HISTORY_LENGTH) {
+                previousLocations.shift();
+            }
 
             if (myself.isPlant() && !forced) {
                 location = currentLocation;
