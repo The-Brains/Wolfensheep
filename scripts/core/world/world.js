@@ -372,7 +372,7 @@ define([
                 tiles = ArrayUtil.makeTwoDimensional(width, height);
                 for(var w = 0 ; w < width ; w ++) {
                     for (var h = 0 ; h < height ; h++ ) {
-                        tiles[w][h] = WorldStatus.parseFromJson(json.tiles[w+h*width]);
+                        tiles[w][h] = WorldStatus.parseFromJson(json.tiles[w][h]);
                     }
                 }
 
