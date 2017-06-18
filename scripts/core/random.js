@@ -39,6 +39,41 @@ define(
             this.getGeneration = function() {
                 return indexGenerator;
             }
+
+            /**
+            * Like _.forEach but shuffle the input first.
+            */
+            this.shuffledForEach = function(input, cb = _.noop) {
+                if (!_.isArray(input)) {
+                    treatment = _.keys(input);
+                }
+
+                var output = [];
+
+                if (_.isArray(input)) {
+                    treatment = _.cloneDeep(input);
+                }
+
+                while(!_.isEmpty(treatment)) {
+                    var key = this.getInt(0, _.size(treatment));
+                    var element = _.pullAt(treatment, key);
+                    output.push(element[0]);
+                }
+
+                if (!_.isArray(input)) {
+                    var outputObject = {};
+                    _.forEach(output, (key) => {
+                        outputObject[key] = input[key];
+                        cb(input[key], key);
+                    });
+                    return outputObject;
+                } else {
+                    _.forEach(output, (item, key) => {
+                        cb(item, key);
+                    });
+                    return output;
+                }
+            }
         };
 
         return Generator;
