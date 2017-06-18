@@ -1,7 +1,6 @@
 define(['dobuki'],function(DOK) {
 
     function CameraHandler(camera, domElement, cellSize) {
-        var width, height;
         var selectedObj = {};
         function getCamPos() {
             var xPos = camera.position.x;

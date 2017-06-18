@@ -38,8 +38,9 @@ define([
                                 x * cellSize, y * cellSize, 0,//c!==0?0:-64,
                                 cellSize, cellSize,
                                 DOK.Camera.quaternions.southQuaternionArray,
-                                1,
-                                img
+                                img,
+                                light,
+                                0
                             );
                         }
                     }
