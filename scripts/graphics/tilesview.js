@@ -23,15 +23,7 @@ define([
                 },
                 function (x, y) {
                     if (this.options.tiles) {
-                        var tileX = ((x % worldWidth) + worldWidth) % worldWidth;
-                        var tileY = ((y % worldHeight) + worldHeight) % worldHeight;
-
-                        if (this.options.imageCache[tileY][tileX]===undefined) {
-                            var tile = collection.options.tiles[tileX][tileY];
-                            this.options.imageCache[tileY][tileX] = tile
-                                ? ImageStore.getImageInfoFromTile(tile) : null;
-                        }
-                        var imgInfo = this.options.imageCache[tileY][tileX];
+                        var imgInfo = getImgInfo(x,y);
                         var light = 1;
                         if (imgInfo !== null) {
                             return DOK.SpriteObject.create(
@@ -47,6 +39,18 @@ define([
                     return null;
                 }
             );
+
+            function getImgInfo(x,y) {
+                var tileX = ((x % worldWidth) + worldWidth) % worldWidth;
+                var tileY = ((y % worldHeight) + worldHeight) % worldHeight;
+                if (collection.options.imageCache[tileY][tileX]===undefined) {
+                    var tile = collection.options.tiles[tileX][tileY];
+                    collection.options.imageCache[tileY][tileX] = tile
+                        ? ImageStore.getImageInfoFromTile(tile) : null;
+                }
+                var imgInfo = collection.options.imageCache[tileY][tileX];
+                return imgInfo;
+            }
 
             function update() {
                 collection.options.tiles = game.getWorld().getAllTiles();
@@ -65,5 +69,6 @@ define([
             });
 
             this.update = update;
+            this.getImgInfo  = getImgInfo;
         };
 });
