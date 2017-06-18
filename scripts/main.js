@@ -8,6 +8,8 @@ define([
         var game = null;
 
         var injectProgressBar = function(progressName, percent) {
+            $('.loading-animation').remove();
+
             var container = $('.world-generation-progress .container');
             var progressBar = container.find(`[data-name="${progressName}"]`);
 

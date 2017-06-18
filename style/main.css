@@ -36,3 +36,7 @@
     height: 3px;
     background-color: rgb(3,169,244);
 }
+
+.loading-animation {
+    margin: auto;
+}
