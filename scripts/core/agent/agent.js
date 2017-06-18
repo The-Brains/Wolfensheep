@@ -551,7 +551,8 @@ define([
             } else {
                 // normal logic. when agent is part of a world and not forced to move
                 if (!forced && !_.isNil(myself.getWorld())) {
-                    var currentTile = myself.getWorld().getWorldStatus(currentLocation);
+                    var currentTile = myself.getWorld()
+                        .getWorldStatus(currentLocation.getRoundedLocation());
                     var speed = myself.getSpeed(currentTile);
                     // if location target is too far away
                     if (distance > speed) {

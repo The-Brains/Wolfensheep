@@ -28,8 +28,7 @@ define([
                         var tileY = ((y % worldHeight) + worldHeight) % worldHeight;
 
                         if (this.options.imageCache[tileY][tileX]===undefined) {
-                            var key = tileX + "-" + tileY;
-                            var tile = collection.options.tiles[key];
+                            var tile = collection.options.tiles[tileX][tileY];
                             this.options.imageCache[tileY][tileX] = tile ? ImageStore.getImageFromTile(tile) : null;
                         }
                         var img = this.options.imageCache[tileY][tileX];

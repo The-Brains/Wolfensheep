@@ -2,14 +2,15 @@ define([
         'lodash',
         '../random.js',
         '../../util/world-parameters.js',
+        '../../util/array.js',
         '../localization/location.js',
         '../agent/agent.js',
         './world-status.js',
     ],
-    function(_, Generator, Parameters, Location, Agent, WorldStatus) {
+    function(_, Generator, Parameters, ArrayUtil, Location, Agent, WorldStatus) {
         var World = function(seed, width, height) {
             var myself = this;
-            var tiles = {};
+            var tiles = ArrayUtil.makeTwoDimensional(width, height);
             var generator = new Generator(seed);
             var agentsByID = {};
             var agentsByLocation = {};
@@ -29,7 +30,7 @@ define([
 
             var setTile = function(location, param) {
                 var key = location.serialize();
-                tiles[key] = new WorldStatus(location, `${seed}+${key}`, param);
+                tiles[location.getX()][location.getY()] = new WorldStatus(location, `${seed}+${key}`, param);
             }
 
             var initializeWorld = function(param = null, progressCallback = _.noop,
@@ -82,8 +83,7 @@ define([
                         _.times(width, function(w) {
                             var loc = new Location(w, h);
                             if (loc.distance(center) <= radius) {
-                                var key = loc.serialize();
-                                tiles[key].setStatus(paramType, paramOption);
+                                tiles[loc.getX()][loc.getY()].setStatus(paramType, paramOption);
                             }
 
                             counter++;
@@ -256,13 +256,13 @@ define([
 
                 var key = location.serialize();
 
-                if(!_.has(tiles, key)) {
+                if(_.isNil(tiles[location.getX()][location.getY()])) {
                     // world piece need to be defined in function of its neighbors.
                     var locationSeed = `${seed}+${key}`;
-                    tiles[key] = new WorldStatus(location, locationSeed);
+                    tiles[location.getX()][location.getY()] = new WorldStatus(location, locationSeed);
                 }
 
-                return tiles[key];
+                return tiles[location.getX()][location.getY()];
             };
 
             this.getAllTiles = function() {
@@ -407,18 +407,19 @@ define([
             }
 
             this.toJson = function() {
+                var tileSerialized =  ArrayUtil.makeTwoDimensional(width, height);
+                for(var w = 0 ; w < width ; w ++) {
+                    for (var h = 0 ; h < height ; h++ ) {
+                        tileSerialized[w][h] = myself.getWorldStatus(new Location(w, h)).toJson();
+                    }
+                }
                 return {
                     seed: seed,
                     width: width,
                     height: height,
                     agentIndex: agentIndex,
                     worldGenerated: worldGenerated,
-                    tiles: _.map(tiles, (tile, key) => {
-                        return {
-                            key: key,
-                            tile: tile.toJson(),
-                        }
-                    }),
+                    tiles: tileSerialized,
                     generatorGeneration: generator.getGeneration(),
                     agents: _.map(agentsByID, (agent) => {
                         return agent.toJson();
@@ -434,10 +435,12 @@ define([
                 width = json.width;
                 height = json.height;
 
-                tiles = {};
-                _.forEach(json.tiles, (tile) => {
-                    tiles[tile.key] = WorldStatus.parseFromJson(tile.tile);
-                });
+                tiles = ArrayUtil.makeTwoDimensional(width, height);
+                for(var w = 0 ; w < width ; w ++) {
+                    for (var h = 0 ; h < height ; h++ ) {
+                        tiles[w][h] = WorldStatus.parseFromJson(json.tiles[w][h]);
+                    }
+                }
 
                 agentsByID = {};
                 agentsByLocation = {};
