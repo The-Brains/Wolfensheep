@@ -56,7 +56,7 @@ define([
                         }
 
 
-                        var imgInfo = ImageStore.getImageFromAgent(agent, agentLoc);
+                        var imgInfo = ImageStore.getImageInfoFromAgent(agent, agentLoc);
 
                         var spriteObj = DOK.SpriteObject.create(
                             agentLoc.x * cellSize, agentLoc.y * cellSize, cellSize,
