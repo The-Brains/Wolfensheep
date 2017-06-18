@@ -63,8 +63,9 @@ define([
                             agentLoc.x * cellSize, agentLoc.y * cellSize, cellSize,
                             cellSize*3, cellSize*3,
                             null,
+                            img,
                             1,
-                            img
+                            0
                         );
                         spriteObj.type = 'face';
                         tempArray.push(spriteObj);
