@@ -1,6 +1,6 @@
 define(
-    ['chai', 'testWrapper' ,'../core/random.js'],
-    function(chai, testWrapper, Random) {
+    ['chai', 'testWrapper', 'lodash', '../core/random.js'],
+    function(chai, testWrapper, _, Random) {
         var expect = chai.expect;
         var mainName = 'core-random';
 
@@ -46,6 +46,31 @@ define(
                 expect(returned).to.be.at.least(3);
                 expect(returned).to.be.below(10);
             }
+        });
+
+        testWrapper.execTest(mainName, 'should shuffle array', function() {
+            var r = new Random();
+            var input = [1,2,3,4,5,6];
+            var output = r.shuffledForEach(input, (value, key) => {
+                expect(_.values(input)).to.include(value);
+            });
+            expect(output).to.not.eql(input);
+            expect(output.sort()).to.eql(input.sort());
+        });
+
+        testWrapper.execTest(mainName, 'should shuffle hash', function() {
+            var r = new Random();
+            var input = {
+                'one': 1,
+                'two': 2,
+                'three': 3,
+            };
+            var output = r.shuffledForEach(input, (value, key) => {
+                expect(value).to.equal(input[_.findKey(input, v => v === value)]);
+                expect(_.keys(input)).to.include(key);
+                expect(_.values(input)).to.include(value);
+            });
+            expect(output).to.eql(input);
         });
     }
 );

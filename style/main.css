@@ -15,6 +15,10 @@
     border-radius: 4px;
 }
 
+.world-generation-progress .progress-bar .progress-title {
+    text-transform: capitalize;
+}
+
 .world-generation-progress .progress-bar .progress-bar-row {
     display: flex;
     align-items: center;
