@@ -8,8 +8,8 @@ define(
         var expect = chai.expect;
         var mainName = 'agent-interaction';
 
-        testWrapper.execTest(mainName, 'should return null when not present', function() {
-            var game = new Game('awesome seed', 10, 10);
+        testWrapper.execTest(mainName, 'should iterate over cycles', function() {
+            var game = new Game('awesome seed plus plus', 10, 10);
 
             return game.initialize()
             .then(() => {
@@ -42,7 +42,7 @@ define(
                     var world = game.getWorld();
                     expect(world.getAgentQuantity()).to.be.above(0);
                     var agents = world.getAllAgents();
-                    expect(agents[0].getID()).to.be.above(4);
+                    expect(agents[0].getID()).to.at.least(4);
                 });
             });
         });

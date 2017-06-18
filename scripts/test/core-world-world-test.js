@@ -14,7 +14,10 @@ define(
             var world = new World('cool seed', 20, 20);
             return world.generateWorld(_.noop, false)
             .then(() => {
-                expect(_.size(world.getAllTiles())).to.equal(20 * 20);
+                expect(_.size(world.getAllTiles())).to.equal(20);
+                _.forEach(world.getAllTiles(), (slice) => {
+                    expect(_.size(slice)).to.equal(20);
+                })
             });
         });
 
