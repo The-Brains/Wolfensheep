@@ -87,7 +87,6 @@ define([
                 var totalTerrainsQuantity = _.size(terrains);
                 var counter = 0;
                 var promises = [];
-                console.log('totalBiomes: ' + totalTerrainsQuantity);
 
                 progressCallback('Draw all biomes options', counter, totalTerrainsQuantity);
                 for(var t = terrains.length - 1 ; t >= 0 ; t--) {
@@ -102,7 +101,6 @@ define([
                             progressCallback);
 
                         progressCallback('Draw all biomes options', counter, totalTerrainsQuantity);
-                        console.log('Finished with biome ' + counter + '/' + totalTerrainsQuantity);
                         resolve();
                     }));
                 }
