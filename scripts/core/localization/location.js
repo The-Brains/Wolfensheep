@@ -40,11 +40,15 @@ define(['lodash', '../../util/round.js'], function(_, Round) {
         }
 
         this.distance = function(location) {
+            return Math.sqrt(this.distanceSquared(location));
+        };
+
+        this.distanceSquared = function(location) {
             var xx = location.getX() - locX;
             var yy = location.getY() - locY;
 
-            return Math.sqrt(xx*xx + yy*yy);
-        };
+            return xx * xx + yy * yy;
+        }
 
         this.equals = function(location) {
             return location.getX() === locX && location.getY() === locY;
