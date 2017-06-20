@@ -86,22 +86,28 @@ define([
             var drawBiomes = function(terrains, progressCallback = _.noop) {
                 var totalTerrainsQuantity = _.size(terrains);
                 var counter = 0;
+                var promises = [];
+                console.log('totalBiomes: ' + totalTerrainsQuantity);
 
                 progressCallback('Draw all biomes options', counter, totalTerrainsQuantity);
                 for(var t = terrains.length - 1 ; t >= 0 ; t--) {
                     var terrain = terrains[t];
-                    addTileOption(
-                        terrain.parameterName,
-                        terrain.parameterOption,
-                        terrain.center,
-                        terrain.radius,
-                        progressCallback);
-
                     counter++;
-                    progressCallback('Draw all biomes options', counter, totalTerrainsQuantity);
+                    promises.push(new Promise((resolve) => {
+                        addTileOption(
+                            terrain.parameterName,
+                            terrain.parameterOption,
+                            terrain.center,
+                            terrain.radius,
+                            progressCallback);
+
+                        progressCallback('Draw all biomes options', counter, totalTerrainsQuantity);
+                        console.log('Finished with biome ' + counter + '/' + totalTerrainsQuantity);
+                        resolve();
+                    }));
                 }
 
-                progressCallback('Draw all biomes options', totalTerrainsQuantity, totalTerrainsQuantity);
+                return Promise.all(promises);
             }
 
             var consolidateTiles = function(progressCallback = _.noop) {
@@ -178,8 +184,11 @@ define([
                     });
                 });
 
-                drawBiomes(allBiomes, progressCallback);
-                consolidateTiles(progressCallback);
+                return drawBiomes(allBiomes, progressCallback)
+                .then(() => {
+                    consolidateTiles(progressCallback);
+                    return Promise.resolve();
+                });
             }
 
             this.getWorldStatus = function(location) {
@@ -335,9 +344,11 @@ define([
             this.generateWorld = function(progressCallback = _.noop) {
                 return Promise.resolve()
                 .then(() => {
-                    generateBiomeWorld(progressCallback);
-                    worldGenerated = true;
-                    return Promise.resolve();
+                    return generateBiomeWorld(progressCallback)
+                    .then(() => {
+                        worldGenerated = true;
+                        return Promise.resolve();
+                    });
                 });
             }
 
