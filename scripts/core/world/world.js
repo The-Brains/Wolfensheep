@@ -28,31 +28,25 @@ define([
                 return height;
             };
 
-            var setTile = function(location, param) {
-                var key = location.serialize();
-                tiles[location.getX()][location.getY()]
-                    = new WorldStatus(location, `${seed}+${key}`, param);
+            var setTile = function(x, y, param) {
+                tiles[x][y] = new WorldStatus(new Location(x, y), `${seed}+${x}-${y}`, param);
             }
 
             var initializeWorld = function(param, progressCallback = _.noop,
                     extraProgressName = '') {
                 var surface = height * width;
                 var counter = 0;
+
                 progressCallback(`${extraProgressName} world-filling`, counter, surface);
+                for(var h = height - 1 ; h >= 0 ; h--) {
+                    for(var w = width - 1 ; w >= 0 ; w--) {
+                        setTile(w, h, param);
 
-                for(var h = height - 1 ; h>=0 ; h--) {
-                    for(var w = width - 1 ; w>=0 ; w--) {
-                        var loc = new Location(w, h);
-                        setTile(loc, param, true);
-
-                        progressCallback(`${extraProgressName} world-filling`,
-                            counter, surface);
+                        progressCallback(`${extraProgressName} world-filling`, counter, surface);
                         counter++;
                     };
                 };
-
-                progressCallback(`${extraProgressName} world-filling`,
-                            surface, surface);
+                progressCallback(`${extraProgressName} world-filling`, surface, surface);
             };
 
             var addTileOption = function(parameterName, parameterOption, center, radius,
@@ -119,7 +113,7 @@ define([
                     var column = tiles[w];
                     for(var h = height - 1 ; h>=0 ; h--) {
                         column[h].consolidate(generator);
-                        counter ++;
+                        counter++;
                         progressCallback(`Consolidate tiles`, counter, surface);
                     }
                 }
