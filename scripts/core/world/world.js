@@ -141,19 +141,18 @@ define([
                 initializeWorld(defaultParam, progressCallback, 'Filling with default tile');
 
                 var counter = 0;
-
                 progressCallback('creating biomes regions', counter,
                     totalPossibleTerrains);
 
                 var minDimension = Math.min(width, height);
-                var maxRadius = minDimension / 4.0;
-                var maxQuantity = 1 + Math.min(Math.ceil(surface / 400.0), minDimension / 2);
+                var maxRadius = 1 + Math.ceil(minDimension / 10.0);
+                var maxQuantity = 1 + Math.ceil(surface / 800.0 + 1000.0 / surface);
                 var allBiomes = [];
 
                 _.forEach(Parameters, (paramOptions, paramType) => {
                     _.forEach(paramOptions, (paramOption, key) => {
                         if(key !== 0) {
-                            var quantity = generator.getInt(0, maxQuantity);
+                            var quantity = generator.getInt(1, maxQuantity);
 
                             _.times(quantity, () => {
                                 var radius = generator.getInt(1, maxRadius);
