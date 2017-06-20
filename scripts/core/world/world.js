@@ -65,14 +65,20 @@ define([
 
                 var radiusSquared = radius * radius;
 
+                var centerX = center.getX();
+                var centerY = center.getY();
+
                 var surface = (endHeight - startHeight) * (endWidth - startWidth);
                 var counter = 0;
 
                 progressCallback('Add option from one biome', counter, surface);
                 for(var h = endHeight ; h >= startHeight ; h--) {
+                    var yy = centerY - h;
+                    yy = yy * yy;
                     for(var w = endWidth ; w >= startWidth ; w--) {
-                        var loc = new Location(w, h);
-                        if (loc.distanceSquared(center) <= radiusSquared) {
+                        var xx = centerX - w;
+                        xx = xx * xx;
+                        if (xx + yy <= radiusSquared) {
                             tiles[w][h].addStatusOption(parameterName, parameterOption);
                         }
 
