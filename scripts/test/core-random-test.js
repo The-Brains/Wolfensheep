@@ -48,6 +48,30 @@ define(
             }
         });
 
+        testWrapper.execTest(mainName, 'should return any from array', function() {
+            var r = new Random();
+            var input = [1, 2, 3, 4, 5];
+
+            for(var i = 0 ; i < 100; i ++) {
+                var picked = r.anyFrom(input);
+                expect(input).to.include(picked);
+            }
+        });
+
+        testWrapper.execTest(mainName, 'should return any from object', function() {
+            var r = new Random();
+            var input = {
+                'one': 1,
+                'two': 2,
+                '3': 'three',
+            };
+
+            for(var i = 0 ; i < 100; i ++) {
+                var picked = r.anyFrom(input);
+                expect(_.values(input)).to.include(picked);
+            }
+        });
+
         testWrapper.execTest(mainName, 'should shuffle array', function() {
             var r = new Random();
             var input = [1,2,3,4,5,6];

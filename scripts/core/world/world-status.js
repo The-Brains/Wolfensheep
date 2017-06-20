@@ -58,6 +58,26 @@ define([
             this.setStatus = function(paramType, newParam) {
                 status[paramType] = newParam;
             }
+
+            this.consolidate = function(overridGenerator = null) {
+                var statusCopy = _.cloneDeep(status);
+
+                _.forEach(statusCopy, (paramOption, paramType) => {
+                    if(_.isArray(paramOption)) {
+                        status[paramType] = overridGenerator
+                            ? overridGenerator.anyFrom(paramOption)
+                            : generator.anyFrom(paramOption);
+                    }
+                });
+            }
+
+            this.addStatusOption = function(paramType, extraParam) {
+                if (!_.isArray(status[paramType])) {
+                    status[paramType] = [extraParam];
+                } else {
+                    status[paramType] = _.concat(status[paramType], extraParam);
+                }
+            }
         };
 
         WorldStatus.parseFromJson = function(json) {

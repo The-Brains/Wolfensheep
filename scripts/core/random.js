@@ -40,10 +40,26 @@ define(
                 return indexGenerator;
             }
 
+            this.anyFrom = function(input) {
+                var key = null;
+
+                if (!_.isArray(input)) {
+                    var keys = _.keys(input);
+                    var key = this.getInt(0, _.size(keys));
+                    key = _.pullAt(keys, key);
+                } else {
+                    var key = this.getInt(0, _.size(input));
+                }
+
+                return input[key];
+            }
+
             /**
             * Like _.forEach but shuffle the input first.
             */
             this.shuffledForEach = function(input, cb = _.noop) {
+                var treatment = null;
+
                 if (!_.isArray(input)) {
                     treatment = _.keys(input);
                 }
