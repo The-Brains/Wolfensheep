@@ -25,6 +25,9 @@ define([
                     if (this.options.tiles) {
                         var imgInfo = getImgInfo(x,y);
                         var light = 1;
+                        if(x===cameraHandler.getCamPos().x && y===cameraHandler.getCamPos().y) {
+                            light = Math.random();
+                        }
                         if (imgInfo !== null) {
                             return DOK.SpriteObject.create(
                                 x * cellSize, y * cellSize, 0,//c!==0?0:-64,
