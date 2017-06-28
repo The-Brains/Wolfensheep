@@ -34,7 +34,18 @@ define([
                 var point = getClosestAgentsPosition(camPos.x, camPos.y, 20);
                 if(point) {
                     var agents = game.getWorld().getAgentsAt(point);
-                    console.log(agents);
+                    var agent = null;
+                    for(var a in agents) {
+                        agent = agents[a];
+                        break;
+                    }
+                    if(agent) {
+                        document.getElementById('infobox').style.display = '';
+                        document.getElementById('infospace').textContent =
+                            agent.serialize();
+                    }
+                } else {
+                    document.getElementById('infobox').style.display = 'none';
                 }
             }
 

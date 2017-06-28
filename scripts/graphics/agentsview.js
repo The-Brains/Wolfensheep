@@ -61,7 +61,7 @@ define([
 
                         var spriteObj = DOK.SpriteObject.create(
                             (x + agentLoc.x - Math.floor(agentLoc.x)) * cellSize, (y + agentLoc.y - Math.floor(agentLoc.y)) * cellSize, cellSize,
-                            cellSize*3, cellSize*3,
+                            cellSize, cellSize,
                             null,
                             imgInfo.img,
                             1,

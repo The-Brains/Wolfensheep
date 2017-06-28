@@ -30,7 +30,7 @@ define(['dobuki'],
 
             var time = DOK.Loop.time;
             if(type===0) {
-                imageInfo.img = move.dist>.01
+                imageInfo.img = move && move.dist>.01
                     ? DOK.SpriteSheet.spritesheet.creatures.blob.move
                     : DOK.SpriteSheet.spritesheet.creatures.blob.still;
             } else {
