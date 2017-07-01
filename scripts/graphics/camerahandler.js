@@ -50,7 +50,7 @@ define(['dobuki'],function(DOK) {
 
         var zoomState = [
             { distance: 400, angle: 1.1 },
-            { distance: 1000, angle: .3 },
+            { distance: 1800, angle: 0.05 },
         ];
 
         function updateCamera() {
